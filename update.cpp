@@ -109,6 +109,8 @@ void Update::camera(int frame_rate,double ms_per_frame,int logic_frame_rate){
 
     if(game.in_progress){
         game.set_camera();
+
+        game.world.update_background();
     }
 }
 
@@ -121,7 +123,7 @@ void Update::render(int frame_rate,double ms_per_frame,int logic_frame_rate){
         ///Render something here.
         rtt_manager.example.reset_render_target();*/
 
-        game.render_background();
+        game.world.render_background();
 
         game.world.render();
 

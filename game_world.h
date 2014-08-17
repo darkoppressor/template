@@ -17,6 +17,9 @@ public:
     void events();
     void animate();
     void render();
+
+    void update_background();
+    void render_background();
 };
 
 #endif

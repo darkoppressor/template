@@ -296,10 +296,6 @@ void Game::set_camera(){
     camera_delta_y=camera.y-camera_delta_y;
 }
 
-void Game::render_background(){
-    render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,"ui_black");
-}
-
 void Game::render_scoreboard(){
     if(display_scoreboard){
         Bitmap_Font* font=engine_interface.get_font("small");

@@ -83,7 +83,6 @@ public:
 
     void set_camera();
 
-    void render_background();
     void render_scoreboard();
 
     void prepare_for_input();
