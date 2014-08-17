@@ -7,13 +7,71 @@
 using namespace std;
 
 void Engine_Interface::load_data_game(){
+    ///load_data("example_game_script");
 }
 
 void Engine_Interface::load_data_script_game(string script,File_IO_Load* load){
+    /**if(script=="example_game_script"){
+        load_example_game_script(load);
+    }*/
 }
 
 void Engine_Interface::unload_data_game(){
+    ///example_game_scripts.clear();
 }
+
+/**void Engine_Interface::load_example_game_script(File_IO_Load* load){
+    example_game_scripts.push_back(Example_Game_Script());
+
+    bool multi_line_comment=false;
+
+    while(!load->eof()){
+        string line="";
+
+        string str_name="name:";
+
+        load->getline(&line);
+        boost::algorithm::trim(line);
+
+        if(boost::algorithm::contains(line,"*/")){
+            /**multi_line_comment=false;
+        }
+        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
+            multi_line_comment=true;
+        }
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
+        }
+
+        //name
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
+            line.erase(0,str_name.length());
+
+            example_game_scripts[example_game_scripts.size()-1].name=line;
+        }
+
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</example_game_script>")){
+            return;
+        }
+    }
+}*/
+
+/**Example_Game_Script* Engine_Interface::get_example_game_script(string name){
+    Example_Game_Script* ptr_object=0;
+
+    for(int i=0;i<example_game_scripts.size();i++){
+        if(example_game_scripts[i].name==name){
+            ptr_object=&example_game_scripts[i];
+
+            break;
+        }
+    }
+
+    if(ptr_object==0){
+        message_log.add_error("Error accessing example game script '"+name+"'");
+    }
+
+    return ptr_object;
+}*/
 
 void Engine_Interface::open_window(Window* window){
     if(!is_window_open(window)){
