@@ -1,5 +1,6 @@
 #include "game_world.h"
 #include "world.h"
+#include "render.h"
 
 using namespace std;
 

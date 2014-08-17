@@ -2,6 +2,7 @@
 #define game_constants_h
 
 #include <string>
+#include <stdint.h>
 
 extern double ZOOM_RATE;
 extern double ZOOM_MIN;
