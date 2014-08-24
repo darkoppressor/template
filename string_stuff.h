@@ -49,13 +49,21 @@ public:
     double string_to_double(std::string get_string);
 
     template<class Number_Type>
-    inline std::string num_to_string(Number_Type number){
-        std::string message="";
-
+    inline std::string num_to_string(Number_Type number,int precision=10,std::string notation="default"){
         std::stringstream strstream("");
-        strstream.clear();strstream.str("");strstream<<number;message=strstream.str();
 
-        return message;
+        strstream.precision(precision);
+
+        if(notation=="fixed"){
+            strstream<<std::fixed;
+        }
+        else if(notation=="scientific"){
+            strstream<<std::scientific;
+        }
+
+        strstream<<number;
+
+        return strstream.str();
     }
 
     template<class Number_Type>
