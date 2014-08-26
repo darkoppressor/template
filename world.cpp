@@ -42,8 +42,6 @@ Sound sound_system;
 Game game;
 
 bool load_world(){
-    world_loaded=true;
-
     engine_interface.load_data_game_options();
 
     if(!engine_interface.load_options()){
@@ -75,6 +73,8 @@ bool load_world(){
 
     //To be safe, this should be at the very bottom of load_world().
     image.set_error_image();
+
+    world_loaded=true;
 
     return true;
 }
