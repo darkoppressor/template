@@ -79,44 +79,61 @@ int Sound::get_free_channel(){
     return -1;
 }
 
+void Sound::play_sound(string sound_name){
+    Sound_Data* ptr_sound=get_sound(sound_name);
+
+    int volume=128;
+
+    volume=modify_sound_volume(volume);
+
+    _play_sound(ptr_sound,volume);
+}
+
 void Sound::play_sound(string sound_name,double sound_x,double sound_y,double falloff){
     Sound_Data* ptr_sound=get_sound(sound_name);
 
+    int volume=128;
+
+    if(falloff<0.0){
+        falloff=engine_interface.sound_falloff;
+    }
+
+    falloff*=game.camera_zoom;
+
+    double sound_center_x=game.camera.center_x();
+    double sound_center_y=game.camera.center_y();
+
+    if(game.in_progress){
+        /**sound_center_x=game.world.example_player.circle.x;
+        sound_center_y=game.world.example_player.circle.y;*/
+    }
+
+    double sound_position_x=sound_x*game.camera_zoom;
+    double sound_position_y=sound_y*game.camera_zoom;
+
+    double sound_distance=distance_between_points(sound_center_x,sound_center_y,sound_position_x,sound_position_y);
+    if(sound_distance<1.0){
+        sound_distance=0.0;
+    }
+
+    if(sound_distance==0.0){
+        volume=128;
+    }
+    else{
+        volume=(int)floor((falloff/sound_distance)*falloff);
+    }
+
+    if(volume>128){
+        volume=128;
+    }
+
+    volume=modify_sound_volume(volume);
+
+    _play_sound(ptr_sound,volume);
+}
+
+void Sound::_play_sound(Sound_Data* ptr_sound,int volume){
     if(ptr_sound!=0 && ptr_sound->chunk!=0){
-        int volume=128;
-
-        if(sound_x!=-1.0 && sound_y!=-1.0){
-            if(falloff==-1.0){
-                falloff=engine_interface.sound_falloff;
-            }
-
-            falloff*=game.camera_zoom;
-
-            double sound_center_x=game.camera.center_x();
-            double sound_center_y=game.camera.center_y();
-
-            if(game.in_progress){
-                /**sound_center_x=game.world.example_player.circle.x;
-                sound_center_y=game.world.example_player.circle.y;*/
-            }
-
-            double sound_distance=distance_between_points(sound_center_x,sound_center_y,sound_x*game.camera_zoom,sound_y*game.camera_zoom);
-
-            if(sound_distance==0.0){
-                volume=128;
-            }
-            else{
-                volume=(int)((falloff/sound_distance)*falloff);
-            }
-
-            if(volume>128){
-                volume=128;
-            }
-        }
-
-        volume=modify_sound_volume(volume);
-
-        //As long as volume didn't end up 0.
         if(volume!=0){
             int channel=get_free_channel();
 
