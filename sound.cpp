@@ -92,7 +92,15 @@ void Sound::play_sound(string sound_name,double sound_x,double sound_y,double fa
 
             falloff*=game.camera_zoom;
 
-            double sound_distance=distance_between_points(game.camera.center_x(),game.camera.center_y(),sound_x*game.camera_zoom,sound_y*game.camera_zoom);
+            double sound_center_x=game.camera.center_x();
+            double sound_center_y=game.camera.center_y();
+
+            if(game.in_progress){
+                /**sound_center_x=game.world.example_player.circle.x;
+                sound_center_y=game.world.example_player.circle.y;*/
+            }
+
+            double sound_distance=distance_between_points(sound_center_x,sound_center_y,sound_x*game.camera_zoom,sound_y*game.camera_zoom);
 
             if(sound_distance==0.0){
                 volume=128;
