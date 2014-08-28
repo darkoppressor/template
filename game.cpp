@@ -91,7 +91,7 @@ string Game::get_random_direction_cardinal_ordinal(){
 }
 
 bool Game::effect_allowed(){
-    uint32_t effects=/**effects_example.size()*/0;
+    uint32_t effects=/**world.effects_example.size()*/0;
 
     if(effects<option_effect_limit){
         return true;
