@@ -49,10 +49,14 @@ public:
     double string_to_double(std::string get_string);
 
     template<class Number_Type>
-    inline std::string num_to_string(Number_Type number,int precision=10,std::string notation="default"){
+    inline std::string num_to_string(Number_Type number,int precision=10,bool show_point=false,std::string notation="default"){
         std::stringstream strstream("");
 
         strstream.precision(precision);
+
+        if(show_point){
+            strstream.setf(std::ios::showpoint);
+        }
 
         if(notation=="fixed"){
             strstream<<std::fixed;
