@@ -1582,6 +1582,7 @@ void Engine_Interface::load_window(File_IO_Load* load){
 
         string str_name="name:";
         string str_starting_position="starting_position:";
+        string str_starting_size="starting_size:";
         string str_width="width:";
         string str_height="height:";
         string str_fit_content="fit_content:";
@@ -1637,6 +1638,17 @@ void Engine_Interface::load_window(File_IO_Load* load){
 
             windows[windows.size()-1].start_x=windows[windows.size()-1].x;
             windows[windows.size()-1].start_y=windows[windows.size()-1].y;
+        }
+        //Starting size
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_starting_size)){
+            //Clear the data name.
+            line.erase(0,str_starting_size.length());
+
+            vector<string> start_dimensions;
+            boost::algorithm::split(start_dimensions,line,boost::algorithm::is_any_of(","));
+
+            windows[windows.size()-1].start_width=string_stuff.string_to_long(start_dimensions[0]);
+            windows[windows.size()-1].start_height=string_stuff.string_to_long(start_dimensions[1]);
         }
         //Width
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_width)){

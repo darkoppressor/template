@@ -1,6 +1,7 @@
 <window>
 	name:notice
 	starting_position:-1,-1
+	starting_size:4,24
 	fit_content:true
 	
 	<info>

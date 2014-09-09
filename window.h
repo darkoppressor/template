@@ -13,13 +13,18 @@ public:
 
     std::string name;
 
-    //The coordinate location and dimensions.
+    //The coordinate location and dimensions
     short x,y;
     short w,h;
 
-    //The starting coordinates.
+    //The starting coordinates
     short start_x;
     short start_y;
+
+    //The starting size
+    //This is only used when fit_content is true
+    short start_width;
+    short start_height;
 
     bool fit_content;
 

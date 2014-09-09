@@ -15,6 +15,9 @@ Window::Window(){
     start_x=0;
     start_y=0;
 
+    start_width=0;
+    start_height=0;
+
     fit_content=false;
 
     title="";
@@ -151,8 +154,8 @@ void Window::set_dimensions(){
             }
         }
 
-        w=side_right-side_left+4;
-        h=side_down-side_up+more_height+24;
+        w=side_right-side_left+start_width;
+        h=side_down-side_up+more_height+start_height;
 
         for(int i=0;i<buttons.size();i++){
             buttons[i].center_in_window(w,h);
