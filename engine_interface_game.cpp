@@ -33,7 +33,8 @@ void Engine_Interface::unload_data_game(){
         load->getline(&line);
         boost::algorithm::trim(line);
 
-        if(boost::algorithm::contains(line,"*//**")){
+        if(boost::algorithm::contains(line,"*/
+                                      /**")){
             multi_line_comment=false;
         }
         if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
