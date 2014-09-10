@@ -4476,7 +4476,7 @@ void Engine_Interface::render_small_text_inputter(){
 
     double buttons_start_y=window_border_thickness+2.0+font->spacing_y*2.0;
 
-    double x_offset=74.0+window_border_thickness;
+    double x_offset=((double)main_window.SCREEN_WIDTH-font->get_letter_width()*13.0)/2.0+window_border_thickness;
     double offset_y=buttons_start_y;
 
     for(int i=0;i<13;i++){
