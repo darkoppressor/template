@@ -103,7 +103,10 @@ void Engine_Interface::render_title_background(){
 
     Image_Data* logo=image.get_image("logo");
 
-    render_texture(main_window.SCREEN_WIDTH-logo->w*0.25,main_window.SCREEN_HEIGHT-logo->h*0.25,*logo,1.0,0.25,0.25);
+    double logo_scale_x=(double)main_window.SCREEN_WIDTH/(double)1280.0;
+    double logo_scale_y=(double)main_window.SCREEN_HEIGHT/(double)720.0;
+
+    render_texture(main_window.SCREEN_WIDTH-logo->w*logo_scale_x,main_window.SCREEN_HEIGHT-logo->h*logo_scale_y,*logo,1.0,logo_scale_x,logo_scale_y);
 }
 
 void Engine_Interface::render_pause(){
