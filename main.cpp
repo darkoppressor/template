@@ -95,6 +95,8 @@ void game_loop(){
             network.send_updates();
             network.send_input();
 
+            update.tick();
+
             update.movement();
 
             update.events();

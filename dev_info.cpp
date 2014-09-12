@@ -16,7 +16,7 @@ void Engine_Interface::render_dev_info(){
     if(msg.length()>0){
         Bitmap_Font* font=engine_interface.get_font("small");
 
-        render_rectangle(2,2,string_stuff.longest_line(msg)*font->spacing_x,string_stuff.newline_count(msg)*font->spacing_y,0.75,"ui_black");
-        font->show(2,2,msg,"red");
+        render_rectangle(2.0,2.0,string_stuff.longest_line(msg)*font->spacing_x,string_stuff.newline_count(msg)*font->spacing_y,0.75,"ui_black");
+        font->show(2.0,2.0,msg,"red");
     }
 }
