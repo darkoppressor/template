@@ -142,9 +142,10 @@ string File_IO_Load::get_data(){
 
     bool File_IO::is_directory(string path){
         struct stat file_info;
+        string file_name_compare=get_file_name(path);
 
         if(stat(path.c_str(),&file_info)==0){
-            if(S_ISDIR(file_info.st_mode)){
+            if(file_name_compare!="." && file_name_compare!=".." && S_ISDIR(file_info.st_mode)){
                 return true;
             }
         }
