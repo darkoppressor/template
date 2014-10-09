@@ -199,6 +199,17 @@ string File_IO_Load::get_data(){
         }
     }
 
+    string File_IO::get_file_name(string path){
+        for(int i=0;i<path.size();i++){
+            if(path[i]=='/' || path[i]=='\\'){
+                path.erase(0,i+1);
+                i=0;
+            }
+        }
+
+        return path;
+    }
+
     bool File_IO::external_storage_available(){
         int external_storage_state=SDL_AndroidGetExternalStorageState();
 
@@ -431,6 +442,11 @@ string File_IO_Load::get_data(){
 
     void File_IO::remove_directory(string path){
         boost::filesystem::remove_all(path);
+    }
+
+    string File_IO::get_file_name(string path){
+        boost::filesystem::path boost_path(path);
+        return boost_path.filename().string();
     }
 
     File_IO_Directory_Iterator::File_IO_Directory_Iterator(string get_directory){

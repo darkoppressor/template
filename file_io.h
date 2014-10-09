@@ -43,6 +43,7 @@ public:
         void create_directory(std::string path);
         void remove_file(std::string path);
         void remove_directory(std::string path);
+        std::string get_file_name(std::string path);
 
         bool external_storage_available();
     };
@@ -96,6 +97,7 @@ public:
         void create_directory(std::string path);
         void remove_file(std::string path);
         void remove_directory(std::string path);
+        std::string get_file_name(std::string path);
     };
 
     class File_IO_Directory_Iterator{
