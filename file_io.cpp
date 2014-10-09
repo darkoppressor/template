@@ -140,6 +140,36 @@ string File_IO_Load::get_data(){
         }
     }
 
+    bool File_IO::is_directory(string path){
+        struct stat file_info;
+
+        if(stat(path.c_str(),&file_info)==0){
+            if(S_ISDIR(file_info.st_mode)){
+                return true;
+            }
+        }
+        else{
+            message_log.add_error("Error getting file information for file '"+path+"': "+string_stuff.num_to_string(errno));
+        }
+
+        return false;
+    }
+
+    bool File_IO::is_regular_file(string path){
+        struct stat file_info;
+
+        if(stat(path.c_str(),&file_info)==0){
+            if(S_ISREG(file_info.st_mode)){
+                return true;
+            }
+        }
+        else{
+            message_log.add_error("Error getting file information for file '"+path+"': "+string_stuff.num_to_string(errno));
+        }
+
+        return false;
+    }
+
     void File_IO::create_directory(string path){
         if(!directory_exists(path) && mkdir(path.c_str(),S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0){
             message_log.add_error("Error creating directory '"+path+"': "+string_stuff.num_to_string(errno));
@@ -221,6 +251,10 @@ string File_IO_Load::get_data(){
 
     void File_IO_Directory_Iterator::iterate(){
         entry++;
+    }
+
+    bool File_IO_Directory_Iterator::is_directory(){
+        return false;
     }
 
     bool File_IO_Directory_Iterator::is_regular_file(){
@@ -379,6 +413,14 @@ string File_IO_Load::get_data(){
         return boost::filesystem::exists(path);
     }
 
+    bool File_IO::is_directory(string path){
+        return boost::filesystem::is_directory(path);
+    }
+
+    bool File_IO::is_regular_file(string path){
+        return boost::filesystem::is_regular_file(path);
+    }
+
     void File_IO::create_directory(string path){
         boost::filesystem::create_directory(path);
     }
@@ -406,6 +448,15 @@ string File_IO_Load::get_data(){
 
     void File_IO_Directory_Iterator::iterate(){
         it++;
+    }
+
+    bool File_IO_Directory_Iterator::is_directory(){
+        if(boost::filesystem::is_directory(it->path())){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     bool File_IO_Directory_Iterator::is_regular_file(){

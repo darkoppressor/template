@@ -38,6 +38,8 @@ public:
 
         bool directory_exists(std::string path);
         bool file_exists(std::string path);
+        bool is_directory(std::string path);
+        bool is_regular_file(std::string path);
         void create_directory(std::string path);
         void remove_file(std::string path);
         void remove_directory(std::string path);
@@ -56,6 +58,7 @@ public:
 
         bool evaluate();
         void iterate();
+        bool is_directory();
         bool is_regular_file();
         std::string get_full_path();
         std::string get_file_name();
@@ -88,6 +91,8 @@ public:
 
         bool directory_exists(std::string path);
         bool file_exists(std::string path);
+        bool is_directory(std::string path);
+        bool is_regular_file(std::string path);
         void create_directory(std::string path);
         void remove_file(std::string path);
         void remove_directory(std::string path);
@@ -102,6 +107,7 @@ public:
 
         bool evaluate();
         void iterate();
+        bool is_directory();
         bool is_regular_file();
         std::string get_full_path();
         std::string get_file_name();
