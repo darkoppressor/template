@@ -1,0 +1,19 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+#TARGET=Release-Linux-x86_64
+#codeblocks --build --target="${TARGET}" ../project.cbp > log-${TARGET}
+
+#TARGET=Release-Linux-x86
+#codeblocks --build --target="${TARGET}" ../project.cbp > log-${TARGET}
+
+#TARGET=Cross-Compile-Windows-x86_64
+#codeblocks --build --target="${TARGET}" ../project.cbp > log-${TARGET}
+
+#TARGET=Release-Windows-x86
+#codeblocks --build --target="${TARGET}" ../project.cbp > log-${TARGET}
+
+TARGET=Release-OSX-x86_64
+codeblocks --build --target="${TARGET}" ../project.cbp > log-${TARGET}
