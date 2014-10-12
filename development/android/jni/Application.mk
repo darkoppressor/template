@@ -3,6 +3,8 @@
 # See CPLUSPLUS-SUPPORT.html in the NDK documentation for more information
 APP_STL := gnustl_static
 
+NDK_TOOLCHAIN_VERSION := 4.8
+
 # The 'mips' target doesn't work right now. It fails to compile, complaining of missing headers.
 APP_ABI := armeabi armeabi-v7a x86
 #APP_ABI := armeabi-v7a
