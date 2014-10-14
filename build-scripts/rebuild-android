@@ -1,0 +1,14 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+cd ../development/android/
+
+./android-prep-linux-x86_64 > log-Release-Android
+
+cd build-scripts/linux/
+
+./rebuild >> log-Release-Android
+
+./ant-release-rebuild >> log-Release-Android
