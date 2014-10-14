@@ -2,7 +2,6 @@
 #define version_h
 
 namespace Version{
-
 	//Build date
 	static const char YEAR[]="2014";
 	static const char MONTH[]="09";
