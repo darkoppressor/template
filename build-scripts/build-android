@@ -5,10 +5,10 @@ cd $DIR
 
 cd ../development/android/
 
-./android-prep-linux-x86_64 > log-Release-Android
+./android-prep-linux-x86_64 > ${DIR}/log-Release-Android
 
 cd build-scripts/linux/
 
-./build >> log-Release-Android
+./build >> ${DIR}/log-Release-Android
 
-./ant-release-build >> log-Release-Android
+./ant-release-build >> ${DIR}/log-Release-Android
