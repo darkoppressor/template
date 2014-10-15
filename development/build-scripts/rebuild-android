@@ -3,9 +3,11 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-cd ../development/android/
+../refresh-build-date > log-Release-Android
 
-./android-prep-linux-x86_64 > ${DIR}/log-Release-Android
+cd ../android/
+
+./android-prep-linux-x86_64 >> ${DIR}/log-Release-Android
 
 cd build-scripts/linux/
 

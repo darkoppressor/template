@@ -13,7 +13,7 @@ namespace Version{
 	static const int MICRO=1;
 
 	//Status
-	static const char STATUS[] = "alpha";
+	static const char STATUS[]="alpha";
 }
 
 #endif

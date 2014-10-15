@@ -34,7 +34,6 @@
         </activity>
     </application>
 
-    <!-- Android 2.3.3 -->
     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19" />
 
     <!-- OpenGL ES 2.0 -->

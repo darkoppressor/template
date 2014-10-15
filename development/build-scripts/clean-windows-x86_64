@@ -4,4 +4,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
 TARGET=Cross-Compile-Windows-x86_64
-codeblocks --clean --target="${TARGET}" ../project.cbp
+codeblocks --clean --target="${TARGET}" ../../project.cbp
