@@ -8,7 +8,7 @@ chmod -x version
 
 chmod +x ../android/adb-logcat
 chmod +x ../android/adb-logcat-all
-chmod +x ../android/android-prep-linux-x86_64
+chmod +x ../android/android-prep
 
 chmod +x ../android/build-scripts/linux/*
 
