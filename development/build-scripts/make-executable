@@ -6,6 +6,10 @@ cd $DIR
 chmod +x *
 chmod -x version
 
+chmod +x ../refresh-build-date
+chmod +x ../rename-template
+chmod +x ../version-change
+
 chmod +x ../android/adb-logcat
 chmod +x ../android/adb-logcat-all
 chmod +x ../android/android-prep

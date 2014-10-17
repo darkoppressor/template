@@ -293,23 +293,24 @@
 				</Linker>
 			</Target>
 			<Target title="Release-OSX-x86_64">
-				<Option platforms="Mac;" />
+				<Option platforms="Unix;" />
 				<Option output="Template-OSX-x86_64" prefix_auto="1" extension_auto="0" />
 				<Option working_dir="" />
 				<Option object_output=".objs/osx-x86_64" />
 				<Option type="5" />
-				<Option compiler="gcc" />
+				<Option compiler="osxcross_clang_compiler" />
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O2" />
 					<Add option="-w" />
 					<Add option="-m64" />
+					<Add option="-stdlib=libc++" />
 					<Add option="-DGAME_OS_OSX" />
-					<Add directory="/usr/include/" />
-					<Add directory="/home/tails/build-server/osx-x86_64/boost/" />
+					<Add directory="/home/tails/build-server/osx-x86_64/osxcross/target/SDK/MacOSX10.9.sdk/usr/include/" />
 					<Add directory="/home/tails/build-server/osx-x86_64/SDL2/include/" />
 					<Add directory="/home/tails/build-server/osx-x86_64/SDL2_image/" />
 					<Add directory="/home/tails/build-server/osx-x86_64/SDL2_mixer/" />
+					<Add directory="/home/tails/build-server/osx-x86_64/boost/" />
 					<Add directory="/home/tails/build-server/osx-x86_64/raknet/" />
 				</Compiler>
 				<Linker>
@@ -327,18 +328,18 @@
 					<Add option="-framework AudioUnit" />
 					<Add option="-framework AudioToolbox" />
 					<Add option="-framework OpenGL" />
+					<Add library="/home/tails/build-server/osx-x86_64/SDL2_image/.libs/libSDL2_image.a" />
+					<Add library="/home/tails/build-server/osx-x86_64/libpng/.libs/libpng.a" />
+					<Add library="/home/tails/build-server/osx-x86_64/zlib/libz.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/SDL2_mixer/build/.libs/libSDL2_mixer.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/libvorbis/lib/.libs/libvorbis.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/libvorbis/lib/.libs/libvorbisfile.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/libogg/src/.libs/libogg.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/SDL2_image/.libs/libSDL2_image.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/libpng/.libs/libpng.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/zlib/libz.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/SDL2/build/.libs/libSDL2.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/raknet/raknet/Lib/LibStatic/Lib/libRakNetLibStatic.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/boost/stage/lib/libboost_filesystem.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/boost/stage/lib/libboost_system.a" />
-					<Add library="/usr/lib/libiconv.2.dylib" />
+					<Add library="/home/tails/build-server/osx-x86_64/boost/stage/lib/libboost_filesystem.a" />
+					<Add library="/home/tails/build-server/osx-x86_64/raknet/raknet/Lib/LibStatic/Lib/libRakNetLibStatic.a" />
+					<Add library="/home/tails/build-server/osx-x86_64/osxcross/target/SDK/MacOSX10.9.sdk/usr/lib/libiconv.dylib" />
 				</Linker>
 			</Target>
 		</Build>

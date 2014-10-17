@@ -11,4 +11,6 @@ cd $DIR
 
 ./rebuild-windows-x86
 
+./rebuild-osx-x86_64
+
 ./rebuild-android

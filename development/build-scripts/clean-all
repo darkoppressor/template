@@ -11,4 +11,6 @@ cd $DIR
 
 ./clean-windows-x86
 
+./clean-osx-x86_64
+
 ./clean-android

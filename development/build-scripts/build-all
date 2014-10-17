@@ -11,4 +11,6 @@ cd $DIR
 
 ./build-windows-x86
 
+./build-osx-x86_64
+
 ./build-android
