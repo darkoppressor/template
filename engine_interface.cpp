@@ -4,7 +4,6 @@
 #include "sorting.h"
 
 #include <fstream>
-#include <cmath>
 
 #include <SDL_image.h>
 

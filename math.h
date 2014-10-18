@@ -1,6 +1,12 @@
 #ifndef math_h
 #define math_h
 
+#include <cmath>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846264338327950288
+#endif
+
 double degrees_to_radians(double degrees);
 double radians_to_degrees(double radians);
 

@@ -12,6 +12,7 @@ APP_ABI := armeabi armeabi-v7a x86
 # Release options:
 APP_CFLAGS += -w
 APP_CFLAGS += -s
+APP_CFLAGS += -std=c++11
 APP_CFLAGS += -O2
 APP_CFLAGS += -fexpensive-optimizations
 
