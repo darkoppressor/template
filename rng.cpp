@@ -50,7 +50,7 @@ uint32_t RNG::random_range(uint32_t lownum,uint32_t highnum){
 
 uint32_t RNG::weighted_random_range(uint32_t lownum,uint32_t highnum,uint32_t target,uint32_t weight){
     if(weight==0){
-        message_log.add_error("Error generating weighted random number: weight cannot be 0");
+        Log::add_error("Error generating weighted random number: weight cannot be 0");
     }
 
     //We use signed int64's so that we can do abs and subtraction with our unsigned int32's.

@@ -1,55 +1,55 @@
-#ifndef string_stuff_h
-#define string_stuff_h
+#ifndef strings_h
+#define strings_h
 
 #include <string>
 #include <sstream>
 
-class String_Stuff{
+class Strings{
 public:
 
-    std::string first_letter_capital(std::string str_input);
+    static std::string first_letter_capital(std::string str_input);
 
-    std::string capitalize_all_words(std::string str_input);
+    static std::string capitalize_all_words(const std::string& str_input);
 
-    std::string upper_case(std::string str_input);
+    static std::string upper_case(const std::string& str_input);
 
-    std::string lower_case(std::string str_input);
+    static std::string lower_case(const std::string& str_input);
 
-    std::string underscore_to_space(std::string str_input);
+    static std::string underscore_to_space(const std::string& str_input);
 
     //Prepares newlines (\n) in a string to be written to disk.
-    std::string add_newlines(std::string str_input);
+    static std::string add_newlines(const std::string& str_input);
 
     //Process newlines (\n) in a string that has been read from disk.
-    std::string process_newlines(std::string str_input);
+    static std::string process_newlines(const std::string& str_input);
 
     //Returns the number of newlines in the passed string.
-    int newline_count(std::string str_input);
+    static int newline_count(const std::string& str_input);
 
     //Returns the length of the last line in the passed string.
     //Simply returns the length of the string if it has only one line.
-    int length_of_last_line(std::string str_input);
+    static int length_of_last_line(const std::string& str_input);
 
     //Returns the length of the longest line in the passed string.
-    int longest_line(std::string str_input);
+    static int longest_line(const std::string& str_input);
 
-    std::string erase_first_line(std::string str_input);
+    static std::string erase_first_line(std::string str_input);
 
-    bool is_number(std::string str_input);
+    static bool is_number(const std::string& str_input);
 
     //Returns a string with the time represented by seconds.
     //If highest is true, only shows the highest unit of time possible.
-    std::string time_string(int seconds,bool highest=false);
+    static std::string time_string(int seconds,bool highest=false);
 
-    bool string_to_bool(std::string get_string);
-    std::string bool_to_string(bool get_bool);
+    static bool string_to_bool(const std::string& get_string);
+    static std::string bool_to_string(const bool& get_bool);
 
-    long string_to_long(std::string get_string);
-    unsigned long string_to_unsigned_long(std::string get_string);
-    double string_to_double(std::string get_string);
+    static long string_to_long(const std::string& get_string);
+    static unsigned long string_to_unsigned_long(const std::string& get_string);
+    static double string_to_double(const std::string& get_string);
 
-    template<class Number_Type>
-    inline std::string num_to_string(Number_Type number,int precision=10,bool show_point=false,std::string notation="default"){
+    template<typename Number_Type>
+    inline static std::string num_to_string(const Number_Type& number,int precision=10,bool show_point=false,std::string notation="default"){
         std::stringstream strstream("");
 
         strstream.precision(precision);
@@ -70,8 +70,8 @@ public:
         return strstream.str();
     }
 
-    template<class Number_Type>
-    inline std::string num_to_roman_numeral(Number_Type number){
+    template<typename Number_Type>
+    inline static std::string num_to_roman_numeral(const Number_Type& number){
         std::string message="";
 
         int num=(int)number;

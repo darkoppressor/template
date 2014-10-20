@@ -305,7 +305,7 @@ void Game::render_scoreboard(){
 
         render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0.5,"ui_black");
 
-        font->show(72,(main_window.SCREEN_HEIGHT-(string_stuff.newline_count(name_list)+1)*font->spacing_y)/2.0,name_list,"ui_white");
-        font->show(168,(main_window.SCREEN_HEIGHT-(string_stuff.newline_count(ping_list)+1)*font->spacing_y)/2.0,ping_list,"ui_white");
+        font->show(72,(main_window.SCREEN_HEIGHT-(Strings::newline_count(name_list)+1)*font->spacing_y)/2.0,name_list,"ui_white");
+        font->show(168,(main_window.SCREEN_HEIGHT-(Strings::newline_count(ping_list)+1)*font->spacing_y)/2.0,ping_list,"ui_white");
     }
 }

@@ -113,7 +113,7 @@ void Console::reset_text_timers(){
     if(chat){
         text_timers.clear();
 
-        for(int i=0;i<string_stuff.newline_count(info_display.text)+1;i++){
+        for(int i=0;i<Strings::newline_count(info_display.text)+1;i++){
             text_timers.push_back(Timer());
         }
     }
@@ -174,15 +174,15 @@ void Console::add_text(string text){
 
     info_display.text+="\n"+text;
 
-    while(string_stuff.newline_count(info_display.text)+1>max_log_recall){
-        info_display.text=string_stuff.erase_first_line(info_display.text);
+    while(Strings::newline_count(info_display.text)+1>max_log_recall){
+        info_display.text=Strings::erase_first_line(info_display.text);
     }
 
-    info_display.scroll_offset=-string_stuff.newline_count(info_display.text);
+    info_display.scroll_offset=-Strings::newline_count(info_display.text);
     info_display.scroll_offset+=info_display.scroll_height-1;
 
     if(chat){
-        for(int i=0;i<string_stuff.newline_count(text)+1;i++){
+        for(int i=0;i<Strings::newline_count(text)+1;i++){
             //Create a timer for this line.
             text_timers.push_back(Timer());
 

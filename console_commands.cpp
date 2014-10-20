@@ -224,7 +224,7 @@ void Console::do_command(){
                     int custom_toast_length=-1;
 
                     if(command_input.size()>2){
-                        custom_toast_length=string_stuff.string_to_long(command_input[2]);
+                        custom_toast_length=Strings::string_to_long(command_input[2]);
                     }
 
                     if(input_has_option("s",command_input[0])){
@@ -273,9 +273,9 @@ void Console::do_command(){
                     boost::algorithm::split(dice_command,info_input.text,boost::algorithm::is_any_of("d"));
                 }
 
-                if(dice_command.size()==2 && string_stuff.is_number(dice_command[0]) && string_stuff.is_number(dice_command[1])){
-                    int dice_count=string_stuff.string_to_long(dice_command[0]);
-                    int dice_sides=string_stuff.string_to_long(dice_command[1]);
+                if(dice_command.size()==2 && Strings::is_number(dice_command[0]) && Strings::is_number(dice_command[1])){
+                    int dice_count=Strings::string_to_long(dice_command[0]);
+                    int dice_sides=Strings::string_to_long(dice_command[1]);
 
                     if(dice_count>0 && dice_sides>0){
                         int total=0;
@@ -284,13 +284,13 @@ void Console::do_command(){
                             total+=engine_interface.rng.random_range(1,dice_sides);
                         }
 
-                        add_text("Rolling "+info_input.text+": "+string_stuff.num_to_string(total));
+                        add_text("Rolling "+info_input.text+": "+Strings::num_to_string(total));
                     }
                     else if(dice_count<=0){
-                        add_text("You cannot roll "+string_stuff.num_to_string(dice_count)+" dice.");
+                        add_text("You cannot roll "+Strings::num_to_string(dice_count)+" dice.");
                     }
                     else if(dice_sides<=0){
-                        add_text("A "+string_stuff.num_to_string(dice_sides)+"-sided die?");
+                        add_text("A "+Strings::num_to_string(dice_sides)+"-sided die?");
                     }
                 }
                 else{

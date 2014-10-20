@@ -30,7 +30,7 @@ void Rtt_Data::make_render_target(){
     if(SDL_SetRenderTarget(main_window.renderer,texture)!=0){
         string msg="Unable to set render target: ";
         msg+=SDL_GetError();
-        message_log.add_error(msg);
+        Log::add_error(msg);
     }
 
     SDL_SetRenderDrawColor(main_window.renderer,0,0,0,0);
@@ -41,6 +41,6 @@ void Rtt_Data::reset_render_target(){
     if(SDL_SetRenderTarget(main_window.renderer,NULL)!=0){
         string msg="Unable to set render target: ";
         msg+=SDL_GetError();
-        message_log.add_error(msg);
+        Log::add_error(msg);
     }
 }

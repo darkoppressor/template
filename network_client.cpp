@@ -68,7 +68,7 @@ void Network::start_as_client(){
             connect_to_server();
         }
         else{
-            message_log.add_error("Error initializing client: "+string_stuff.num_to_string(startup));
+            Log::add_error("Error initializing client: "+Strings::num_to_string(startup));
         }
     }
 }
@@ -82,7 +82,7 @@ void Network::connect_to_server(){
             peer->Connect(server_address.c_str(),server_port,server_password.c_str(),server_password.length());
         }
 
-        message_log.add_log("Attempting to connect to server: "+server_address+"|"+string_stuff.num_to_string(server_port));
+        Log::add_log("Attempting to connect to server: "+server_address+"|"+Strings::num_to_string(server_port));
 
         engine_interface.get_window("network_connecting")->toggle_on(true,true);
     }
@@ -105,14 +105,14 @@ void Network::receive_version(){
 
     string our_version=engine_interface.get_version();
     if(version!=our_version){
-        message_log.add_log("Version mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur version: "+our_version+"\nServer version: "+version);
+        Log::add_log("Version mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur version: "+our_version+"\nServer version: "+version);
 
         engine_interface.button_events_manager.handle_button_event("stop_game");
         engine_interface.make_notice("Version mismatch with server.");
     }
     else{
         if(checksum.length()>0 && checksum!=CHECKSUM){
-            message_log.add_log("Checksum mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur checksum: "+CHECKSUM+"\nServer checksum: "+checksum);
+            Log::add_log("Checksum mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur checksum: "+CHECKSUM+"\nServer checksum: "+checksum);
 
             engine_interface.button_events_manager.handle_button_event("stop_game");
             engine_interface.make_notice("Checksum mismatch with server.");

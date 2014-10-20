@@ -204,7 +204,7 @@ int Music::get_track_ident(string track_name){
     }
 
     if(track_ident==-1){
-        message_log.add_error("Error accessing music track '"+track_name+"'");
+        Log::add_error("Error accessing music track '"+track_name+"'");
     }
 
     return track_ident;

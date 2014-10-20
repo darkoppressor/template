@@ -125,7 +125,7 @@ void game_loop(){
 int handle_app_events(void* userdata,SDL_Event* event){
     switch(event->type){
     case SDL_APP_TERMINATING:
-        message_log.add_error("The OS is terminating this application, shutting down...");
+        Log::add_error("The OS is terminating this application, shutting down...");
 
         engine_interface.quit();
         return 0;
@@ -164,7 +164,7 @@ int main(int argc,char* args[]){
 
     engine_interface.make_directories();
 
-    message_log.clear_error_log();
+    Log::clear_error_log();
 
     int things_loaded=0;
     int things_to_load=1;

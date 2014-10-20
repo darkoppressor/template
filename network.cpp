@@ -137,13 +137,13 @@ void Network::receive_packets(){
                     if(status=="client"){
                         server_id=packet->guid;
 
-                        message_log.add_log("Connected to server: "+string(packet->systemAddress.ToString(true)));
+                        Log::add_log("Connected to server: "+string(packet->systemAddress.ToString(true)));
                     }
                     break;
 
                 case ID_CONNECTION_ATTEMPT_FAILED:
                     if(status=="client"){
-                        message_log.add_log("Could not connect to server: "+server_address+"|"+string_stuff.num_to_string(server_port));
+                        Log::add_log("Could not connect to server: "+server_address+"|"+Strings::num_to_string(server_port));
 
                         engine_interface.button_events_manager.handle_button_event("stop_game");
                         engine_interface.make_notice("Could not connect to server.");
@@ -152,7 +152,7 @@ void Network::receive_packets(){
 
                 case ID_ALREADY_CONNECTED:
                     if(status=="client"){
-                        message_log.add_log("Already connected to server: "+string(packet->systemAddress.ToString(true)));
+                        Log::add_log("Already connected to server: "+string(packet->systemAddress.ToString(true)));
                     }
                     break;
 
@@ -169,7 +169,7 @@ void Network::receive_packets(){
 
                 case ID_NO_FREE_INCOMING_CONNECTIONS:
                     if(status=="client"){
-                        message_log.add_log("Server is full: "+string(packet->systemAddress.ToString(true)));
+                        Log::add_log("Server is full: "+string(packet->systemAddress.ToString(true)));
 
                         engine_interface.button_events_manager.handle_button_event("stop_game");
                         engine_interface.make_notice("Server is full.");
@@ -195,7 +195,7 @@ void Network::receive_packets(){
                         }
                     }
                     else{
-                        message_log.add_log("Disconnected from server: "+string(packet->systemAddress.ToString(true)));
+                        Log::add_log("Disconnected from server: "+string(packet->systemAddress.ToString(true)));
 
                         engine_interface.button_events_manager.handle_button_event("stop_game");
                         engine_interface.make_notice("Disconnected from server.");
@@ -221,7 +221,7 @@ void Network::receive_packets(){
                         }
                     }
                     else{
-                        message_log.add_log("Lost connection to server: "+string(packet->systemAddress.ToString(true)));
+                        Log::add_log("Lost connection to server: "+string(packet->systemAddress.ToString(true)));
 
                         engine_interface.button_events_manager.handle_button_event("stop_game");
                         engine_interface.make_notice("Lost connection to server.");
@@ -230,7 +230,7 @@ void Network::receive_packets(){
 
                 case ID_CONNECTION_BANNED:
                     if(status=="client"){
-                        message_log.add_log("Banned from: "+string(packet->systemAddress.ToString(true)));
+                        Log::add_log("Banned from: "+string(packet->systemAddress.ToString(true)));
 
                         engine_interface.button_events_manager.handle_button_event("stop_game");
                         engine_interface.make_notice("Banned from server.");
@@ -239,7 +239,7 @@ void Network::receive_packets(){
 
                 case ID_INVALID_PASSWORD:
                     if(status=="client"){
-                        message_log.add_log("Invalid password for server: "+string(packet->systemAddress.ToString(true)));
+                        Log::add_log("Invalid password for server: "+string(packet->systemAddress.ToString(true)));
 
                         engine_interface.button_events_manager.handle_button_event("stop_game");
                         engine_interface.make_notice("Invalid password for server.");
@@ -247,7 +247,7 @@ void Network::receive_packets(){
                     break;
 
                 case ID_INCOMPATIBLE_PROTOCOL_VERSION:
-                    message_log.add_log("Incompatible protocol version: "+string(packet->systemAddress.ToString(true))+"\nOur protocol: "+string_stuff.num_to_string((int)RAKNET_PROTOCOL_VERSION)+"\nServer protocol: "+receive_incompatible_protocol());
+                    Log::add_log("Incompatible protocol version: "+string(packet->systemAddress.ToString(true))+"\nOur protocol: "+Strings::num_to_string((int)RAKNET_PROTOCOL_VERSION)+"\nServer protocol: "+receive_incompatible_protocol());
 
                     if(status=="client"){
                         engine_interface.button_events_manager.handle_button_event("stop_game");
@@ -257,7 +257,7 @@ void Network::receive_packets(){
 
                 case ID_IP_RECENTLY_CONNECTED:
                     if(status=="client"){
-                        message_log.add_log("Connected too recently to server: "+string(packet->systemAddress.ToString(true)));
+                        Log::add_log("Connected too recently to server: "+string(packet->systemAddress.ToString(true)));
 
                         engine_interface.button_events_manager.handle_button_event("stop_game");
                         engine_interface.make_notice("Connected too recently to server.");
@@ -329,7 +329,7 @@ void Network::receive_packets(){
                     break;
 
                 default:
-                    message_log.add_log("Received message with unknown identifier: "+string_stuff.num_to_string((int)packet_id));
+                    Log::add_log("Received message with unknown identifier: "+Strings::num_to_string((int)packet_id));
                     break;
             }
 
@@ -357,14 +357,14 @@ string Network::get_ping_list(){
         str_list+="\n";
 
         for(int i=1;i<clients.size();i++){
-            str_list+=string_stuff.num_to_string(peer->GetAveragePing(clients[i].id))+"\n";
+            str_list+=Strings::num_to_string(peer->GetAveragePing(clients[i].id))+"\n";
         }
     }
     else if(status=="client"){
-        str_list+=string_stuff.num_to_string(peer->GetAveragePing(server_id))+"\n";
+        str_list+=Strings::num_to_string(peer->GetAveragePing(server_id))+"\n";
 
         for(int i=1;i<clients.size();i++){
-            str_list+=string_stuff.num_to_string(clients[i].ping)+"\n";
+            str_list+=Strings::num_to_string(clients[i].ping)+"\n";
         }
     }
 
@@ -375,8 +375,8 @@ string Network::get_stats(){
     string str_stats="";
 
     if(status!="off"){
-        str_stats+="In: "+string_stuff.num_to_string((long double)stat_bytes_received/(long double)1000.0)+" kB/s\n";
-        str_stats+="Out: "+string_stuff.num_to_string((long double)stat_bytes_sent/(long double)1000.0)+" kB/s\n";
+        str_stats+="In: "+Strings::num_to_string((long double)stat_bytes_received/(long double)1000.0)+" kB/s\n";
+        str_stats+="Out: "+Strings::num_to_string((long double)stat_bytes_sent/(long double)1000.0)+" kB/s\n";
     }
 
     return str_stats;
@@ -458,7 +458,7 @@ string Network::receive_incompatible_protocol(){
     unsigned char version;
     bitstream.Read(version);
 
-    return string_stuff.num_to_string((int)version);
+    return Strings::num_to_string((int)version);
 }
 
 void Network::receive_chat_message(){

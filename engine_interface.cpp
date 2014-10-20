@@ -1,7 +1,6 @@
 #include "engine_interface.h"
 #include "world.h"
 #include "render.h"
-#include "sorting.h"
 
 #include <fstream>
 
@@ -16,6 +15,22 @@ GUI_Object::GUI_Object(string get_type,int get_index,int get_x,int get_y){
     index=get_index;
     x=get_x;
     y=get_y;
+    sort_by_y=false;
+}
+
+bool GUI_Object::operator<=(GUI_Object object){
+    if(sort_by_y){
+        return y<=object.y;
+    }
+    else{
+        return x<=object.x;
+    }
+}
+
+void GUI_Object::set_sort_by_y(vector<GUI_Object>& objects,const bool& sort_value){
+    for(int i=0;i<objects.size();i++){
+        objects[i].sort_by_y=sort_value;
+    }
 }
 
 GUI_Selector_Chaser::GUI_Selector_Chaser(){
@@ -402,7 +417,7 @@ bool Engine_Interface::load_data(string script){
                 }
             }
             else{
-                message_log.add_error("Error loading script data: '"+script+"'");
+                Log::add_error("Error loading script data: '"+script+"'");
 
                 return false;
             }
@@ -581,14 +596,14 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_logical_screen_width.length());
 
-            logical_screen_width=string_stuff.string_to_long(line);
+            logical_screen_width=Strings::string_to_long(line);
         }
         //Logical screen height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_logical_screen_height)){
             //Clear the data name.
             line.erase(0,str_logical_screen_height.length());
 
-            logical_screen_height=string_stuff.string_to_long(line);
+            logical_screen_height=Strings::string_to_long(line);
         }
         //Resolution mode
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_resolution_mode)){
@@ -602,105 +617,105 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_frame_rate.length());
 
-            set_logic_update_rate(string_stuff.string_to_double(line));
+            set_logic_update_rate(Strings::string_to_double(line));
         }
         //Frame rate render
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frame_rate_render)){
             //Clear the data name.
             line.erase(0,str_frame_rate_render.length());
 
-            set_render_update_rate(string_stuff.string_to_double(line));
+            set_render_update_rate(Strings::string_to_double(line));
         }
         //Axis scroll rate
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_axis_scroll_rate)){
             //Clear the data name.
             line.erase(0,str_axis_scroll_rate.length());
 
-            axis_scroll_rate=string_stuff.string_to_long(line);
+            axis_scroll_rate=Strings::string_to_long(line);
         }
         //Scrolling buttons offset
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_scrolling_buttons_offset)){
             //Clear the data name.
             line.erase(0,str_scrolling_buttons_offset.length());
 
-            scrolling_buttons_offset=string_stuff.string_to_long(line);
+            scrolling_buttons_offset=Strings::string_to_long(line);
         }
         //Cursor width
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor_width)){
             //Clear the data name.
             line.erase(0,str_cursor_width.length());
 
-            cursor_width=string_stuff.string_to_long(line);
+            cursor_width=Strings::string_to_long(line);
         }
         //Cursor height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor_height)){
             //Clear the data name.
             line.erase(0,str_cursor_height.length());
 
-            cursor_height=string_stuff.string_to_long(line);
+            cursor_height=Strings::string_to_long(line);
         }
         //Console height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_height)){
             //Clear the data name.
             line.erase(0,str_console_height.length());
 
-            console_height=string_stuff.string_to_long(line);
+            console_height=Strings::string_to_long(line);
         }
         //Chat height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_chat_height)){
             //Clear the data name.
             line.erase(0,str_chat_height.length());
 
-            chat_height=string_stuff.string_to_long(line);
+            chat_height=Strings::string_to_long(line);
         }
         //Sound falloff
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sound_falloff)){
             //Clear the data name.
             line.erase(0,str_sound_falloff.length());
 
-            sound_falloff=string_stuff.string_to_double(line);
+            sound_falloff=Strings::string_to_double(line);
         }
         //Window border thickness
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_window_border_thickness)){
             //Clear the data name.
             line.erase(0,str_window_border_thickness.length());
 
-            window_border_thickness=string_stuff.string_to_double(line);
+            window_border_thickness=Strings::string_to_double(line);
         }
         //GUI border thickness
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_border_thickness)){
             //Clear the data name.
             line.erase(0,str_gui_border_thickness.length());
 
-            gui_border_thickness=string_stuff.string_to_double(line);
+            gui_border_thickness=Strings::string_to_double(line);
         }
         //Touch finger size
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_finger_size)){
             //Clear the data name.
             line.erase(0,str_touch_finger_size.length());
 
-            touch_finger_size=string_stuff.string_to_double(line);
+            touch_finger_size=Strings::string_to_double(line);
         }
         //Touch controller shoulders
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_shoulders)){
             //Clear the data name.
             line.erase(0,str_touch_controller_shoulders.length());
 
-            touch_controller_shoulders=string_stuff.string_to_bool(line);
+            touch_controller_shoulders=Strings::string_to_bool(line);
         }
         //Touch controller guide
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_guide)){
             //Clear the data name.
             line.erase(0,str_touch_controller_guide.length());
 
-            touch_controller_guide=string_stuff.string_to_bool(line);
+            touch_controller_guide=Strings::string_to_bool(line);
         }
         //Touch controller xy
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_xy)){
             //Clear the data name.
             line.erase(0,str_touch_controller_xy.length());
 
-            touch_controller_xy=string_stuff.string_to_bool(line);
+            touch_controller_xy=Strings::string_to_bool(line);
         }
         //Tooltip font
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tooltip_font)){
@@ -728,49 +743,49 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_toast_length_short.length());
 
-            toast_length_short=string_stuff.string_to_long(line);
+            toast_length_short=Strings::string_to_long(line);
         }
         //Toast length medium
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_toast_length_medium)){
             //Clear the data name.
             line.erase(0,str_toast_length_medium.length());
 
-            toast_length_medium=string_stuff.string_to_long(line);
+            toast_length_medium=Strings::string_to_long(line);
         }
         //Toast length long
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_toast_length_long)){
             //Clear the data name.
             line.erase(0,str_toast_length_long.length());
 
-            toast_length_long=string_stuff.string_to_long(line);
+            toast_length_long=Strings::string_to_long(line);
         }
         //Console move speed
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_move_speed)){
             //Clear the data name.
             line.erase(0,str_console_move_speed.length());
 
-            console.move_speed=string_stuff.string_to_long(line);
+            console.move_speed=Strings::string_to_long(line);
         }
         //Console max command length
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_max_command_length)){
             //Clear the data name.
             line.erase(0,str_console_max_command_length.length());
 
-            console.max_command_length=string_stuff.string_to_long(line);
+            console.max_command_length=Strings::string_to_long(line);
         }
         //Console max log recall
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_max_log_recall)){
             //Clear the data name.
             line.erase(0,str_console_max_log_recall.length());
 
-            console.max_log_recall=string_stuff.string_to_long(line);
+            console.max_log_recall=Strings::string_to_long(line);
         }
         //Console max command recall
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_max_command_recall)){
             //Clear the data name.
             line.erase(0,str_console_max_command_recall.length());
 
-            console.max_command_recall=string_stuff.string_to_long(line);
+            console.max_command_recall=Strings::string_to_long(line);
         }
         //Console font
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_font)){
@@ -791,35 +806,35 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_console_opacity.length());
 
-            console.background_opacity=string_stuff.string_to_double(line);
+            console.background_opacity=Strings::string_to_double(line);
         }
         //Chat move speed
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_chat_move_speed)){
             //Clear the data name.
             line.erase(0,str_chat_move_speed.length());
 
-            chat.move_speed=string_stuff.string_to_long(line);
+            chat.move_speed=Strings::string_to_long(line);
         }
         //Chat max command length
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_chat_max_command_length)){
             //Clear the data name.
             line.erase(0,str_chat_max_command_length.length());
 
-            chat.max_command_length=string_stuff.string_to_long(line);
+            chat.max_command_length=Strings::string_to_long(line);
         }
         //Chat max log recall
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_chat_max_log_recall)){
             //Clear the data name.
             line.erase(0,str_chat_max_log_recall.length());
 
-            chat.max_log_recall=string_stuff.string_to_long(line);
+            chat.max_log_recall=Strings::string_to_long(line);
         }
         //Chat max command recall
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_chat_max_command_recall)){
             //Clear the data name.
             line.erase(0,str_chat_max_command_recall.length());
 
-            chat.max_command_recall=string_stuff.string_to_long(line);
+            chat.max_command_recall=Strings::string_to_long(line);
         }
         //Chat font
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_chat_font)){
@@ -840,14 +855,14 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_chat_opacity.length());
 
-            chat.background_opacity=string_stuff.string_to_double(line);
+            chat.background_opacity=Strings::string_to_double(line);
         }
         //Chat line timeout
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_chat_line_timeout)){
             //Clear the data name.
             line.erase(0,str_chat_line_timeout.length());
 
-            chat.line_timeout=string_stuff.string_to_long(line);
+            chat.line_timeout=Strings::string_to_long(line);
         }
         //GUI selector style
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_selector_style)){
@@ -861,7 +876,7 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_controller_dead_zone.length());
 
-            controller_dead_zone=string_stuff.string_to_long(line);
+            controller_dead_zone=Strings::string_to_long(line);
         }
         //Color theme
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_color_theme)){
@@ -875,14 +890,14 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_controller_text_entry_small.length());
 
-            controller_text_entry_small=string_stuff.string_to_bool(line);
+            controller_text_entry_small=Strings::string_to_bool(line);
         }
         //Cursor render always
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor_render_always)){
             //Clear the data name.
             line.erase(0,str_cursor_render_always.length());
 
-            cursor_render_always=string_stuff.string_to_bool(line);
+            cursor_render_always=Strings::string_to_bool(line);
         }
         //Cursor
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor)){
@@ -911,21 +926,21 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_screen_width.length());
 
-            option_screen_width=string_stuff.string_to_long(line);
+            option_screen_width=Strings::string_to_long(line);
         }
         //default_screen_height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_screen_height)){
             //Clear the data name.
             line.erase(0,str_default_screen_height.length());
 
-            option_screen_height=string_stuff.string_to_long(line);
+            option_screen_height=Strings::string_to_long(line);
         }
         //default_fullscreen
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_fullscreen)){
             //Clear the data name.
             line.erase(0,str_default_fullscreen.length());
 
-            option_fullscreen=string_stuff.string_to_bool(line);
+            option_fullscreen=Strings::string_to_bool(line);
         }
         //default_fullscreen_mode
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_fullscreen_mode)){
@@ -940,56 +955,56 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_vsync.length());
 
-            option_vsync=string_stuff.string_to_bool(line);
+            option_vsync=Strings::string_to_bool(line);
         }
         //default_accelerometer_controller
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_accelerometer_controller)){
             //Clear the data name.
             line.erase(0,str_default_accelerometer_controller.length());
 
-            option_accelerometer_controller=string_stuff.string_to_bool(line);
+            option_accelerometer_controller=Strings::string_to_bool(line);
         }
         //default_touch_controller
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller)){
             //Clear the data name.
             line.erase(0,str_default_touch_controller.length());
 
-            option_touch_controller=string_stuff.string_to_bool(line);
+            option_touch_controller=Strings::string_to_bool(line);
         }
         //default_touch_controller_opacity
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller_opacity)){
             //Clear the data name.
             line.erase(0,str_default_touch_controller_opacity.length());
 
-            option_touch_controller_opacity=string_stuff.string_to_double(line);
+            option_touch_controller_opacity=Strings::string_to_double(line);
         }
         //default_font_shadows
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_font_shadows)){
             //Clear the data name.
             line.erase(0,str_default_font_shadows.length());
 
-            option_font_shadows=string_stuff.string_to_bool(line);
+            option_font_shadows=Strings::string_to_bool(line);
         }
         //default_screen_keyboard
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_screen_keyboard)){
             //Clear the data name.
             line.erase(0,str_default_screen_keyboard.length());
 
-            option_screen_keyboard=string_stuff.string_to_bool(line);
+            option_screen_keyboard=Strings::string_to_bool(line);
         }
         //default_hw_cursor
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_hw_cursor)){
             //Clear the data name.
             line.erase(0,str_default_hw_cursor.length());
 
-            option_hw_cursor=string_stuff.string_to_bool(line);
+            option_hw_cursor=Strings::string_to_bool(line);
         }
         //default_bind_cursor
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_bind_cursor)){
             //Clear the data name.
             line.erase(0,str_default_bind_cursor.length());
 
-            option_bind_cursor=string_stuff.string_to_bool(line);
+            option_bind_cursor=Strings::string_to_bool(line);
         }
 
         //default_fps
@@ -997,56 +1012,56 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_fps.length());
 
-            option_fps=string_stuff.string_to_bool(line);
+            option_fps=Strings::string_to_bool(line);
         }
         //default_dev
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_dev)){
             //Clear the data name.
             line.erase(0,str_default_dev.length());
 
-            option_dev=string_stuff.string_to_bool(line);
+            option_dev=Strings::string_to_bool(line);
         }
         //default_volume_global
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_volume_global)){
             //Clear the data name.
             line.erase(0,str_default_volume_global.length());
 
-            option_volume_global=string_stuff.string_to_double(line);
+            option_volume_global=Strings::string_to_double(line);
         }
         //default_volume_sound
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_volume_sound)){
             //Clear the data name.
             line.erase(0,str_default_volume_sound.length());
 
-            option_volume_sound=string_stuff.string_to_double(line);
+            option_volume_sound=Strings::string_to_double(line);
         }
         //default_volume_music
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_volume_music)){
             //Clear the data name.
             line.erase(0,str_default_volume_music.length());
 
-            option_volume_music=string_stuff.string_to_double(line);
+            option_volume_music=Strings::string_to_double(line);
         }
         //default_mute_global
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_mute_global)){
             //Clear the data name.
             line.erase(0,str_default_mute_global.length());
 
-            option_mute_global=string_stuff.string_to_bool(line);
+            option_mute_global=Strings::string_to_bool(line);
         }
         //default_mute_sound
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_mute_sound)){
             //Clear the data name.
             line.erase(0,str_default_mute_sound.length());
 
-            option_mute_sound=string_stuff.string_to_bool(line);
+            option_mute_sound=Strings::string_to_bool(line);
         }
         //default_mute_music
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_mute_music)){
             //Clear the data name.
             line.erase(0,str_default_mute_music.length());
 
-            option_mute_music=string_stuff.string_to_bool(line);
+            option_mute_music=Strings::string_to_bool(line);
         }
 
         //If the line ends the engine data.
@@ -1115,35 +1130,35 @@ void Engine_Interface::load_font(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_spacing_x.length());
 
-            fonts[fonts.size()-1].spacing_x=string_stuff.string_to_long(line);
+            fonts[fonts.size()-1].spacing_x=Strings::string_to_long(line);
         }
         //Spacing y
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_spacing_y)){
             //Clear the data name.
             line.erase(0,str_spacing_y.length());
 
-            fonts[fonts.size()-1].spacing_y=string_stuff.string_to_long(line);
+            fonts[fonts.size()-1].spacing_y=Strings::string_to_long(line);
         }
         //GUI padding x
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_padding_x)){
             //Clear the data name.
             line.erase(0,str_gui_padding_x.length());
 
-            fonts[fonts.size()-1].gui_padding_x=string_stuff.string_to_long(line);
+            fonts[fonts.size()-1].gui_padding_x=Strings::string_to_long(line);
         }
         //GUI padding y
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_padding_y)){
             //Clear the data name.
             line.erase(0,str_gui_padding_y.length());
 
-            fonts[fonts.size()-1].gui_padding_y=string_stuff.string_to_long(line);
+            fonts[fonts.size()-1].gui_padding_y=Strings::string_to_long(line);
         }
         //Shadow distance
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_shadow_distance)){
             //Clear the data name.
             line.erase(0,str_shadow_distance.length());
 
-            fonts[fonts.size()-1].shadow_distance=string_stuff.string_to_long(line);
+            fonts[fonts.size()-1].shadow_distance=Strings::string_to_long(line);
         }
 
         //If the line ends the font.
@@ -1263,7 +1278,7 @@ void Engine_Interface::load_color(File_IO_Load* load){
             boost::algorithm::split(rgb_values,line,boost::algorithm::is_any_of(","));
 
             if(rgb_values.size()==3){
-                colors[colors.size()-1].set_rgb(string_stuff.string_to_long(rgb_values[0]),string_stuff.string_to_long(rgb_values[1]),string_stuff.string_to_long(rgb_values[2]));
+                colors[colors.size()-1].set_rgb(Strings::string_to_long(rgb_values[0]),Strings::string_to_long(rgb_values[1]),Strings::string_to_long(rgb_values[2]));
             }
         }
 
@@ -1535,21 +1550,21 @@ void Engine_Interface::load_animation(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_frame_count.length());
 
-            animations[animations.size()-1].frame_count=string_stuff.string_to_long(line);
+            animations[animations.size()-1].frame_count=Strings::string_to_long(line);
         }
         //Animation speed
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_animation_speed)){
             //Clear the data name.
             line.erase(0,str_animation_speed.length());
 
-            animations[animations.size()-1].animation_speed=string_stuff.string_to_long(line);
+            animations[animations.size()-1].animation_speed=Strings::string_to_long(line);
         }
         //Frame width
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frame_width)){
             //Clear the data name.
             line.erase(0,str_frame_width.length());
 
-            frame_width=string_stuff.string_to_double(line);
+            frame_width=Strings::string_to_double(line);
         }
         //End behavior
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_end_behavior)){
@@ -1632,8 +1647,8 @@ void Engine_Interface::load_window(File_IO_Load* load){
             vector<string> start_coords;
             boost::algorithm::split(start_coords,line,boost::algorithm::is_any_of(","));
 
-            windows[windows.size()-1].x=string_stuff.string_to_long(start_coords[0]);
-            windows[windows.size()-1].y=string_stuff.string_to_long(start_coords[1]);
+            windows[windows.size()-1].x=Strings::string_to_long(start_coords[0]);
+            windows[windows.size()-1].y=Strings::string_to_long(start_coords[1]);
 
             windows[windows.size()-1].start_x=windows[windows.size()-1].x;
             windows[windows.size()-1].start_y=windows[windows.size()-1].y;
@@ -1646,36 +1661,36 @@ void Engine_Interface::load_window(File_IO_Load* load){
             vector<string> start_dimensions;
             boost::algorithm::split(start_dimensions,line,boost::algorithm::is_any_of(","));
 
-            windows[windows.size()-1].start_width=string_stuff.string_to_long(start_dimensions[0]);
-            windows[windows.size()-1].start_height=string_stuff.string_to_long(start_dimensions[1]);
+            windows[windows.size()-1].start_width=Strings::string_to_long(start_dimensions[0]);
+            windows[windows.size()-1].start_height=Strings::string_to_long(start_dimensions[1]);
         }
         //Width
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_width)){
             //Clear the data name.
             line.erase(0,str_width.length());
 
-            windows[windows.size()-1].w=string_stuff.string_to_long(line);
+            windows[windows.size()-1].w=Strings::string_to_long(line);
         }
         //Height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_height)){
             //Clear the data name.
             line.erase(0,str_height.length());
 
-            windows[windows.size()-1].h=string_stuff.string_to_long(line);
+            windows[windows.size()-1].h=Strings::string_to_long(line);
         }
         //Fit Content
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_fit_content)){
             //Clear the data name.
             line.erase(0,str_fit_content.length());
 
-            windows[windows.size()-1].fit_content=string_stuff.string_to_bool(line);
+            windows[windows.size()-1].fit_content=Strings::string_to_bool(line);
         }
         //Title
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_title)){
             //Clear the data name.
             line.erase(0,str_title.length());
 
-            windows[windows.size()-1].title=string_stuff.process_newlines(line);
+            windows[windows.size()-1].title=Strings::process_newlines(line);
         }
         //Font
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_font)){
@@ -1724,21 +1739,21 @@ void Engine_Interface::load_window(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_disallow_closing.length());
 
-            windows[windows.size()-1].disallow_closing=string_stuff.string_to_bool(line);
+            windows[windows.size()-1].disallow_closing=Strings::string_to_bool(line);
         }
         //Exclusive
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_exclusive)){
             //Clear the data name.
             line.erase(0,str_exclusive.length());
 
-            windows[windows.size()-1].exclusive=string_stuff.string_to_bool(line);
+            windows[windows.size()-1].exclusive=Strings::string_to_bool(line);
         }
         //No Button Sort
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_no_button_sort)){
             //Clear the data name.
             line.erase(0,str_no_button_sort.length());
 
-            windows[windows.size()-1].no_button_sort=string_stuff.string_to_bool(line);
+            windows[windows.size()-1].no_button_sort=Strings::string_to_bool(line);
         }
 
         //If the line begins an information.
@@ -1816,8 +1831,8 @@ void Engine_Interface::load_information(File_IO_Load* load){
             vector<string> location;
             boost::algorithm::split(location,line,boost::algorithm::is_any_of(","));
 
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].x=string_stuff.string_to_long(location[0]);
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].y=string_stuff.string_to_long(location[1]);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].x=Strings::string_to_long(location[0]);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].y=Strings::string_to_long(location[1]);
 
             windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].start_x=windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].x;
             windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].start_y=windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].y;
@@ -1827,28 +1842,28 @@ void Engine_Interface::load_information(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_text.length());
 
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].text=string_stuff.process_newlines(line);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].text=Strings::process_newlines(line);
         }
         //Tooltip text
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tooltip_text)){
             //Clear the data name.
             line.erase(0,str_tooltip_text.length());
 
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].tooltip_text=string_stuff.process_newlines(line);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].tooltip_text=Strings::process_newlines(line);
         }
         //Text mutable
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_text_mutable)){
             //Clear the data name.
             line.erase(0,str_text_mutable.length());
 
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].text_mutable=string_stuff.string_to_bool(line);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].text_mutable=Strings::string_to_bool(line);
         }
         //Max text length
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_max_text_length)){
             //Clear the data name.
             line.erase(0,str_max_text_length.length());
 
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].max_text_length=string_stuff.string_to_long(line);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].max_text_length=Strings::string_to_long(line);
         }
         //Allowed input
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_allowed_input)){
@@ -1865,7 +1880,7 @@ void Engine_Interface::load_information(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_scrolling.length());
 
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].scrolling=string_stuff.string_to_bool(line);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].scrolling=Strings::string_to_bool(line);
         }
         //Scroll dimensions
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_scroll_dimensions)){
@@ -1875,8 +1890,8 @@ void Engine_Interface::load_information(File_IO_Load* load){
             vector<string> scroll_dimensions;
             boost::algorithm::split(scroll_dimensions,line,boost::algorithm::is_any_of(","));
 
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].scroll_width=string_stuff.string_to_long(scroll_dimensions[0]);
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].scroll_height=string_stuff.string_to_long(scroll_dimensions[1]);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].scroll_width=Strings::string_to_long(scroll_dimensions[0]);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].scroll_height=Strings::string_to_long(scroll_dimensions[1]);
         }
         //Sprite
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sprite)){
@@ -1897,7 +1912,7 @@ void Engine_Interface::load_information(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_background_opacity.length());
 
-            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].background_opacity=string_stuff.string_to_double(line);
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].background_opacity=Strings::string_to_double(line);
         }
         //Font color
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_font_color)){
@@ -1993,8 +2008,8 @@ void Engine_Interface::load_button(File_IO_Load* load){
             vector<string> location;
             boost::algorithm::split(location,line,boost::algorithm::is_any_of(","));
 
-            windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].x=string_stuff.string_to_long(location[0]);
-            windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].y=string_stuff.string_to_long(location[1]);
+            windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].x=Strings::string_to_long(location[0]);
+            windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].y=Strings::string_to_long(location[1]);
 
             windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].start_x=windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].x;
             windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].start_y=windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].y;
@@ -2004,14 +2019,14 @@ void Engine_Interface::load_button(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_text.length());
 
-            windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].text=string_stuff.process_newlines(line);
+            windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].text=Strings::process_newlines(line);
         }
         //Tooltip text
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tooltip_text)){
             //Clear the data name.
             line.erase(0,str_tooltip_text.length());
 
-            windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].tooltip_text=string_stuff.process_newlines(line);
+            windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].tooltip_text=Strings::process_newlines(line);
         }
         //Font
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_font)){
@@ -2160,14 +2175,14 @@ void Engine_Interface::load_game_command(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_description.length());
 
-            game_commands[game_commands.size()-1].description=string_stuff.process_newlines(line);
+            game_commands[game_commands.size()-1].description=Strings::process_newlines(line);
         }
         //Developer
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_developer)){
             //Clear the data name.
             line.erase(0,str_developer.length());
 
-            game_commands[game_commands.size()-1].dev=string_stuff.string_to_bool(line);
+            game_commands[game_commands.size()-1].dev=Strings::string_to_bool(line);
         }
         //Key
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_key)){
@@ -2248,7 +2263,7 @@ void Engine_Interface::load_game_option(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_description.length());
 
-            game_options[game_options.size()-1].description=string_stuff.process_newlines(line);
+            game_options[game_options.size()-1].description=Strings::process_newlines(line);
         }
         //Default
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default)){
@@ -2341,7 +2356,7 @@ Bitmap_Font* Engine_Interface::get_font(std::string name){
     }
 
     if(ptr_font==0){
-        message_log.add_error("Error accessing font '"+name+"'");
+        Log::add_error("Error accessing font '"+name+"'");
     }
 
     return ptr_font;
@@ -2359,7 +2374,7 @@ Cursor* Engine_Interface::get_cursor(string name){
     }
 
     if(ptr_cursor==0){
-        message_log.add_error("Error accessing cursor '"+name+"'");
+        Log::add_error("Error accessing cursor '"+name+"'");
     }
 
     return ptr_cursor;
@@ -2377,7 +2392,7 @@ Color* Engine_Interface::get_color(string name){
     }
 
     if(ptr_color==0){
-        message_log.add_error("Error accessing color '"+name+"'");
+        Log::add_error("Error accessing color '"+name+"'");
     }
 
     return ptr_color;
@@ -2395,7 +2410,7 @@ Color_Theme* Engine_Interface::get_color_theme(string name){
     }
 
     if(ptr_color_theme==0){
-        message_log.add_error("Error accessing color theme '"+name+"'");
+        Log::add_error("Error accessing color theme '"+name+"'");
     }
 
     return ptr_color_theme;
@@ -2413,7 +2428,7 @@ Animation* Engine_Interface::get_animation(string name){
     }
 
     if(ptr_animation==0){
-        message_log.add_error("Error accessing animation '"+name+"'");
+        Log::add_error("Error accessing animation '"+name+"'");
     }
 
     return ptr_animation;
@@ -2431,7 +2446,7 @@ Window* Engine_Interface::get_window(string name){
     }
 
     if(ptr_window==0){
-        message_log.add_error("Error accessing window '"+name+"'");
+        Log::add_error("Error accessing window '"+name+"'");
     }
 
     return ptr_window;
@@ -2449,7 +2464,7 @@ Game_Command* Engine_Interface::get_game_command(string name){
     }
 
     if(ptr_object==0){
-        message_log.add_error("Error accessing game command '"+name+"'");
+        Log::add_error("Error accessing game command '"+name+"'");
     }
 
     return ptr_object;
@@ -2467,7 +2482,7 @@ Game_Option* Engine_Interface::get_game_option(string name){
     }
 
     if(ptr_object==0){
-        message_log.add_error("Error accessing game option '"+name+"'");
+        Log::add_error("Error accessing game option '"+name+"'");
     }
 
     return ptr_object;
@@ -2701,7 +2716,7 @@ void Engine_Interface::set_gui_mode(string new_gui_mode){
         }
 
         if(gui_mode!="mouse" && gui_mode!="keyboard" && gui_mode!="controller"){
-            message_log.add_error("Error setting GUI mode '"+gui_mode+"'");
+            Log::add_error("Error setting GUI mode '"+gui_mode+"'");
         }
     }
 }
@@ -2764,7 +2779,7 @@ void Engine_Interface::change_gui_selected_object(string direction){
             }
         }
         else{
-            message_log.add_error("Error navigating GUI in direction '"+direction+"'");
+            Log::add_error("Error navigating GUI in direction '"+direction+"'");
         }
 
         gui_check_scrolling_button();
@@ -2822,7 +2837,8 @@ GUI_Object Engine_Interface::get_gui_selected_object(){
 
             if(objects.size()>gui_selected_object){
                 if(!top_window->no_button_sort){
-                    objects=quick_sort(objects,true);
+                    GUI_Object::set_sort_by_y(objects,true);
+                    quick_sort(objects);
 
                     //Build a list of all y values that have at least one duplicate
                     vector<int> y_duplicates_to_sort;
@@ -2877,7 +2893,8 @@ GUI_Object Engine_Interface::get_gui_selected_object(){
                             }
                         }
 
-                        replacements=quick_sort(replacements,false);
+                        GUI_Object::set_sort_by_y(replacements,false);
+                        quick_sort(replacements);
 
                         for(int j=0;j<replacements.size();j++){
                             objects[initial_object+j]=replacements[j];
@@ -3087,11 +3104,11 @@ void Engine_Interface::update_window_caption(int render_rate,double ms_per_frame
     msg+=get_game_window_caption();
 
     if(option_fps){
-        msg+="  FPS: "+string_stuff.num_to_string(render_rate);
+        msg+="  FPS: "+Strings::num_to_string(render_rate);
 
-        msg+="  LUPS: "+string_stuff.num_to_string(logic_frame_rate);
+        msg+="  LUPS: "+Strings::num_to_string(logic_frame_rate);
 
-        msg+="  MS/Frame: "+string_stuff.num_to_string(ms_per_frame);
+        msg+="  MS/Frame: "+Strings::num_to_string(ms_per_frame);
     }
 
     SDL_SetWindowTitle(main_window.screen,msg.c_str());
@@ -3507,7 +3524,7 @@ void Engine_Interface::input_backspace(){
         ptr_mutable_info->text.erase(ptr_mutable_info->text.length()-1);
 
         if(deleted_char=="\xA"){
-            ptr_mutable_info->scroll_offset=-string_stuff.newline_count(ptr_mutable_info->text);
+            ptr_mutable_info->scroll_offset=-Strings::newline_count(ptr_mutable_info->text);
         }
     }
 }
@@ -3516,9 +3533,9 @@ void Engine_Interface::input_newline(){
     if(mutable_info_selected()){
         ptr_mutable_info->text+="\\";
         ptr_mutable_info->text+="n";
-        ptr_mutable_info->text=string_stuff.process_newlines(ptr_mutable_info->text);
+        ptr_mutable_info->text=Strings::process_newlines(ptr_mutable_info->text);
 
-        ptr_mutable_info->scroll_offset=-string_stuff.newline_count(ptr_mutable_info->text);
+        ptr_mutable_info->scroll_offset=-Strings::newline_count(ptr_mutable_info->text);
         ptr_mutable_info->scroll_offset+=ptr_mutable_info->scroll_height-1;
     }
 }
@@ -3752,9 +3769,9 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                         if(controller_object->haptic!=0){
                             if(SDL_HapticRumbleSupported(controller_object->haptic)){
                                 if(SDL_HapticRumbleInit(controller_object->haptic)!=0){
-                                    string msg="Error initializing rumble for haptic on controller "+string_stuff.num_to_string(event.cdevice.which)+": ";
+                                    string msg="Error initializing rumble for haptic on controller "+Strings::num_to_string(event.cdevice.which)+": ";
                                     msg+=SDL_GetError();
-                                    message_log.add_error(msg);
+                                    Log::add_error(msg);
 
                                     SDL_HapticClose(controller_object->haptic);
                                     controller_object->haptic=0;
@@ -3762,23 +3779,23 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                             }
                         }
                         else{
-                            string msg="Error opening haptic for controller "+string_stuff.num_to_string(event.cdevice.which)+": ";
+                            string msg="Error opening haptic for controller "+Strings::num_to_string(event.cdevice.which)+": ";
                             msg+=SDL_GetError();
-                            message_log.add_error(msg);
+                            Log::add_error(msg);
                         }
                     }
                 }
                 else{
-                    string msg="Error opening controller "+string_stuff.num_to_string(event.cdevice.which)+": ";
+                    string msg="Error opening controller "+Strings::num_to_string(event.cdevice.which)+": ";
                     msg+=SDL_GetError();
-                    message_log.add_error(msg);
+                    Log::add_error(msg);
 
                     controllers.pop_back();
                 }
             }
             else{
                 string joystick_name=SDL_JoystickNameForIndex(event.cdevice.which);
-                message_log.add_error("Joystick \""+joystick_name+"\" detected, but not supported by the game controller interface.");
+                Log::add_error("Joystick \""+joystick_name+"\" detected, but not supported by the game controller interface.");
             }
             break;
 
@@ -4049,7 +4066,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                     //Toggle fullscreen
                     if(!event_consumed && (keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && (event.key.keysym.scancode==SDL_SCANCODE_RETURN || event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
-                        change_option("cl_fullscreen_state",string_stuff.bool_to_string(!option_fullscreen));
+                        change_option("cl_fullscreen_state",Strings::bool_to_string(!option_fullscreen));
                         reload();
 
                         event_consumed=true;
@@ -4234,11 +4251,11 @@ string Engine_Interface::get_system_info(){
     int power_seconds=0;
     int power_percentage=0;
     SDL_PowerState power_state=SDL_GetPowerInfo(&power_seconds,&power_percentage);
-    string str_power_seconds=string_stuff.time_string(power_seconds)+" remaining";
-    string str_power_percentage=string_stuff.num_to_string(power_percentage)+"%";
+    string str_power_seconds=Strings::time_string(power_seconds)+" remaining";
+    string str_power_percentage=Strings::num_to_string(power_percentage)+"%";
 
     if(engine_interface.controllers.size()>0){
-        msg+="Controllers ("+string_stuff.num_to_string(engine_interface.controllers.size())+"):\n\n";
+        msg+="Controllers ("+Strings::num_to_string(engine_interface.controllers.size())+"):\n\n";
 
         for(int i=0;i<engine_interface.controllers.size();i++){
             if(SDL_GameControllerGetAttached(engine_interface.controllers[i].controller)){
@@ -4247,7 +4264,7 @@ string Engine_Interface::get_system_info(){
                     haptic=true;
                 }
 
-                msg+=string_stuff.num_to_string(i)+".\n";
+                msg+=Strings::num_to_string(i)+".\n";
                 msg+="Controller Name: ";
                 msg+=SDL_GameControllerName(engine_interface.controllers[i].controller);
                 msg+="\n";
@@ -4255,24 +4272,24 @@ string Engine_Interface::get_system_info(){
                 msg+=SDL_JoystickName(SDL_GameControllerGetJoystick(engine_interface.controllers[i].controller));
                 msg+="\n";
                 msg+="Instance ID: ";
-                msg+=string_stuff.num_to_string(engine_interface.controllers[i].instance_id);
+                msg+=Strings::num_to_string(engine_interface.controllers[i].instance_id);
                 msg+="\n";
-                msg+="Has Rumble: "+string_stuff.bool_to_string(haptic);
+                msg+="Has Rumble: "+Strings::bool_to_string(haptic);
                 msg+="\n\n";
             }
         }
     }
 
-    msg+="Resolution (Logical): "+string_stuff.num_to_string(logical_width)+" x "+string_stuff.num_to_string(logical_height)+"\n";
-    msg+="Logical Viewport: "+string_stuff.num_to_string(rect.x)+","+string_stuff.num_to_string(rect.y)+","+string_stuff.num_to_string(rect.w)+","+string_stuff.num_to_string(rect.h)+"\n";
-    msg+="Render Scale: "+string_stuff.num_to_string(scale_x)+","+string_stuff.num_to_string(scale_y)+"\n";
-    msg+="Resolution (Actual): "+string_stuff.num_to_string(actual_width)+" x "+string_stuff.num_to_string(actual_height)+"\n";
+    msg+="Resolution (Logical): "+Strings::num_to_string(logical_width)+" x "+Strings::num_to_string(logical_height)+"\n";
+    msg+="Logical Viewport: "+Strings::num_to_string(rect.x)+","+Strings::num_to_string(rect.y)+","+Strings::num_to_string(rect.w)+","+Strings::num_to_string(rect.h)+"\n";
+    msg+="Render Scale: "+Strings::num_to_string(scale_x)+","+Strings::num_to_string(scale_y)+"\n";
+    msg+="Resolution (Actual): "+Strings::num_to_string(actual_width)+" x "+Strings::num_to_string(actual_height)+"\n";
     msg+="Renderer: "+renderer_name+"\n";
-    msg+="Max Texture Size: "+string_stuff.num_to_string(info.max_texture_width)+" x "+string_stuff.num_to_string(info.max_texture_height)+"\n";
-    msg+="Current Gui Mode: "+string_stuff.first_letter_capital(engine_interface.gui_mode)+"\n";
+    msg+="Max Texture Size: "+Strings::num_to_string(info.max_texture_width)+" x "+Strings::num_to_string(info.max_texture_height)+"\n";
+    msg+="Current Gui Mode: "+Strings::first_letter_capital(engine_interface.gui_mode)+"\n";
 
-    msg+="Mouse Position (Logical): "+string_stuff.num_to_string(mouse_x)+","+string_stuff.num_to_string(mouse_y)+"\n";
-    msg+="Mouse Position (Actual): "+string_stuff.num_to_string(mouse_real_x)+","+string_stuff.num_to_string(mouse_real_y)+"\n";
+    msg+="Mouse Position (Logical): "+Strings::num_to_string(mouse_x)+","+Strings::num_to_string(mouse_y)+"\n";
+    msg+="Mouse Position (Actual): "+Strings::num_to_string(mouse_real_x)+","+Strings::num_to_string(mouse_real_y)+"\n";
 
     msg+="Power State: ";
     if(power_state==SDL_POWERSTATE_UNKNOWN){

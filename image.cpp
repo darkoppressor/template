@@ -66,12 +66,12 @@ Image_Data* Image::get_image(string image_name){
     }
 
     if(ptr_image==0){
-        message_log.add_error("Error accessing image '"+image_name+"'");
+        Log::add_error("Error accessing image '"+image_name+"'");
 
         ptr_image=error_image;
 
         if(ptr_image==0){
-            message_log.add_error("Error accessing error image! Really?!");
+            Log::add_error("Error accessing error image! Really?!");
         }
     }
 

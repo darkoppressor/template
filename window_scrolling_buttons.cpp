@@ -22,7 +22,7 @@ void Window::build_scrolling_buttons(){
                     buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
                     buttons[buttons.size()-1].text=engine_interface.game_commands[i].title;
                     buttons[buttons.size()-1].tooltip_text=engine_interface.game_commands[i].description;
-                    buttons[buttons.size()-1].event_function="configure_commands_"+string_stuff.num_to_string(i);
+                    buttons[buttons.size()-1].event_function="configure_commands_"+Strings::num_to_string(i);
                     buttons[buttons.size()-1].set_dimensions();
                 }
             }
@@ -34,9 +34,9 @@ void Window::build_scrolling_buttons(){
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
-                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+string_stuff.num_to_string(network.server_list[i].port)+")";
+                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+Strings::num_to_string(network.server_list[i].port)+")";
                 buttons[buttons.size()-1].font="small";
-                buttons[buttons.size()-1].event_function="server_list_"+string_stuff.num_to_string(i);
+                buttons[buttons.size()-1].event_function="server_list_"+Strings::num_to_string(i);
                 buttons[buttons.size()-1].set_dimensions();
             }
         }
@@ -47,9 +47,9 @@ void Window::build_scrolling_buttons(){
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
-                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+string_stuff.num_to_string(network.server_list[i].port)+")";
+                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+Strings::num_to_string(network.server_list[i].port)+")";
                 buttons[buttons.size()-1].font="small";
-                buttons[buttons.size()-1].event_function="server_list_delete_"+string_stuff.num_to_string(i);
+                buttons[buttons.size()-1].event_function="server_list_delete_"+Strings::num_to_string(i);
                 buttons[buttons.size()-1].set_dimensions();
             }
         }
@@ -60,14 +60,14 @@ void Window::build_scrolling_buttons(){
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
-                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+string_stuff.num_to_string(network.server_list[i].port)+")";
+                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+Strings::num_to_string(network.server_list[i].port)+")";
                 buttons[buttons.size()-1].font="small";
-                buttons[buttons.size()-1].event_function="server_list_edit_"+string_stuff.num_to_string(i);
+                buttons[buttons.size()-1].event_function="server_list_edit_"+Strings::num_to_string(i);
                 buttons[buttons.size()-1].set_dimensions();
             }
         }
         else{
-            message_log.add_error("Invalid scrolling buttons list: '"+scrolling_buttons+"'");
+            Log::add_error("Invalid scrolling buttons list: '"+scrolling_buttons+"'");
         }
     }
 }

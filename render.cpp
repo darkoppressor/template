@@ -18,7 +18,7 @@ SDL_Surface* scale_surface(SDL_Surface* surface,double scale_x,double scale_y){
     if(new_surface==0){
         string msg="Error creating scaled surface: ";
         msg+=SDL_GetError();
-        message_log.add_error(msg);
+        Log::add_error(msg);
     }
 
     for(int x=0;x<surface->w;x++){
@@ -58,7 +58,7 @@ SDL_Surface* optimize_surface(SDL_Surface* surface){
     if(conv==0){
         string msg="Error converting surface: ";
         msg+=SDL_GetError();
-        message_log.add_error(msg);
+        Log::add_error(msg);
     }
 
     return conv;
@@ -75,7 +75,7 @@ SDL_Surface* load_image(string filename){
         SDL_FreeSurface(loaded_image);
     }
     else{
-        message_log.add_error("Error loading image '"+filename+"': "+IMG_GetError());
+        Log::add_error("Error loading image '"+filename+"': "+IMG_GetError());
     }
 
     return optimized_image;
@@ -92,7 +92,7 @@ SDL_Texture* load_texture(string filename,Image_Data* id){
     if(texture==0){
         string msg="Error creating texture: ";
         msg+=SDL_GetError();
-        message_log.add_error(msg);
+        Log::add_error(msg);
     }
 
     SDL_FreeSurface(surface);

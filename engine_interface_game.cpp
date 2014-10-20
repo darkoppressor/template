@@ -68,7 +68,7 @@ void Engine_Interface::unload_data_game(){
     }
 
     if(ptr_object==0){
-        message_log.add_error("Error accessing example game script '"+name+"'");
+        Log::add_error("Error accessing example game script '"+name+"'");
     }
 
     return ptr_object;
@@ -117,7 +117,7 @@ void Engine_Interface::render_pause(){
 }
 
 void Engine_Interface::render_fps(int render_rate,double ms_per_frame,int logic_frame_rate){
-    get_font("small")->show(2,2,"FPS: "+string_stuff.num_to_string(render_rate)+"\n"+network.get_stats(),"ui_white");
+    get_font("small")->show(2,2,"FPS: "+Strings::num_to_string(render_rate)+"\n"+network.get_stats(),"ui_white");
 }
 
 void Engine_Interface::render_loading_screen(double percentage,string load_message){
@@ -137,7 +137,7 @@ void Engine_Interface::render_loading_screen(double percentage,string load_messa
     render_rectangle(main_window.SCREEN_WIDTH/2.0-120-2,main_window.SCREEN_HEIGHT-75-2,max_bar_width+4,30+4,1.0,"ui_3");
     render_rectangle(main_window.SCREEN_WIDTH/2.0-120,main_window.SCREEN_HEIGHT-75,bar_width,30,1.0,"ui_1");
 
-    string msg=string_stuff.num_to_string((int)(percentage*100.0))+"%";
+    string msg=Strings::num_to_string((int)(percentage*100.0))+"%";
 
     font->show(main_window.SCREEN_WIDTH/2.0-120+(max_bar_width-msg.length()*font->spacing_x)/2.0,main_window.SCREEN_HEIGHT-75+font->spacing_y/4.0,msg,"ui_0");
 

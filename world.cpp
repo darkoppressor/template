@@ -15,10 +15,6 @@ double SKIP_TICKS=1000.0/UPDATE_RATE;
 double UPDATE_RATE_RENDER=200.0;
 double SKIP_TICKS_RENDER=1000.0/UPDATE_RATE_RENDER;
 
-Message_Log message_log;
-
-String_Stuff string_stuff;
-
 Game_Window main_window;
 
 SDL_Event event;

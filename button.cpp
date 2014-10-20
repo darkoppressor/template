@@ -76,8 +76,8 @@ void Button::set_dimensions(){
 void Button::set_dimensions_text(){
     Bitmap_Font* ptr_font=engine_interface.get_font(font);
 
-    w=engine_interface.gui_border_thickness*2.0+string_stuff.longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
-    h=engine_interface.gui_border_thickness*2.0+(string_stuff.newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
+    w=engine_interface.gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
+    h=engine_interface.gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
 }
 
 void Button::center_in_window(int window_width,int window_height){

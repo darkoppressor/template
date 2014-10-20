@@ -9,7 +9,7 @@ void Window::exec_close_function(){
             engine_interface.configure_command=-1;
         }
         else{
-            message_log.add_error("Invalid close function: '"+close_function+"'");
+            Log::add_error("Invalid close function: '"+close_function+"'");
         }
     }
 }

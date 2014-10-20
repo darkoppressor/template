@@ -96,7 +96,7 @@ string File_IO_Load::get_data(){
                 if(!append){
                     string msg="Error saving file '"+path+"': ";
                     msg+=SDL_GetError();
-                    message_log.add_error(msg);
+                    Log::add_error(msg);
                 }
 
                 return false;
@@ -108,7 +108,7 @@ string File_IO_Load::get_data(){
             if(!append){
                 string msg="Error opening file '"+path+"' for saving: ";
                 msg+=SDL_GetError();
-                message_log.add_error(msg);
+                Log::add_error(msg);
             }
 
             return false;
@@ -150,7 +150,7 @@ string File_IO_Load::get_data(){
             }
         }
         else{
-            message_log.add_error("Error getting file information for file '"+path+"': "+string_stuff.num_to_string(errno));
+            Log::add_error("Error getting file information for file '"+path+"': "+Strings::num_to_string(errno));
         }
 
         return false;
@@ -165,7 +165,7 @@ string File_IO_Load::get_data(){
             }
         }
         else{
-            message_log.add_error("Error getting file information for file '"+path+"': "+string_stuff.num_to_string(errno));
+            Log::add_error("Error getting file information for file '"+path+"': "+Strings::num_to_string(errno));
         }
 
         return false;
@@ -173,13 +173,13 @@ string File_IO_Load::get_data(){
 
     void File_IO::create_directory(string path){
         if(!directory_exists(path) && mkdir(path.c_str(),S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0){
-            message_log.add_error("Error creating directory '"+path+"': "+string_stuff.num_to_string(errno));
+            Log::add_error("Error creating directory '"+path+"': "+Strings::num_to_string(errno));
         }
     }
 
     void File_IO::remove_file(string path){
         if(file_exists(path) && remove(path.c_str())!=0){
-            message_log.add_error("Error removing file '"+path+"': "+string_stuff.num_to_string(errno));
+            Log::add_error("Error removing file '"+path+"': "+Strings::num_to_string(errno));
         }
     }
 
@@ -220,13 +220,13 @@ string File_IO_Load::get_data(){
                 return true;
             }
             else{
-                message_log.add_error("External storage is not RW enabled.");
+                Log::add_error("External storage is not RW enabled.");
             }
         }
         else{
             string msg="External storage is unavailable: ";
             msg+=SDL_GetError();
-            message_log.add_error(msg);
+            Log::add_error(msg);
         }
 
         return false;
@@ -340,7 +340,7 @@ string File_IO_Load::get_data(){
             }
         }
         else{
-            message_log.add_error("Error getting file information for file '"+get_full_path()+"': "+string_stuff.num_to_string(errno));
+            Log::add_error("Error getting file information for file '"+get_full_path()+"': "+Strings::num_to_string(errno));
         }
 
         return false;
@@ -356,7 +356,7 @@ string File_IO_Load::get_data(){
             }
         }
         else{
-            message_log.add_error("Error getting file information for file '"+get_full_path()+"': "+string_stuff.num_to_string(errno));
+            Log::add_error("Error getting file information for file '"+get_full_path()+"': "+Strings::num_to_string(errno));
         }
 
         return false;
@@ -396,7 +396,7 @@ string File_IO_Load::get_data(){
                 if(!append){
                     string msg="Error saving file '"+path+"': ";
                     msg+=SDL_GetError();
-                    message_log.add_error(msg);
+                    Log::add_error(msg);
                 }
 
                 return false;
@@ -408,7 +408,7 @@ string File_IO_Load::get_data(){
             if(!append){
                 string msg="Error opening file '"+path+"' for saving: ";
                 msg+=SDL_GetError();
-                message_log.add_error(msg);
+                Log::add_error(msg);
             }
 
             return false;

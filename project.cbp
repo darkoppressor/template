@@ -405,12 +405,12 @@
 		<Unit filename="image_data.h" />
 		<Unit filename="information.cpp" />
 		<Unit filename="information.h" />
+		<Unit filename="log.cpp" />
+		<Unit filename="log.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
 		<Unit filename="math.cpp" />
 		<Unit filename="math.h" />
-		<Unit filename="message_log.cpp" />
-		<Unit filename="message_log.h" />
 		<Unit filename="music.cpp" />
 		<Unit filename="music.h" />
 		<Unit filename="network.cpp" />
@@ -432,7 +432,6 @@
 		<Unit filename="screen_shake.h" />
 		<Unit filename="server.cpp" />
 		<Unit filename="server.h" />
-		<Unit filename="sorting.cpp" />
 		<Unit filename="sorting.h" />
 		<Unit filename="sound.cpp" />
 		<Unit filename="sound.h" />
@@ -442,8 +441,10 @@
 		<Unit filename="special_info.h" />
 		<Unit filename="sprite.cpp" />
 		<Unit filename="sprite.h" />
-		<Unit filename="string_stuff.cpp" />
-		<Unit filename="string_stuff.h" />
+		<Unit filename="strings.cpp" />
+		<Unit filename="strings.h" />
+		<Unit filename="symbols.cpp" />
+		<Unit filename="symbols.h" />
 		<Unit filename="timer.cpp" />
 		<Unit filename="timer.h" />
 		<Unit filename="toast.cpp" />

@@ -14,12 +14,14 @@
 #include "sound.h"
 #include "engine_interface.h"
 #include "update.h"
-#include "message_log.h"
-#include "string_stuff.h"
+#include "log.h"
+#include "strings.h"
 #include "file_io.h"
 #include "game.h"
 #include "game_constants.h"
 #include "network.h"
+#include "symbols.h"
+#include "sorting.h"
 
 #include <string>
 #include <sstream>
@@ -43,10 +45,6 @@ extern double SKIP_TICKS;
 
 extern double UPDATE_RATE_RENDER;
 extern double SKIP_TICKS_RENDER;
-
-extern Message_Log message_log;
-
-extern String_Stuff string_stuff;
 
 extern Game_Window main_window;
 

@@ -75,7 +75,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             Window* window=engine_interface.get_window("add_server");
 
             if(window->get_info_text(2).length()==0){
-                window->set_info_text(2,string_stuff.num_to_string(network.port));
+                window->set_info_text(2,Strings::num_to_string(network.port));
             }
 
             window->toggle_on();
@@ -83,7 +83,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         }
         else if(button_event=="add_server"){
             if(parent_window!=0){
-                network.add_server(parent_window->get_info_text(0),parent_window->get_info_text(1),string_stuff.string_to_unsigned_long(parent_window->get_info_text(2)),parent_window->get_info_text(3));
+                network.add_server(parent_window->get_info_text(0),parent_window->get_info_text(1),Strings::string_to_unsigned_long(parent_window->get_info_text(2)),parent_window->get_info_text(3));
 
                 engine_interface.get_window("server_list")->rebuild_scrolling_buttons();
                 engine_interface.get_window("server_list_delete")->rebuild_scrolling_buttons();
@@ -94,7 +94,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         }
         else if(button_event=="edit_server"){
             if(parent_window!=0){
-                network.edit_server(engine_interface.editing_server,parent_window->get_info_text(0),parent_window->get_info_text(1),string_stuff.string_to_unsigned_long(parent_window->get_info_text(2)),parent_window->get_info_text(3));
+                network.edit_server(engine_interface.editing_server,parent_window->get_info_text(0),parent_window->get_info_text(1),Strings::string_to_unsigned_long(parent_window->get_info_text(2)),parent_window->get_info_text(3));
 
                 engine_interface.get_window("server_list")->rebuild_scrolling_buttons();
                 engine_interface.get_window("server_list_delete")->rebuild_scrolling_buttons();
@@ -107,7 +107,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         else if(boost::algorithm::starts_with(button_event,"configure_commands_")){
             boost::algorithm::erase_first(button_event,"configure_commands_");
 
-            engine_interface.configure_command=string_stuff.string_to_long(button_event);
+            engine_interface.configure_command=Strings::string_to_long(button_event);
             engine_interface.get_window("configure_command")->toggle_on(true,true);
             window_opened_on_top=true;
         }
@@ -115,7 +115,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         else if(boost::algorithm::starts_with(button_event,"server_list_delete_")){
             boost::algorithm::erase_first(button_event,"server_list_delete_");
 
-            network.remove_server(string_stuff.string_to_long(button_event));
+            network.remove_server(Strings::string_to_long(button_event));
 
             engine_interface.get_window("server_list")->rebuild_scrolling_buttons();
             engine_interface.get_window("server_list_delete")->rebuild_scrolling_buttons();
@@ -125,15 +125,15 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             boost::algorithm::erase_first(button_event,"server_list_edit_");
 
             Window* window=engine_interface.get_window("edit_server");
-            Server* server=network.get_server(string_stuff.string_to_long(button_event));
+            Server* server=network.get_server(Strings::string_to_long(button_event));
 
             if(server!=0){
                 window->set_info_text(0,server->name);
                 window->set_info_text(1,server->address);
-                window->set_info_text(2,string_stuff.num_to_string(server->port));
+                window->set_info_text(2,Strings::num_to_string(server->port));
                 window->set_info_text(3,server->password);
 
-                engine_interface.editing_server=string_stuff.string_to_long(button_event);
+                engine_interface.editing_server=Strings::string_to_long(button_event);
 
                 window->toggle_on(true,true);
                 window_opened_on_top=true;
@@ -144,13 +144,13 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
 
             engine_interface.close_all_windows();
 
-            network.set_server_target(string_stuff.string_to_long(button_event));
+            network.set_server_target(Strings::string_to_long(button_event));
 
             network.start_as_client();
         }
 
         else{
-            message_log.add_error("Invalid button event: '"+button_event+"'");
+            Log::add_error("Invalid button event: '"+button_event+"'");
         }
     }
 

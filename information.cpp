@@ -51,8 +51,8 @@ void Information::set_dimensions(){
             h=engine_interface.gui_border_thickness*2.0+ptr_font->spacing_y;
         }
         else{
-            w=engine_interface.gui_border_thickness*2.0+string_stuff.longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
-            h=engine_interface.gui_border_thickness*2.0+(string_stuff.newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
+            w=engine_interface.gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
+            h=engine_interface.gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
         }
     }
 }
@@ -108,7 +108,7 @@ void Information::begin_editing(){
         engine_interface.set_mutable_info(this);
 
         if(scrolling){
-            scroll_offset=-string_stuff.newline_count(text);
+            scroll_offset=-Strings::newline_count(text);
         }
     }
 }
@@ -123,7 +123,7 @@ void Information::scroll_up(short y_offset){
 
 void Information::scroll_down(short y_offset){
     if(scrolling){
-        if(y_offset+y+engine_interface.get_font(font)->spacing_y*scroll_offset+engine_interface.get_font(font)->spacing_y*string_stuff.newline_count(text)>y_offset+y){
+        if(y_offset+y+engine_interface.get_font(font)->spacing_y*scroll_offset+engine_interface.get_font(font)->spacing_y*Strings::newline_count(text)>y_offset+y){
             scroll_offset-=1;
         }
     }
@@ -253,7 +253,7 @@ void Information::render(short x_offset,short y_offset){
             ptr_font->show(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y,text,font_color_real,1.0,1.0,1.0,0.0,allowed_area);
 
             if(text_mutable && engine_interface.mutable_info_this(this)){
-                ptr_font->show(x_offset+x+engine_interface.gui_border_thickness+(ptr_font->spacing_x*string_stuff.length_of_last_line(text)),y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y+(ptr_font->spacing_y*string_stuff.newline_count(text)),"\x7F",font_color_real,engine_interface.cursor_opacity*0.1,1.0,1.0,0.0,allowed_area);
+                ptr_font->show(x_offset+x+engine_interface.gui_border_thickness+(ptr_font->spacing_x*Strings::length_of_last_line(text)),y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y+(ptr_font->spacing_y*Strings::newline_count(text)),"\x7F",font_color_real,engine_interface.cursor_opacity*0.1,1.0,1.0,0.0,allowed_area);
             }
         }
     }

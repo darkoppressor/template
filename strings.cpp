@@ -1,4 +1,4 @@
-#include "string_stuff.h"
+#include "strings.h"
 #include "world.h"
 
 #include <vector>
@@ -7,7 +7,7 @@
 
 using namespace std;
 
-string String_Stuff::first_letter_capital(string str_input){
+string Strings::first_letter_capital(string str_input){
     if(str_input.length()>0){
         string first_letter="";
         first_letter+=str_input[0];
@@ -21,7 +21,7 @@ string String_Stuff::first_letter_capital(string str_input){
     return str_input;
 }
 
-string String_Stuff::capitalize_all_words(string str_input){
+string Strings::capitalize_all_words(const string& str_input){
     string message="";
 
     vector<string> words;
@@ -40,41 +40,33 @@ string String_Stuff::capitalize_all_words(string str_input){
     return message;
 }
 
-string String_Stuff::upper_case(string str_input){
-    boost::algorithm::to_upper(str_input);
-
-    return str_input;
+string Strings::upper_case(const string& str_input){
+    return boost::algorithm::to_upper_copy(str_input);
 }
 
-string String_Stuff::lower_case(string str_input){
-    boost::algorithm::to_lower(str_input);
-
-    return str_input;
+string Strings::lower_case(const string& str_input){
+    return boost::algorithm::to_lower_copy(str_input);
 }
 
-string String_Stuff::underscore_to_space(string str_input){
+string Strings::underscore_to_space(const string& str_input){
     return boost::algorithm::replace_all_copy(str_input,"_"," ");
 }
 
-string String_Stuff::add_newlines(string str_input){
+string Strings::add_newlines(const string& str_input){
     string newline="\\";
     newline+="n";
 
-    boost::algorithm::replace_all(str_input,"\xA",newline);
-
-    return str_input;
+    return boost::algorithm::replace_all_copy(str_input,"\xA",newline);
 }
 
-string String_Stuff::process_newlines(string str_input){
+string Strings::process_newlines(const string& str_input){
     string newline="\\";
     newline+="n";
 
-    boost::algorithm::replace_all(str_input,newline,"\xA");
-
-    return str_input;
+    return boost::algorithm::replace_all_copy(str_input,newline,"\xA");
 }
 
-int String_Stuff::newline_count(string str_input){
+int Strings::newline_count(const string& str_input){
     int newlines=0;
     string newline="\xA";
 
@@ -87,14 +79,14 @@ int String_Stuff::newline_count(string str_input){
     return newlines;
 }
 
-int String_Stuff::length_of_last_line(string str_input){
+int Strings::length_of_last_line(const string& str_input){
     vector<string> lines;
     boost::algorithm::split(lines,str_input,boost::algorithm::is_any_of("\xA"));
 
     return lines[lines.size()-1].length();
 }
 
-int String_Stuff::longest_line(string str_input){
+int Strings::longest_line(const string& str_input){
     vector<string> lines;
     boost::algorithm::split(lines,str_input,boost::algorithm::is_any_of("\xA"));
 
@@ -108,7 +100,7 @@ int String_Stuff::longest_line(string str_input){
     return longest_line_length;
 }
 
-string String_Stuff::erase_first_line(string str_input){
+string Strings::erase_first_line(string str_input){
     string newline="\xA";
 
     for(int i=0;i<str_input.length();i++){
@@ -127,7 +119,7 @@ string String_Stuff::erase_first_line(string str_input){
     return str_input;
 }
 
-bool String_Stuff::is_number(string str_input){
+bool Strings::is_number(const string& str_input){
     if(str_input.length()==0 || (str_input.length()==1 && str_input[0]=='-')){
         return false;
     }
@@ -141,7 +133,7 @@ bool String_Stuff::is_number(string str_input){
     return true;
 }
 
-string String_Stuff::time_string(int seconds,bool highest){
+string Strings::time_string(int seconds,bool highest){
     string text="";
 
     int minutes=0;
@@ -258,21 +250,21 @@ string String_Stuff::time_string(int seconds,bool highest){
     return text;
 }
 
-bool String_Stuff::string_to_bool(string get_string){
-    if(get_string=="true" || get_string=="1"){
+bool Strings::string_to_bool(const string& get_string){
+    if(get_string=="true" || string_to_unsigned_long(get_string)!=0){
         return true;
     }
     else if(get_string=="false" || get_string=="0"){
         return false;
     }
     else{
-        message_log.add_error("Invalid value for string_to_bool: '"+get_string+"'");
+        Log::add_error("Invalid value for string_to_bool: '"+get_string+"'");
 
         return false;
     }
 }
 
-string String_Stuff::bool_to_string(bool get_bool){
+string Strings::bool_to_string(const bool& get_bool){
     if(get_bool){
         return "true";
     }
@@ -281,14 +273,14 @@ string String_Stuff::bool_to_string(bool get_bool){
     }
 }
 
-long String_Stuff::string_to_long(string get_string){
+long Strings::string_to_long(const string& get_string){
     return strtol(get_string.c_str(),NULL,0);
 }
 
-unsigned long String_Stuff::string_to_unsigned_long(string get_string){
+unsigned long Strings::string_to_unsigned_long(const string& get_string){
     return strtoul(get_string.c_str(),NULL,0);
 }
 
-double String_Stuff::string_to_double(string get_string){
+double Strings::string_to_double(const string& get_string){
     return strtod(get_string.c_str(),NULL);
 }

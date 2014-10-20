@@ -53,7 +53,13 @@ public:
     int x;
     int y;
 
+    bool sort_by_y;
+
     GUI_Object(std::string get_type,int get_index,int get_x,int get_y);
+
+    bool operator<=(GUI_Object object);
+
+    static void set_sort_by_y(std::vector<GUI_Object>& objects,const bool& sort_value);
 };
 
 class GUI_Selector_Chaser{

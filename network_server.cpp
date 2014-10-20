@@ -39,7 +39,7 @@ void Network::start_as_server(bool allow_clients){
             status="server";
         }
         else{
-            message_log.add_error("Error initializing server: "+string_stuff.num_to_string(startup));
+            Log::add_error("Error initializing server: "+Strings::num_to_string(startup));
         }
     }
 }

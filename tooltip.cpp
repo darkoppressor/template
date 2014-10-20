@@ -38,8 +38,8 @@ void Tooltip::setup(string get_message,int mouse_x,int mouse_y){
 void Tooltip::set_dimensions(){
     Bitmap_Font* ptr_font=engine_interface.get_font(font);
 
-    w=engine_interface.gui_border_thickness*2.0+string_stuff.longest_line(message)*ptr_font->spacing_x+ptr_font->gui_padding_x;
-    h=engine_interface.gui_border_thickness*2.0+(string_stuff.newline_count(message)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
+    w=engine_interface.gui_border_thickness*2.0+Strings::longest_line(message)*ptr_font->spacing_x+ptr_font->gui_padding_x;
+    h=engine_interface.gui_border_thickness*2.0+(Strings::newline_count(message)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
 }
 
 void Tooltip::render(){

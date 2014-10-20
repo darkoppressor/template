@@ -157,7 +157,7 @@ Sound_Data* Sound::get_sound(string sound_name){
     }
 
     if(ptr_sound==0){
-        message_log.add_error("Error accessing sound '"+sound_name+"'");
+        Log::add_error("Error accessing sound '"+sound_name+"'");
     }
 
     return ptr_sound;

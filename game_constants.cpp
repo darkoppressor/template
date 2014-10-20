@@ -9,12 +9,12 @@ double ZOOM_MAX=0.0;
 
 void set_game_constant(string name,string value){
     if(name=="zoom_rate"){
-        ZOOM_RATE=string_stuff.string_to_double(value);
+        ZOOM_RATE=Strings::string_to_double(value);
     }
     else if(name=="zoom_min"){
-        ZOOM_MIN=string_stuff.string_to_double(value);
+        ZOOM_MIN=Strings::string_to_double(value);
     }
     else if(name=="zoom_max"){
-        ZOOM_MAX=string_stuff.string_to_double(value);
+        ZOOM_MAX=Strings::string_to_double(value);
     }
 }
