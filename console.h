@@ -4,6 +4,9 @@
 #include "information.h"
 #include "timer.h"
 
+#include <string>
+#include <vector>
+
 class Console{
 public:
 
@@ -90,7 +93,11 @@ public:
     //Returns whether or not the option is in the options list.
     bool input_has_option(std::string option,std::string options);
 
+    void exec_file(std::string filename);
+
     void do_command();
+
+    void run_commands(const std::vector<std::string>& command_list);
 };
 
 #endif

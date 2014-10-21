@@ -17,6 +17,7 @@ void Console::setup_commands(){
     commands.push_back("quit");
     commands.push_back("play");
     commands.push_back("toast");
+    commands.push_back("exec");
 
     commands.push_back("cl_logic_update_rate");
     commands.push_back("cl_frame_rate_max");
@@ -125,6 +126,33 @@ bool Console::input_has_option(string option,string options){
     return false;
 }
 
+void Console::exec_file(string filename){
+    File_IO_Load load(engine_interface.get_home_directory()+filename);
+
+    vector<string> command_list;
+
+    if(load.file_loaded()){
+        while(!load.eof()){
+            string line="";
+
+            load.getline(&line);
+
+            vector<string> com_list;
+
+            boost::algorithm::split(com_list,line,boost::algorithm::is_any_of(";"));
+
+            for(int i=0;i<com_list.size();i++){
+                command_list.push_back(com_list[i]);
+            }
+        }
+    }
+    else{
+        Log::add_error("Error loading file for execution: '"+engine_interface.get_home_directory()+filename+"'");
+    }
+
+    run_commands(command_list);
+}
+
 void Console::do_command(){
     if(!chat && info_input.text.length()>0){
         //Forget the oldest command string.
@@ -138,170 +166,179 @@ void Console::do_command(){
         vector<string> command_list;
         boost::algorithm::split(command_list,info_input.text,boost::algorithm::is_any_of(";"));
 
-        for(int n=0;n<command_list.size();n++){
-            info_input.text=command_list[n];
+        run_commands(command_list);
+    }
+}
 
-            boost::algorithm::trim(info_input.text);
+void Console::run_commands(const vector<string>& command_list){
+    for(int n=0;n<command_list.size();n++){
+        info_input.text=command_list[n];
 
-            string full_command=info_input.text;
+        boost::algorithm::trim(info_input.text);
 
-            //The command itself.
-            string command="";
+        string full_command=info_input.text;
 
-            //Any input given to this command.
-            vector<string> command_input;
+        //The command itself.
+        string command="";
 
-            for(int i=0;i<commands.size();i++){
-                if(boost::algorithm::starts_with(info_input.text,commands[i])){
-                    command=commands[i];
+        //Any input given to this command.
+        vector<string> command_input;
 
-                    boost::algorithm::erase_first(info_input.text,commands[i]);
-                    boost::algorithm::trim(info_input.text);
+        for(int i=0;i<commands.size();i++){
+            if(boost::algorithm::starts_with(info_input.text,commands[i])){
+                command=commands[i];
 
-                    command_input=parse_input(info_input.text);
+                boost::algorithm::erase_first(info_input.text,commands[i]);
+                boost::algorithm::trim(info_input.text);
 
-                    break;
+                command_input=parse_input(info_input.text);
+
+                break;
+            }
+        }
+
+        if(command.length()>0){
+            if(command=="commands"){
+                for(int i=0;i<commands.size();i++){
+                    if(!boost::algorithm::starts_with(commands[i],"cl_")){
+                        add_text(commands[i]);
+                    }
+                }
+            }
+            else if(command=="options"){
+                for(int i=0;i<commands.size();i++){
+                    if(boost::algorithm::starts_with(commands[i],"cl_")){
+                        add_text(commands[i]);
+                    }
+                }
+            }
+            else if(command=="echo"){
+                string echo_text="";
+
+                for(int i=1;i<command_input.size();i++){
+                    echo_text+=command_input[i]+" ";
+                }
+
+                boost::algorithm::trim(echo_text);
+
+                add_text(echo_text);
+            }
+            else if(command=="clear"){
+                clear_text();
+                engine_interface.chat.clear_text();
+            }
+            else if(command=="reload"){
+                add_text("Reloading UI...");
+
+                engine_interface.reload();
+            }
+            else if(command=="about"){
+                add_text(engine_interface.game_title+"\nDeveloped by: "+engine_interface.developer+"\nVersion: "+engine_interface.get_version()+"\nChecksum: "+CHECKSUM+"\nBuilt on: "+engine_interface.get_build_date());
+            }
+            else if(command=="quit"){
+                add_text("Be seeing you...");
+
+                engine_interface.quit();
+            }
+            else if(command=="play"){
+                if(command_input[1].length()>0){
+                    if(sound_system.get_sound(command_input[1])!=0){
+                        add_text("Playing sound '"+command_input[1]+"'");
+
+                        sound_system.play_sound(command_input[1]);
+                    }
+                    else{
+                        add_text("Unknown sound '"+command_input[1]+"'");
+                    }
+                }
+            }
+            else if(command=="toast"){
+                string toast_length="";
+                int custom_toast_length=-1;
+
+                if(command_input.size()>2){
+                    custom_toast_length=Strings::string_to_long(command_input[2]);
+                }
+
+                if(input_has_option("s",command_input[0])){
+                    toast_length="short";
+                }
+                else if(input_has_option("m",command_input[0])){
+                    toast_length="medium";
+                }
+                else if(input_has_option("l",command_input[0])){
+                    toast_length="long";
+                }
+
+                engine_interface.make_toast(command_input[1],toast_length,custom_toast_length);
+            }
+            else if(command=="exec"){
+                if(command_input[1].length()>0){
+                    exec_file(command_input[1]);
                 }
             }
 
-            if(command.length()>0){
-                if(command=="commands"){
-                    for(int i=0;i<commands.size();i++){
-                        if(!boost::algorithm::starts_with(commands[i],"cl_")){
-                            add_text(commands[i]);
-                        }
-                    }
-                }
-                else if(command=="options"){
-                    for(int i=0;i<commands.size();i++){
-                        if(boost::algorithm::starts_with(commands[i],"cl_")){
-                            add_text(commands[i]);
-                        }
-                    }
-                }
-                else if(command=="echo"){
-                    string echo_text="";
+            //If the command is a valid one but is not handled above.
+            else{
+                for(int i=0;i<commands.size();i++){
+                    if(command==commands[i]){
+                        if(command_input[1].length()==0){
+                            add_text("\""+commands[i]+"\" = \""+engine_interface.get_option_value(commands[i])+"\"");
 
-                    for(int i=1;i<command_input.size();i++){
-                        echo_text+=command_input[i]+" ";
-                    }
-
-                    boost::algorithm::trim(echo_text);
-
-                    add_text(echo_text);
-                }
-                else if(command=="clear"){
-                    clear_text();
-                    engine_interface.chat.clear_text();
-                }
-                else if(command=="reload"){
-                    add_text("Reloading UI...");
-
-                    engine_interface.reload();
-                }
-                else if(command=="about"){
-                    add_text(engine_interface.game_title+"\nDeveloped by: "+engine_interface.developer+"\nVersion: "+engine_interface.get_version()+"\nChecksum: "+CHECKSUM+"\nBuilt on: "+engine_interface.get_build_date());
-                }
-                else if(command=="quit"){
-                    add_text("Be seeing you...");
-
-                    engine_interface.quit();
-                }
-                else if(command=="play"){
-                    if(command_input[1].length()>0){
-                        if(sound_system.get_sound(command_input[1])!=0){
-                            add_text("Playing sound '"+command_input[1]+"'");
-
-                            sound_system.play_sound(command_input[1]);
+                            add_text(" - "+engine_interface.get_option_description(commands[i]));
                         }
                         else{
-                            add_text("Unknown sound '"+command_input[1]+"'");
+                            engine_interface.change_option(commands[i],command_input[1]);
+
+                            add_text("\""+commands[i]+"\" set to \""+engine_interface.get_option_value(commands[i])+"\"");
                         }
-                    }
-                }
-                else if(command=="toast"){
-                    string toast_length="";
-                    int custom_toast_length=-1;
 
-                    if(command_input.size()>2){
-                        custom_toast_length=Strings::string_to_long(command_input[2]);
-                    }
-
-                    if(input_has_option("s",command_input[0])){
-                        toast_length="short";
-                    }
-                    else if(input_has_option("m",command_input[0])){
-                        toast_length="medium";
-                    }
-                    else if(input_has_option("l",command_input[0])){
-                        toast_length="long";
-                    }
-
-                    engine_interface.make_toast(command_input[1],toast_length,custom_toast_length);
-                }
-
-                //If the command is a valid one but is not handled above.
-                else{
-                    for(int i=0;i<commands.size();i++){
-                        if(command==commands[i]){
-                            if(command_input[1].length()==0){
-                                add_text("\""+commands[i]+"\" = \""+engine_interface.get_option_value(commands[i])+"\"");
-
-                                add_text(" - "+engine_interface.get_option_description(commands[i]));
-                            }
-                            else{
-                                engine_interface.change_option(commands[i],command_input[1]);
-
-                                add_text("\""+commands[i]+"\" set to \""+engine_interface.get_option_value(commands[i])+"\"");
-                            }
-
-                            break;
-                        }
+                        break;
                     }
                 }
             }
-            else if(info_input.text.length()>=2 && (isdigit(info_input.text[0]) || info_input.text[0]=='-' || info_input.text[0]=='d')){
-                vector<string> dice_command;
+        }
+        else if(info_input.text.length()>=2 && (isdigit(info_input.text[0]) || info_input.text[0]=='-' || info_input.text[0]=='d')){
+            vector<string> dice_command;
 
-                if(info_input.text[0]=='d'){
-                    dice_command.push_back("1");
-                    string ds=info_input.text;
-                    ds.erase(ds.begin());
-                    dice_command.push_back(ds);
-                }
-                else{
-                    boost::algorithm::split(dice_command,info_input.text,boost::algorithm::is_any_of("d"));
-                }
+            if(info_input.text[0]=='d'){
+                dice_command.push_back("1");
+                string ds=info_input.text;
+                ds.erase(ds.begin());
+                dice_command.push_back(ds);
+            }
+            else{
+                boost::algorithm::split(dice_command,info_input.text,boost::algorithm::is_any_of("d"));
+            }
 
-                if(dice_command.size()==2 && Strings::is_number(dice_command[0]) && Strings::is_number(dice_command[1])){
-                    int dice_count=Strings::string_to_long(dice_command[0]);
-                    int dice_sides=Strings::string_to_long(dice_command[1]);
+            if(dice_command.size()==2 && Strings::is_number(dice_command[0]) && Strings::is_number(dice_command[1])){
+                int dice_count=Strings::string_to_long(dice_command[0]);
+                int dice_sides=Strings::string_to_long(dice_command[1]);
 
-                    if(dice_count>0 && dice_sides>0){
-                        int total=0;
+                if(dice_count>0 && dice_sides>0){
+                    int total=0;
 
-                        for(int i=0;i<dice_count;i++){
-                            total+=engine_interface.rng.random_range(1,dice_sides);
-                        }
-
-                        add_text("Rolling "+info_input.text+": "+Strings::num_to_string(total));
+                    for(int i=0;i<dice_count;i++){
+                        total+=engine_interface.rng.random_range(1,dice_sides);
                     }
-                    else if(dice_count<=0){
-                        add_text("You cannot roll "+Strings::num_to_string(dice_count)+" dice.");
-                    }
-                    else if(dice_sides<=0){
-                        add_text("A "+Strings::num_to_string(dice_sides)+"-sided die?");
-                    }
+
+                    add_text("Rolling "+info_input.text+": "+Strings::num_to_string(total));
                 }
-                else{
-                    add_text("Unknown command: \""+info_input.text+"\"");
+                else if(dice_count<=0){
+                    add_text("You cannot roll "+Strings::num_to_string(dice_count)+" dice.");
+                }
+                else if(dice_sides<=0){
+                    add_text("A "+Strings::num_to_string(dice_sides)+"-sided die?");
                 }
             }
             else{
-                add_text("Unknown command: \""+info_input.text+"\"");
+                add_text("Unknown command: '"+info_input.text+"'");
             }
-
-            info_input.text="";
         }
+        else if(info_input.text.length()>0){
+            add_text("Unknown command: '"+info_input.text+"'");
+        }
+
+        info_input.text="";
     }
 }

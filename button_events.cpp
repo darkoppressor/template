@@ -33,7 +33,29 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             engine_interface.save_game_commands();
         }
         else if(button_event=="show_data_location"){
-            engine_interface.make_notice("Your save data is located here:\n\n"+engine_interface.get_save_path());
+            string save_path=engine_interface.get_save_path();
+
+            vector<string> lines;
+            int spacing_x=engine_interface.get_font("small")->spacing_x;
+            int window_width=(int)floor((double)main_window.SCREEN_WIDTH*0.8);
+
+            while(save_path.length()*spacing_x>window_width){
+                int i=window_width/spacing_x;
+                lines.push_back(string(save_path,0,i));
+                save_path.erase(save_path.begin(),save_path.begin()+i);
+            }
+
+            if(save_path.length()>0){
+                lines.push_back(save_path);
+            }
+
+            save_path="";
+
+            for(int i=0;i<lines.size();i++){
+                save_path+=lines[i]+"\n";
+            }
+
+            engine_interface.make_notice("Your save data is located here:\n\n"+save_path);
             window_opened_on_top=true;
         }
         else if(button_event=="start_game_window"){
