@@ -42,7 +42,7 @@ public:
     static std::string time_string(int seconds,bool highest=false);
 
     static bool string_to_bool(const std::string& get_string);
-    static std::string bool_to_string(const bool& get_bool);
+    static std::string bool_to_string(bool get_bool);
 
     static long string_to_long(const std::string& get_string);
     static unsigned long string_to_unsigned_long(const std::string& get_string);

@@ -27,7 +27,7 @@ bool GUI_Object::operator<=(GUI_Object object){
     }
 }
 
-void GUI_Object::set_sort_by_y(vector<GUI_Object>& objects,const bool& sort_value){
+void GUI_Object::set_sort_by_y(vector<GUI_Object>& objects,bool sort_value){
     for(int i=0;i<objects.size();i++){
         objects[i].sort_by_y=sort_value;
     }

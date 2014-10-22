@@ -290,6 +290,8 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         else if(button_event=="start_server"){
             engine_interface.close_all_windows();
 
+            game.stop();
+
             game.start();
 
             network.start_as_server();
@@ -304,6 +306,12 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         }
         else if(button_event=="server_list_edit_window"){
             engine_interface.get_window("server_list_edit")->toggle_on();
+            window_opened_on_top=true;
+        }
+        else if(button_event=="lan_server_list_window"){
+            network.lan_refresh();
+
+            engine_interface.get_window("lan_server_list")->toggle_on();
             window_opened_on_top=true;
         }
         else if(button_event=="add_server_window"){
@@ -379,7 +387,52 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
 
             engine_interface.close_all_windows();
 
+            game.stop();
+
             network.set_server_target(Strings::string_to_long(button_event));
+
+            network.start_as_client();
+        }
+        else if(button_event=="lan_refresh"){
+            network.lan_refresh();
+        }
+        else if(boost::algorithm::starts_with(button_event,"lan_server_list_")){
+            boost::algorithm::erase_first(button_event,"lan_server_list_");
+
+            int lan_server_index=Strings::string_to_long(button_event);
+
+            Server* server=network.get_lan_server(lan_server_index);
+
+            if(server!=0){
+                if(server->password.length()>0){
+                    network.lan_connecting_index=lan_server_index;
+
+                    engine_interface.get_window("input_lan_server_password")->toggle_on(true,true);
+                    window_opened_on_top=true;
+                }
+                else{
+                    engine_interface.close_all_windows();
+
+                    game.stop();
+
+                    network.set_lan_server_target(lan_server_index);
+
+                    network.start_as_client();
+                }
+            }
+        }
+        else if(button_event=="lan_server_password"){
+            engine_interface.close_all_windows();
+
+            int lan_server_index=network.lan_connecting_index;
+
+            game.stop();
+
+            Window* window=engine_interface.get_window("input_lan_server_password");
+
+            network.set_lan_server_target(lan_server_index,window->get_info_text(0));
+
+            window->set_info_text(0,"");
 
             network.start_as_client();
         }

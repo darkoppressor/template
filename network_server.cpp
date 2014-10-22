@@ -6,16 +6,21 @@ using namespace std;
 void Network::start_as_server(bool allow_clients){
     if(status=="off"){
         unsigned int actual_max_clients=max_clients;
+        unsigned short actual_port=port;
+
         if(!allow_clients){
             actual_max_clients=0;
+            actual_port=0;
         }
 
         peer=RakNet::RakPeerInterface::GetInstance();
 
-        RakNet::SocketDescriptor sd(port,"");
+        RakNet::SocketDescriptor sd(actual_port,"");
         RakNet::StartupResult startup=peer->Startup(max_clients,&sd,1);
 
         if(startup==RakNet::RAKNET_STARTED){
+            status="server";
+
             peer->SetMaximumIncomingConnections(actual_max_clients);
 
             peer->SetUnreliableTimeout(500);
@@ -24,9 +29,7 @@ void Network::start_as_server(bool allow_clients){
 
             peer->SetLimitIPConnectionFrequency(frequent_connection_protection);
 
-            if(password.length()>0){
-                peer->SetIncomingPassword(password.c_str(),password.length());
-            }
+            update_server_password();
 
             id=peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS);
             address=peer->GetSystemAddressFromGuid(id);
@@ -35,12 +38,37 @@ void Network::start_as_server(bool allow_clients){
             clients[0].connected=true;
 
             timer_tick.start();
-
-            status="server";
         }
         else{
             Log::add_error("Error initializing server: "+Strings::num_to_string(startup));
         }
+    }
+}
+
+void Network::update_server_password(){
+    if(status=="server"){
+        if(password.length()>0){
+            peer->SetIncomingPassword(password.c_str(),password.length());
+        }
+        else{
+            peer->SetIncomingPassword(0,0);
+        }
+
+        update_offline_ping_response();
+    }
+}
+
+void Network::update_offline_ping_response(){
+    if(status=="server"){
+        string data="0";
+
+        if(password.length()>0){
+            data="1";
+        }
+
+        data+=name;
+
+        peer->SetOfflinePingResponse(data.c_str(),data.length());
     }
 }
 

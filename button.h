@@ -80,7 +80,7 @@ public:
     void set_text(const std::string& get_text);
 
     bool has_states();
-    void set_state_index(const uint32_t& get_state_index);
+    void set_state_index(uint32_t get_state_index);
     std::string get_state();
 
     bool is_moused_over(int mouse_x,int mouse_y,short x_offset,short y_offset);

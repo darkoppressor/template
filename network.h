@@ -88,6 +88,7 @@ public:
     unsigned int max_clients;
     unsigned short port;
     std::string password;
+    std::string name;
     bool frequent_connection_protection;
     bool ignore_checksum;
     uint32_t rate_bytes_min;
@@ -111,6 +112,12 @@ public:
     double recall_update_rate;
     RakNet::Time last_update_time;
     std::vector<std::string> command_buffer;
+
+    // LAN Browser //
+
+    std::vector<Server> lan_server_list;
+    //Used to keep track of the LAN server we are connecting to when a password prompt is needed before connecting to the server
+    int lan_connecting_index;
 
     RakNet::RakNetGUID server_id;
 
@@ -148,6 +155,10 @@ public:
     // Server //
 
     void start_as_server(bool allow_clients=true);
+
+    void update_server_password();
+
+    void update_offline_ping_response();
 
     void prepare_server_input_states();
 
@@ -204,6 +215,16 @@ public:
     void receive_paused();
 
     void receive_sound();
+
+    // LAN Browser //
+
+    void set_lan_server_target(int index,std::string get_password="");
+    void add_lan_server(std::string get_name,std::string get_address,unsigned short get_port,std::string get_password);
+    Server* get_lan_server(int index);
+
+    void lan_refresh();
+
+    void receive_lan_server();
 
     // Game-Specific //
 

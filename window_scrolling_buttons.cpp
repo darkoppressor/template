@@ -66,6 +66,19 @@ void Window::build_scrolling_buttons(){
                 buttons[buttons.size()-1].set_dimensions();
             }
         }
+        else if(scrolling_buttons=="lan_server_list"){
+            for(int i=0;i<network.lan_server_list.size();i++){
+                buttons.push_back(Button());
+                buttons[buttons.size()-1].x=engine_interface.get_font(font)->spacing_x*2;
+                buttons[buttons.size()-1].y=0;
+                buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
+                buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
+                buttons[buttons.size()-1].text=network.lan_server_list[i].name+"\n("+network.lan_server_list[i].address+"|"+Strings::num_to_string(network.lan_server_list[i].port)+")";
+                buttons[buttons.size()-1].font="small";
+                buttons[buttons.size()-1].event_function="lan_server_list_"+Strings::num_to_string(i);
+                buttons[buttons.size()-1].set_dimensions();
+            }
+        }
         else{
             Log::add_error("Invalid scrolling buttons list: '"+scrolling_buttons+"'");
         }

@@ -73,7 +73,13 @@
 <game_option>
 	name:sv_network_password
 	default:
-	description:The password required for clients to connect.
+	description:The password required for clients to connect.\n - an empty string disables the password\n - 32 characters maximum
+</game_option>
+
+<game_option>
+	name:sv_network_name
+	default:Boring Server Name
+	description:The name of the server.\n - 128 characters maximum
 </game_option>
 
 <game_option>

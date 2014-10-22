@@ -59,7 +59,7 @@ public:
 
     bool operator<=(GUI_Object object);
 
-    static void set_sort_by_y(std::vector<GUI_Object>& objects,const bool& sort_value);
+    static void set_sort_by_y(std::vector<GUI_Object>& objects,bool sort_value);
 };
 
 class GUI_Selector_Chaser{

@@ -48,6 +48,9 @@ string Game_Option::get_value(){
     else if(name=="sv_network_password"){
         return network.password;
     }
+    else if(name=="sv_network_name"){
+        return network.name;
+    }
     else if(name=="sv_network_frequent_connection_protection"){
         return Strings::bool_to_string(network.frequent_connection_protection);
     }
@@ -120,7 +123,22 @@ void Game_Option::set_value(string new_value){
         network.port=Strings::string_to_unsigned_long(new_value);
     }
     else if(name=="sv_network_password"){
+        if(new_value.length()>32){
+            new_value.resize(32);
+        }
+
         network.password=new_value;
+
+        network.update_server_password();
+    }
+    else if(name=="sv_network_name"){
+        if(new_value.length()>128){
+            new_value.resize(128);
+        }
+
+        network.name=new_value;
+
+        network.update_offline_ping_response();
     }
     else if(name=="sv_network_frequent_connection_protection"){
         network.frequent_connection_protection=Strings::string_to_bool(new_value);

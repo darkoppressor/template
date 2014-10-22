@@ -266,7 +266,7 @@ bool Strings::string_to_bool(const string& get_string){
     }
 }
 
-string Strings::bool_to_string(const bool& get_bool){
+string Strings::bool_to_string(bool get_bool){
     if(get_bool){
         return "true";
     }

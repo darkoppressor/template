@@ -37,6 +37,7 @@ Network::Network(){
     max_clients=0;
     port=0;
     password="";
+    name="";
     frequent_connection_protection=false;
     ignore_checksum=false;
     rate_bytes_min=0;
@@ -70,6 +71,8 @@ void Network::reset(){
     counter_commands=0;
     last_update_time=0;
     command_buffer.clear();
+
+    lan_connecting_index=-1;
 
     server_id=RakNet::UNASSIGNED_RAKNET_GUID;
 }
@@ -261,6 +264,12 @@ void Network::receive_packets(){
 
                         engine_interface.button_events_manager.handle_button_event("stop_game");
                         engine_interface.make_notice("Connected too recently to server.");
+                    }
+                    break;
+
+                case ID_UNCONNECTED_PONG:
+                    if(status!="off"){
+                        receive_lan_server();
                     }
                     break;
 

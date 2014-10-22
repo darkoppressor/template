@@ -118,7 +118,7 @@ bool Button::has_states(){
     }
 }
 
-void Button::set_state_index(const uint32_t& get_state_index){
+void Button::set_state_index(uint32_t get_state_index){
     if(has_states() && get_state_index<states.size()){
         state_index=get_state_index;
 

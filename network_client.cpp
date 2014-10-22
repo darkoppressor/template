@@ -60,10 +60,10 @@ void Network::start_as_client(){
         RakNet::StartupResult startup=peer->Startup(1,&sd,1);
 
         if(startup==RakNet::RAKNET_STARTED){
+            status="client";
+
             id=peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS);
             address=peer->GetSystemAddressFromGuid(id);
-
-            status="client";
 
             connect_to_server();
         }

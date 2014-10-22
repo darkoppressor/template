@@ -415,6 +415,7 @@
 		<Unit filename="music.h" />
 		<Unit filename="network.cpp" />
 		<Unit filename="network.h" />
+		<Unit filename="network_browser_lan.cpp" />
 		<Unit filename="network_client.cpp" />
 		<Unit filename="network_game.cpp" />
 		<Unit filename="network_server.cpp" />
