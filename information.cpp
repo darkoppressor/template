@@ -48,7 +48,7 @@ void Information::set_dimensions(){
     else if(text.length()>0 || text_mutable){
         if(text_mutable){
             w=engine_interface.gui_border_thickness*2.0+ptr_font->spacing_x*(max_text_length+1);
-            h=engine_interface.gui_border_thickness*2.0+ptr_font->spacing_y;
+            h=engine_interface.gui_border_thickness*2.0+ptr_font->get_letter_height();
         }
         else{
             w=engine_interface.gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;

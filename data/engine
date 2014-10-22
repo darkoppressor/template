@@ -63,8 +63,8 @@
 	
 	default_vsync:false
 	default_accelerometer_controller:false
-	default_touch_controller:true
-	default_touch_controller_opacity:0.45
+	default_touch_controller_state:true
+	default_touch_controller_opacity:0.5
 	default_font_shadows:true
 	default_screen_keyboard:true
 	default_hw_cursor:true
@@ -74,7 +74,7 @@
 	default_dev:false
 	default_volume_global:1.0
 	default_volume_sound:1.0
-	default_volume_music:0.3
+	default_volume_music:0.25
 	default_mute_global:false
 	default_mute_sound:false
 	default_mute_music:false

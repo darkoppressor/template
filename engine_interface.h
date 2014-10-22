@@ -185,7 +185,7 @@ public:
 
     bool option_vsync;
     bool option_accelerometer_controller;
-    bool option_touch_controller;
+    bool option_touch_controller_state;
     double option_touch_controller_opacity;
     bool option_font_shadows;
     bool option_screen_keyboard;
@@ -483,6 +483,9 @@ public:
     std::string get_version();
     std::string get_build_date();
 
+    std::string get_engine_version();
+    std::string get_engine_date();
+
     std::string get_checksum();
 
     //Returns a string with a time and/or date stamp.
@@ -522,6 +525,21 @@ public:
     std::string get_option_value(std::string option);
     std::string get_option_description(std::string option);
     void change_option(std::string option,std::string new_value);
+
+    void apply_options(const std::string& cl_effect_limit,const std::string& cl_screen_shake);
+
+    void apply_options_graphics(const std::string& cl_screen_width,const std::string& cl_screen_height,const std::string& cl_fullscreen_state,
+                       const std::string& cl_fullscreen_mode,const std::string& cl_vsync,const std::string& cl_fps,const std::string& cl_hw_cursor,
+                       const std::string& cl_font_shadows);
+
+    void apply_options_audio(const std::string& cl_volume_global,const std::string& cl_mute_global,
+                             const std::string& cl_volume_sound,const std::string& cl_mute_sound,
+                             const std::string& cl_volume_music,const std::string& cl_mute_music);
+
+    void apply_options_input(const std::string& cl_bind_cursor,const std::string& cl_screen_keyboard,const std::string& cl_accelerometer_controller,
+                             const std::string& cl_touch_controller_state,const std::string& cl_touch_controller_opacity);
+
+    void apply_options_network(const std::string& cl_name,const std::string& cl_chat_timestamps);
 
     //Returns false if options could not be saved.
     //Returns true otherwise.

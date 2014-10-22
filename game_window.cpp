@@ -324,7 +324,7 @@ bool Game_Window::init(){
         }
     }
 
-    if(engine_interface.option_touch_controller && SDL_GetNumTouchDevices()>0){
+    if(engine_interface.option_touch_controller_state && SDL_GetNumTouchDevices()>0){
         engine_interface.touch_controls=true;
     }
 

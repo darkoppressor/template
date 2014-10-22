@@ -29,7 +29,7 @@ void Console::setup_commands(){
 
     commands.push_back("cl_vsync");
     commands.push_back("cl_accelerometer_controller");
-    commands.push_back("cl_touch_controller");
+    commands.push_back("cl_touch_controller_state");
     commands.push_back("cl_touch_controller_opacity");
     commands.push_back("cl_font_shadows");
     commands.push_back("cl_screen_keyboard");
@@ -147,7 +147,7 @@ void Console::exec_file(string filename){
         }
     }
     else{
-        Log::add_error("Error loading file for execution: '"+engine_interface.get_home_directory()+filename+"'");
+        Log::add_log("Failed to load file for execution: '"+engine_interface.get_home_directory()+filename+"'");
     }
 
     run_commands(command_list);
@@ -233,7 +233,10 @@ void Console::run_commands(const vector<string>& command_list){
                 engine_interface.reload();
             }
             else if(command=="about"){
-                add_text(engine_interface.game_title+"\nDeveloped by: "+engine_interface.developer+"\nVersion: "+engine_interface.get_version()+"\nChecksum: "+CHECKSUM+"\nBuilt on: "+engine_interface.get_build_date());
+                string text=engine_interface.game_title+"\nDeveloped by: "+engine_interface.developer;
+                text+="\nVersion: "+engine_interface.get_version()+" (built on "+engine_interface.get_build_date()+")\nChecksum: "+CHECKSUM;
+                text+="\nEngine version: "+engine_interface.get_engine_version()+" (updated on "+engine_interface.get_engine_date()+")";
+                add_text(text);
             }
             else if(command=="quit"){
                 add_text("Be seeing you...");

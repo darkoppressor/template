@@ -35,6 +35,14 @@ string Engine_Interface::get_build_date(){
     return year+"-"+month+"-"+day;
 }
 
+string Engine_Interface::get_engine_version(){
+    return Version::ENGINE_VERSION;
+}
+
+string Engine_Interface::get_engine_date(){
+    return Version::ENGINE_DATE;
+}
+
 string Engine_Interface::get_checksum(){
     string checksum="";
     string checksum_data="";
@@ -435,8 +443,8 @@ string Engine_Interface::get_option_value(string option){
     else if(option=="cl_accelerometer_controller"){
         return Strings::bool_to_string(option_accelerometer_controller);
     }
-    else if(option=="cl_touch_controller"){
-        return Strings::bool_to_string(option_touch_controller);
+    else if(option=="cl_touch_controller_state"){
+        return Strings::bool_to_string(option_touch_controller_state);
     }
     else if(option=="cl_touch_controller_opacity"){
         return Strings::num_to_string(option_touch_controller_opacity);
@@ -515,7 +523,7 @@ string Engine_Interface::get_option_description(string option){
     else if(option=="cl_accelerometer_controller"){
         return "Allow the Android accelerometer to be used as a game controller.\n - Changes to this option are only applied when the game is restarted.";
     }
-    else if(option=="cl_touch_controller"){
+    else if(option=="cl_touch_controller_state"){
         return "Enable the virtual touchscreen controller.";
     }
     else if(option=="cl_touch_controller_opacity"){
@@ -550,7 +558,7 @@ string Engine_Interface::get_option_description(string option){
         return "The volume modifier for music.\n - Valid values: 0.0 - 1.0";
     }
     else if(option=="cl_mute_global"){
-        return "Mute all sound.";
+        return "Mute all audio.";
     }
     else if(option=="cl_mute_sound"){
         return "Mute sound effects.";
@@ -595,10 +603,10 @@ void Engine_Interface::change_option(string option,string new_value){
     else if(option=="cl_accelerometer_controller"){
         option_accelerometer_controller=Strings::string_to_bool(new_value);
     }
-    else if(option=="cl_touch_controller"){
-        option_touch_controller=Strings::string_to_bool(new_value);
+    else if(option=="cl_touch_controller_state"){
+        option_touch_controller_state=Strings::string_to_bool(new_value);
 
-        if(option_touch_controller && SDL_GetNumTouchDevices()>0){
+        if(option_touch_controller_state && SDL_GetNumTouchDevices()>0){
             touch_controls=true;
         }
     }
@@ -683,6 +691,90 @@ void Engine_Interface::change_option(string option,string new_value){
     save_options();
 }
 
+void Engine_Interface::apply_options(const string& cl_effect_limit,const string& cl_screen_shake){
+    change_option("cl_effect_limit",cl_effect_limit);
+    change_option("cl_screen_shake",cl_screen_shake);
+}
+
+void Engine_Interface::apply_options_graphics(const string& cl_screen_width,const string& cl_screen_height,const string& cl_fullscreen_state,
+                                     const string& cl_fullscreen_mode,const string& cl_vsync,const string& cl_fps,const string& cl_hw_cursor,
+                                     const string& cl_font_shadows){
+    string old_screen_width=get_option_value("cl_screen_width");
+    string old_screen_height=get_option_value("cl_screen_height");
+    string old_fullscreen_state=get_option_value("cl_fullscreen_state");
+    string old_fullscreen_mode=get_option_value("cl_fullscreen_mode");
+
+    change_option("cl_screen_width",cl_screen_width);
+    change_option("cl_screen_height",cl_screen_height);
+    change_option("cl_fullscreen_state",cl_fullscreen_state);
+    change_option("cl_fullscreen_mode",cl_fullscreen_mode);
+    change_option("cl_vsync",cl_vsync);
+    change_option("cl_fps",cl_fps);
+    change_option("cl_hw_cursor",cl_hw_cursor);
+    change_option("cl_font_shadows",cl_font_shadows);
+
+    if(old_screen_width!=cl_screen_width || old_screen_height!=cl_screen_height || old_fullscreen_state!=cl_fullscreen_state ||
+       old_fullscreen_mode!=cl_fullscreen_mode){
+        reload();
+    }
+}
+
+void Engine_Interface::apply_options_audio(const string& cl_volume_global,const string& cl_mute_global,
+                                           const string& cl_volume_sound,const string& cl_mute_sound,
+                                           const string& cl_volume_music,const string& cl_mute_music){
+    double volume_global=1.0;
+    if(cl_volume_global=="Low"){
+        volume_global=0.25;
+    }
+    else if(cl_volume_global=="Medium"){
+        volume_global=0.5;
+    }
+    change_option("cl_volume_global",Strings::num_to_string(volume_global));
+    change_option("cl_mute_global",cl_mute_global);
+
+    double volume_sound=1.0;
+    if(cl_volume_sound=="Low"){
+        volume_sound=0.25;
+    }
+    else if(cl_volume_sound=="Medium"){
+        volume_sound=0.5;
+    }
+    change_option("cl_volume_sound",Strings::num_to_string(volume_sound));
+    change_option("cl_mute_sound",cl_mute_sound);
+
+    double volume_music=1.0;
+    if(cl_volume_music=="Low"){
+        volume_music=0.25;
+    }
+    else if(cl_volume_music=="Medium"){
+        volume_music=0.5;
+    }
+    change_option("cl_volume_music",Strings::num_to_string(volume_music));
+    change_option("cl_mute_music",cl_mute_music);
+}
+
+void Engine_Interface::apply_options_input(const string& cl_bind_cursor,const string& cl_screen_keyboard,const string& cl_accelerometer_controller,
+                                           const string& cl_touch_controller_state,const string& cl_touch_controller_opacity){
+    change_option("cl_bind_cursor",cl_bind_cursor);
+    change_option("cl_screen_keyboard",cl_screen_keyboard);
+    change_option("cl_accelerometer_controller",cl_accelerometer_controller);
+    change_option("cl_touch_controller_state",cl_touch_controller_state);
+
+    double tc_opacity=1.0;
+    if(cl_touch_controller_opacity=="Low"){
+        tc_opacity=0.25;
+    }
+    else if(cl_touch_controller_opacity=="Medium"){
+        tc_opacity=0.5;
+    }
+    change_option("cl_touch_controller_opacity",Strings::num_to_string(tc_opacity));
+}
+
+void Engine_Interface::apply_options_network(const string& cl_name,const string& cl_chat_timestamps){
+    change_option("cl_name",cl_name);
+    change_option("cl_chat_timestamps",cl_chat_timestamps);
+}
+
 bool Engine_Interface::save_options(){
     stringstream save("");
 
@@ -701,7 +793,7 @@ bool Engine_Interface::save_options(){
 
     save<<"\tvsync:"<<Strings::bool_to_string(option_vsync)<<"\n";
     save<<"\taccelerometer_controller:"<<Strings::bool_to_string(option_accelerometer_controller)<<"\n";
-    save<<"\ttouch_controller:"<<Strings::bool_to_string(option_touch_controller)<<"\n";
+    save<<"\ttouch_controller_state:"<<Strings::bool_to_string(option_touch_controller_state)<<"\n";
     save<<"\ttouch_controller_opacity:"<<Strings::num_to_string(option_touch_controller_opacity)<<"\n";
     save<<"\tfont_shadows:"<<Strings::bool_to_string(option_font_shadows)<<"\n";
     save<<"\tscreen_keyboard:"<<Strings::bool_to_string(option_screen_keyboard)<<"\n";
@@ -755,7 +847,7 @@ bool Engine_Interface::load_options(){
 
             string str_vsync="vsync:";
             string str_accelerometer_controller="accelerometer_controller:";
-            string str_touch_controller="touch_controller:";
+            string str_touch_controller_state="touch_controller_state:";
             string str_touch_controller_opacity="touch_controller_opacity:";
             string str_font_shadows="font_shadows:";
             string str_screen_keyboard="screen_keyboard:";
@@ -842,12 +934,12 @@ bool Engine_Interface::load_options(){
 
                 option_accelerometer_controller=Strings::string_to_bool(line);
             }
-            //touch_controller
-            else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller)){
+            //touch_controller_state
+            else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_state)){
                 //Clear the data name.
-                line.erase(0,str_touch_controller.length());
+                line.erase(0,str_touch_controller_state.length());
 
-                option_touch_controller=Strings::string_to_bool(line);
+                option_touch_controller_state=Strings::string_to_bool(line);
             }
             //touch_controller_opacity
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_opacity)){

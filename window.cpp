@@ -59,6 +59,24 @@ string Window::get_info_text(int mutable_info_number){
         }
     }
 
+    Log::add_error("Error accessing mutable info number '"+Strings::num_to_string(mutable_info_number)+"' in window '"+name+"'");
+
+    return "";
+}
+
+string Window::get_stated_button_state(int stated_button_number){
+    int current_number=-1;
+
+    for(int i=0;i<buttons.size();i++){
+        if(buttons[i].has_states()){
+            if(++current_number==stated_button_number){
+                return buttons[i].get_state();
+            }
+        }
+    }
+
+    Log::add_error("Error accessing stated button number '"+Strings::num_to_string(stated_button_number)+"' in window '"+name+"'");
+
     return "";
 }
 
@@ -69,9 +87,61 @@ void Window::set_info_text(int mutable_info_number,string get_text){
         if(informations[i].text_mutable){
             if(++current_number==mutable_info_number){
                 informations[i].set_text(get_text);
+
+                return;
             }
         }
     }
+
+    Log::add_error("Error accessing mutable info number '"+Strings::num_to_string(mutable_info_number)+"' in window '"+name+"'");
+}
+
+void Window::set_info_tooltip(int mutable_info_number,string get_text){
+    int current_number=-1;
+
+    for(int i=0;i<informations.size();i++){
+        if(informations[i].text_mutable){
+            if(++current_number==mutable_info_number){
+                informations[i].tooltip_text=get_text;
+
+                return;
+            }
+        }
+    }
+
+    Log::add_error("Error accessing mutable info number '"+Strings::num_to_string(mutable_info_number)+"' in window '"+name+"'");
+}
+
+void Window::set_stated_button_state_index(int stated_button_number,uint32_t get_state_index){
+    int current_number=-1;
+
+    for(int i=0;i<buttons.size();i++){
+        if(buttons[i].has_states()){
+            if(++current_number==stated_button_number){
+                buttons[i].set_state_index(get_state_index);
+
+                return;
+            }
+        }
+    }
+
+    Log::add_error("Error accessing stated button number '"+Strings::num_to_string(stated_button_number)+"' in window '"+name+"'");
+}
+
+void Window::set_stated_button_tooltip(int stated_button_number,string get_text){
+    int current_number=-1;
+
+    for(int i=0;i<buttons.size();i++){
+        if(buttons[i].has_states()){
+            if(++current_number==stated_button_number){
+                buttons[i].tooltip_text=get_text;
+
+                return;
+            }
+        }
+    }
+
+    Log::add_error("Error accessing stated button number '"+Strings::num_to_string(stated_button_number)+"' in window '"+name+"'");
 }
 
 void Window::set_default_font(){

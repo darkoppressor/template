@@ -13,6 +13,7 @@ Button::Button(){
     tooltip_text="";
     font="";
     font_color="";
+    state_index=0;
     event_function="";
     alt_function1="";
     alt_function2="";
@@ -102,6 +103,38 @@ void Button::center_in_window(int window_width,int window_height){
     }
 }
 
+void Button::set_text(const string& get_text){
+    text=get_text;
+
+    set_dimensions();
+}
+
+bool Button::has_states(){
+    if(states.size()>0){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+void Button::set_state_index(const uint32_t& get_state_index){
+    if(has_states() && get_state_index<states.size()){
+        state_index=get_state_index;
+
+        set_text(states[state_index]);
+    }
+}
+
+string Button::get_state(){
+    if(has_states()){
+        return states[state_index];
+    }
+    else{
+        return "";
+    }
+}
+
 bool Button::is_moused_over(int mouse_x,int mouse_y,short x_offset,short y_offset){
     Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
     Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
@@ -182,7 +215,17 @@ bool Button::has_tooltip(){
 }
 
 bool Button::fire_event(Window* parent_window){
-    return engine_interface.button_events_manager.handle_button_event(event_function,parent_window);
+    if(has_states()){
+        if(state_index+1>states.size()-1){
+            set_state_index(0);
+        }
+        else{
+            set_state_index(state_index+1);
+        }
+    }
+    else{
+        return engine_interface.button_events_manager.handle_button_event(event_function,parent_window);
+    }
 }
 
 bool Button::fire_alt_event1(Window* parent_window){

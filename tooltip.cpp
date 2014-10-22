@@ -19,6 +19,40 @@ Tooltip::Tooltip(){
 
 void Tooltip::setup(string get_message,int mouse_x,int mouse_y){
     message=get_message;
+
+    vector<string> lines;
+    int spacing_x=engine_interface.get_font("small")->spacing_x;
+    int window_width=(int)floor((double)main_window.SCREEN_WIDTH*0.95);
+
+    while(message.length()*spacing_x>window_width){
+        int i=window_width/spacing_x;
+
+        for(int n=1;n<i;n++){
+            if(n<message.length() && message[n]=='\n'){
+                i=n;
+
+                break;
+            }
+        }
+
+        lines.push_back(string(message,0,i));
+        message.erase(message.begin(),message.begin()+i);
+    }
+
+    if(message.length()>0){
+        lines.push_back(message);
+    }
+
+    message="";
+
+    for(int i=0;i<lines.size();i++){
+        message+=lines[i];
+
+        if(i<lines.size()-1){
+            message+="\n";
+        }
+    }
+
     on=true;
     x=mouse_x;
     y=mouse_y+engine_interface.get_font(font)->get_letter_height();
@@ -29,9 +63,15 @@ void Tooltip::setup(string get_message,int mouse_x,int mouse_y){
     if(x+w>main_window.SCREEN_WIDTH){
         x=mouse_x-w;
     }
+    if(x<0){
+        x=0;
+    }
 
     if(y+h>main_window.SCREEN_HEIGHT){
         y=mouse_y-engine_interface.get_font(font)->get_letter_height()-h;
+    }
+    if(y<0){
+        y=0;
     }
 }
 

@@ -101,7 +101,7 @@ Engine_Interface::Engine_Interface(){
 
     option_vsync=false;
     option_accelerometer_controller=false;
-    option_touch_controller=false;
+    option_touch_controller_state=false;
     option_touch_controller_opacity=0.0;
     option_font_shadows=false;
     option_screen_keyboard=false;
@@ -518,7 +518,7 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
 
         string str_default_vsync="default_vsync:";
         string str_default_accelerometer_controller="default_accelerometer_controller:";
-        string str_default_touch_controller="default_touch_controller:";
+        string str_default_touch_controller_state="default_touch_controller_state:";
         string str_default_touch_controller_opacity="default_touch_controller_opacity:";
         string str_default_font_shadows="default_font_shadows:";
         string str_default_screen_keyboard="default_screen_keyboard:";
@@ -964,12 +964,12 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
 
             option_accelerometer_controller=Strings::string_to_bool(line);
         }
-        //default_touch_controller
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller)){
+        //default_touch_controller_state
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller_state)){
             //Clear the data name.
-            line.erase(0,str_default_touch_controller.length());
+            line.erase(0,str_default_touch_controller_state.length());
 
-            option_touch_controller=Strings::string_to_bool(line);
+            option_touch_controller_state=Strings::string_to_bool(line);
         }
         //default_touch_controller_opacity
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller_opacity)){
@@ -1969,6 +1969,7 @@ void Engine_Interface::load_button(File_IO_Load* load){
         string str_tooltip_text="tooltip:";
         string str_font="font:";
         string str_font_color="font_color:";
+        string str_states="states:";
         string str_event_function="event:";
         string str_alt_function1="alt_event1:";
         string str_alt_function2="alt_event2:";
@@ -2041,6 +2042,18 @@ void Engine_Interface::load_button(File_IO_Load* load){
             line.erase(0,str_font_color.length());
 
             windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].font_color=line;
+        }
+        //States
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_states)){
+            //Clear the data name.
+            line.erase(0,str_states.length());
+
+            vector<string> states;
+            boost::algorithm::split(states,line,boost::algorithm::is_any_of(","));
+
+            for(int i=0;i<states.size();i++){
+                windows[windows.size()-1].buttons[windows[windows.size()-1].buttons.size()-1].states.push_back(states[i]);
+            }
         }
         //Event function
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_event_function)){

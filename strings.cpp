@@ -251,10 +251,12 @@ string Strings::time_string(int seconds,bool highest){
 }
 
 bool Strings::string_to_bool(const string& get_string){
-    if(get_string=="true" || string_to_unsigned_long(get_string)!=0){
+    string str_lower_case=lower_case(get_string);
+
+    if(str_lower_case=="true" || str_lower_case=="on" || get_string=="1"){
         return true;
     }
-    else if(get_string=="false" || get_string=="0"){
+    else if(str_lower_case=="false" || str_lower_case=="off" || get_string=="0"){
         return false;
     }
     else{

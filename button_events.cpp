@@ -52,7 +52,11 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             save_path="";
 
             for(int i=0;i<lines.size();i++){
-                save_path+=lines[i]+"\n";
+                save_path+=lines[i];
+
+                if(i<lines.size()-1){
+                    save_path+="\n";
+                }
             }
 
             engine_interface.make_notice("Your save data is located here:\n\n"+save_path);
@@ -74,6 +78,215 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
 
             engine_interface.get_window("main_menu")->toggle_on();
         }
+
+        else if(button_event=="options_window"){
+            Window* window=engine_interface.get_window("options");
+
+            window->set_info_text(0,engine_interface.get_option_value("cl_effect_limit"));
+            window->set_info_tooltip(0,engine_interface.get_option_description("cl_effect_limit"));
+
+            window->set_stated_button_state_index(0,Strings::string_to_bool(engine_interface.get_option_value("cl_screen_shake")));
+            window->set_stated_button_tooltip(0,engine_interface.get_option_description("cl_screen_shake"));
+
+            window->toggle_on();
+            window_opened_on_top=true;
+        }
+        else if(button_event=="options" || button_event=="options_apply"){
+            if(parent_window!=0){
+                engine_interface.apply_options(parent_window->get_info_text(0),
+                                               Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(0))));
+
+                if(button_event=="options"){
+                    handle_button_event("close_window",parent_window);
+                }
+            }
+        }
+        else if(button_event=="options_graphics_window"){
+            Window* window=engine_interface.get_window("options_graphics");
+
+            window->set_info_text(0,engine_interface.get_option_value("cl_screen_width"));
+            window->set_info_tooltip(0,engine_interface.get_option_description("cl_screen_width"));
+
+            window->set_info_text(1,engine_interface.get_option_value("cl_screen_height"));
+            window->set_info_tooltip(1,engine_interface.get_option_description("cl_screen_height"));
+
+            window->set_stated_button_state_index(0,Strings::string_to_bool(engine_interface.get_option_value("cl_fullscreen_state")));
+            window->set_stated_button_tooltip(0,engine_interface.get_option_description("cl_fullscreen_state"));
+
+            window->set_stated_button_state_index(1,Strings::string_to_bool(engine_interface.get_option_value("cl_vsync")));
+            window->set_stated_button_tooltip(1,engine_interface.get_option_description("cl_vsync"));
+
+            uint32_t fs_mode=0;
+            if(engine_interface.get_option_value("cl_fullscreen_mode")=="windowed"){
+                fs_mode=1;
+            }
+            window->set_stated_button_state_index(2,fs_mode);
+            window->set_stated_button_tooltip(2,engine_interface.get_option_description("cl_fullscreen_mode"));
+
+            window->set_stated_button_state_index(3,Strings::string_to_bool(engine_interface.get_option_value("cl_fps")));
+            window->set_stated_button_tooltip(3,engine_interface.get_option_description("cl_fps"));
+
+            window->set_stated_button_state_index(4,Strings::string_to_bool(engine_interface.get_option_value("cl_hw_cursor")));
+            window->set_stated_button_tooltip(4,engine_interface.get_option_description("cl_hw_cursor"));
+
+            window->set_stated_button_state_index(5,Strings::string_to_bool(engine_interface.get_option_value("cl_font_shadows")));
+            window->set_stated_button_tooltip(5,engine_interface.get_option_description("cl_font_shadows"));
+
+            window->toggle_on();
+            window_opened_on_top=true;
+        }
+        else if(button_event=="options_graphics" || button_event=="options_graphics_apply"){
+            if(parent_window!=0){
+                engine_interface.apply_options_graphics(parent_window->get_info_text(0),parent_window->get_info_text(1),
+                                                        Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(0))),
+                                                        Strings::lower_case(parent_window->get_stated_button_state(2)),
+                                                        Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(1))),
+                                                        Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(3))),
+                                                        Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(4))),
+                                                        Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(5))));
+
+                if(button_event=="options_graphics"){
+                    handle_button_event("close_window",parent_window);
+                }
+            }
+        }
+        else if(button_event=="options_audio_window"){
+            Window* window=engine_interface.get_window("options_audio");
+
+            double volume_global=Strings::string_to_double(engine_interface.get_option_value("cl_volume_global"));
+            uint32_t n_volume_global=2;
+            if(volume_global<=0.25){
+                n_volume_global=0;
+            }
+            else if(volume_global<=0.5){
+                n_volume_global=1;
+            }
+            window->set_stated_button_state_index(0,n_volume_global);
+            window->set_stated_button_tooltip(0,engine_interface.get_option_description("cl_volume_global"));
+
+            window->set_stated_button_state_index(1,Strings::string_to_bool(engine_interface.get_option_value("cl_mute_global")));
+            window->set_stated_button_tooltip(1,engine_interface.get_option_description("cl_mute_global"));
+
+            double volume_sound=Strings::string_to_double(engine_interface.get_option_value("cl_volume_sound"));
+            uint32_t n_volume_sound=2;
+            if(volume_sound<=0.25){
+                n_volume_sound=0;
+            }
+            else if(volume_sound<=0.5){
+                n_volume_sound=1;
+            }
+            window->set_stated_button_state_index(2,n_volume_sound);
+            window->set_stated_button_tooltip(2,engine_interface.get_option_description("cl_volume_sound"));
+
+            window->set_stated_button_state_index(3,Strings::string_to_bool(engine_interface.get_option_value("cl_mute_sound")));
+            window->set_stated_button_tooltip(3,engine_interface.get_option_description("cl_mute_sound"));
+
+            double volume_music=Strings::string_to_double(engine_interface.get_option_value("cl_volume_music"));
+            uint32_t n_volume_music=2;
+            if(volume_music<=0.25){
+                n_volume_music=0;
+            }
+            else if(volume_music<=0.5){
+                n_volume_music=1;
+            }
+            window->set_stated_button_state_index(4,n_volume_music);
+            window->set_stated_button_tooltip(4,engine_interface.get_option_description("cl_volume_music"));
+
+            window->set_stated_button_state_index(5,Strings::string_to_bool(engine_interface.get_option_value("cl_mute_music")));
+            window->set_stated_button_tooltip(5,engine_interface.get_option_description("cl_mute_music"));
+
+            window->toggle_on();
+            window_opened_on_top=true;
+        }
+        else if(button_event=="options_audio" || button_event=="options_audio_apply"){
+            if(parent_window!=0){
+                string mute_global="false";
+                if(parent_window->get_stated_button_state(1)=="Muted"){
+                    mute_global="true";
+                }
+
+                string mute_sound="false";
+                if(parent_window->get_stated_button_state(3)=="Muted"){
+                    mute_sound="true";
+                }
+
+                string mute_music="false";
+                if(parent_window->get_stated_button_state(5)=="Muted"){
+                    mute_music="true";
+                }
+
+                engine_interface.apply_options_audio(parent_window->get_stated_button_state(0),mute_global,parent_window->get_stated_button_state(2),mute_sound,parent_window->get_stated_button_state(4),mute_music);
+
+                if(button_event=="options_audio"){
+                    handle_button_event("close_window",parent_window);
+                }
+            }
+        }
+        else if(button_event=="options_input_window"){
+            Window* window=engine_interface.get_window("options_input");
+
+            window->set_stated_button_state_index(0,Strings::string_to_bool(engine_interface.get_option_value("cl_bind_cursor")));
+            window->set_stated_button_tooltip(0,engine_interface.get_option_description("cl_bind_cursor"));
+
+            window->set_stated_button_state_index(1,Strings::string_to_bool(engine_interface.get_option_value("cl_screen_keyboard")));
+            window->set_stated_button_tooltip(1,engine_interface.get_option_description("cl_screen_keyboard"));
+
+            window->set_stated_button_state_index(2,Strings::string_to_bool(engine_interface.get_option_value("cl_accelerometer_controller")));
+            window->set_stated_button_tooltip(2,engine_interface.get_option_description("cl_accelerometer_controller"));
+
+            window->set_stated_button_state_index(3,Strings::string_to_bool(engine_interface.get_option_value("cl_touch_controller_state")));
+            window->set_stated_button_tooltip(3,engine_interface.get_option_description("cl_touch_controller_state"));
+
+            double tc_opacity=Strings::string_to_double(engine_interface.get_option_value("cl_touch_controller_opacity"));
+            uint32_t n_tc_opacity=2;
+            if(tc_opacity<=0.25){
+                n_tc_opacity=0;
+            }
+            else if(tc_opacity<=0.5){
+                n_tc_opacity=1;
+            }
+            window->set_stated_button_state_index(4,n_tc_opacity);
+            window->set_stated_button_tooltip(4,engine_interface.get_option_description("cl_touch_controller_opacity"));
+
+            window->toggle_on();
+            window_opened_on_top=true;
+        }
+        else if(button_event=="options_input" || button_event=="options_input_apply"){
+            if(parent_window!=0){
+                engine_interface.apply_options_input(Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(0))),
+                                                     Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(1))),
+                                                     Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(2))),
+                                                     Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(3))),
+                                                     parent_window->get_stated_button_state(4));
+
+                if(button_event=="options_input"){
+                    handle_button_event("close_window",parent_window);
+                }
+            }
+        }
+        else if(button_event=="options_network_window"){
+            Window* window=engine_interface.get_window("options_network");
+
+            window->set_info_text(0,engine_interface.get_option_value("cl_name"));
+            window->set_info_tooltip(0,engine_interface.get_option_description("cl_name"));
+
+            window->set_stated_button_state_index(0,Strings::string_to_bool(engine_interface.get_option_value("cl_chat_timestamps")));
+            window->set_stated_button_tooltip(0,engine_interface.get_option_description("cl_chat_timestamps"));
+
+            window->toggle_on();
+            window_opened_on_top=true;
+        }
+        else if(button_event=="options_network" || button_event=="options_network_apply"){
+            if(parent_window!=0){
+                engine_interface.apply_options_network(parent_window->get_info_text(0),
+                                               Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(0))));
+
+                if(button_event=="options_network"){
+                    handle_button_event("close_window",parent_window);
+                }
+            }
+        }
+
         else if(button_event=="start_server"){
             engine_interface.close_all_windows();
 
