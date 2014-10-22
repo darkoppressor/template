@@ -18,10 +18,10 @@ namespace Version{
 	static const char STATUS[]="alpha";
 
 	//Engine version
-	static const std::string ENGINE_VERSION="1.1.1";
+	static const std::string ENGINE_VERSION="1.1.2";
 
 	//Engine date
-	static const std::string ENGINE_DATE="2014-10-20";
+	static const std::string ENGINE_DATE="2014-10-21";
 }
 
 #endif
