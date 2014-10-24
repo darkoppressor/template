@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void Network::start_as_server(bool allow_clients){
+bool Network::start_as_server(bool allow_clients){
     if(status=="off"){
         unsigned int actual_max_clients=max_clients;
         unsigned short actual_port=port;
@@ -21,7 +21,7 @@ void Network::start_as_server(bool allow_clients){
         if(startup==RakNet::RAKNET_STARTED){
             status="server";
 
-            peer->SetMaximumIncomingConnections(actual_max_clients);
+            update_server_max_connections(actual_max_clients,true);
 
             peer->SetUnreliableTimeout(500);
 
@@ -36,13 +36,24 @@ void Network::start_as_server(bool allow_clients){
 
             clients.push_back(Client_Data(id,address,game.option_name,true));
             clients[0].connected=true;
+            update_offline_ping_response();
 
             timer_tick.start();
+
+            return true;
         }
         else{
-            Log::add_error("Error initializing server: "+Strings::num_to_string(startup));
+            string error_message="Error initializing server: "+translate_startup_error(startup);
+
+            Log::add_error(error_message);
+
+            engine_interface.get_window("main_menu")->toggle_on("on","on");
+
+            engine_interface.make_notice(error_message);
         }
     }
+
+    return false;
 }
 
 void Network::update_server_password(){
@@ -58,18 +69,50 @@ void Network::update_server_password(){
     }
 }
 
+void Network::update_server_max_connections(unsigned int new_max,bool force){
+    if(status=="server"){
+        //If the maximum incoming connections is set to 0, we are not allowing clients
+        //If this is the case, do not allow the maximum incoming connections to get modified
+        if(force || peer->GetMaximumIncomingConnections()>0){
+            peer->SetMaximumIncomingConnections(new_max);
+
+            update_offline_ping_response();
+        }
+    }
+}
+
 void Network::update_offline_ping_response(){
     if(status=="server"){
-        string data="0";
-
+        string data="0@";
         if(password.length()>0){
-            data="1";
+            data="1@";
         }
+
+        data+=Strings::num_to_string(get_client_count())+"@";
+        data+=Strings::num_to_string(peer->GetMaximumIncomingConnections()+1)+"@";
+
+        data+=engine_interface.get_version()+"@";
+
+        data+=engine_interface.game_title+"@";
 
         data+=name;
 
         peer->SetOfflinePingResponse(data.c_str(),data.length());
     }
+}
+
+uint32_t Network::get_client_count(){
+    uint32_t client_count=0;
+
+    if(status=="server"){
+        for(int i=0;i<clients.size();i++){
+            if(clients[i].connected){
+                client_count++;
+            }
+        }
+    }
+
+    return client_count;
 }
 
 void Network::prepare_server_input_states(){
@@ -83,7 +126,10 @@ void Network::send_version(){
         RakNet::BitStream bitstream;
         bitstream.Write((RakNet::MessageID)ID_GAME_VERSION);
 
+        bitstream.WriteCompressed((RakNet::RakString)engine_interface.game_title.c_str());
+
         bitstream.WriteCompressed((RakNet::RakString)engine_interface.get_version().c_str());
+
         if(!ignore_checksum){
             bitstream.WriteCompressed((RakNet::RakString)CHECKSUM.c_str());
         }
@@ -173,6 +219,7 @@ void Network::receive_connected(){
 
     if(client!=0){
         client->connected=true;
+        update_offline_ping_response();
 
         string msg=client->name+" has connected from "+packet->systemAddress.ToString(true);
 

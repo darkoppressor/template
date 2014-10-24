@@ -498,73 +498,73 @@ string Engine_Interface::get_option_value(string option){
 
 string Engine_Interface::get_option_description(string option){
     if(option=="cl_logic_update_rate"){
-        return "The game logic update rate.\n - Changes to this option won't persist through a game restart.\n - This option cannot be changed during networked play.";
+        return "the game logic update rate\n - changes to this option won't persist through a game restart\n - cannot be changed during networked play";
     }
     else if(option=="cl_frame_rate_max"){
-        return "The maximum frame rate.\n - Changes to this option won't persist through a game restart.";
+        return "the maximum frame rate\n - changes to this option won't persist through a game restart";
     }
 
     else if(option=="cl_screen_width"){
-        return "The width of the screen in pixels.\n - Changes to this option are only applied when the UI is reloaded with \"reload\".";
+        return "the width of the screen in pixels\n - changes to this option are only applied when the UI is reloaded with \"reload\"";
     }
     else if(option=="cl_screen_height"){
-        return "The height of the screen in pixels.\n - Changes to this option are only applied when the UI is reloaded with \"reload\".";
+        return "the height of the screen in pixels\n - changes to this option are only applied when the UI is reloaded with \"reload\"";
     }
     else if(option=="cl_fullscreen_state"){
-        return "Enable or disable the fullscreen status of the window.\n - Changes to this option are only applied when the UI is reloaded with \"reload\".";
+        return "enable or disable the fullscreen status of the window\n - changes to this option are only applied when the UI is reloaded with \"reload\"";
     }
     else if(option=="cl_fullscreen_mode"){
-        return "The mode used when the window is made fullscreen.\n - Changes to this option are only applied when the UI is reloaded with \"reload\".\n - Valid values: \"standard\", \"windowed\"";
+        return "the mode used when the window is made fullscreen\n - changes to this option are only applied when the UI is reloaded with \"reload\"\n - valid values: \"standard\", \"windowed\"";
     }
 
     else if(option=="cl_vsync"){
-        return "Enable vertical synchronization.\n - Changes to this option are only applied when the game is restarted.";
+        return "enable vertical synchronization\n - changes to this option are only applied when the game is restarted";
     }
     else if(option=="cl_accelerometer_controller"){
-        return "Allow the Android accelerometer to be used as a game controller.\n - Changes to this option are only applied when the game is restarted.";
+        return "allow the Android accelerometer to be used as a game controller\n - changes to this option are only applied when the game is restarted";
     }
     else if(option=="cl_touch_controller_state"){
-        return "Enable the virtual touchscreen controller.";
+        return "enable the virtual touchscreen controller";
     }
     else if(option=="cl_touch_controller_opacity"){
-        return "The opacity of the touchscreen controller.\n - Valid values: 0.0 - 1.0";
+        return "the opacity of the touchscreen controller\n - valid values: 0.0 - 1.0";
     }
     else if(option=="cl_font_shadows"){
-        return "Enable font shadows.";
+        return "enable font shadows";
     }
     else if(option=="cl_screen_keyboard"){
-        return "Enable the screen keyboard.";
+        return "enable the screen keyboard";
     }
     else if(option=="cl_hw_cursor"){
-        return "Enable hardware cursor.";
+        return "enable hardware cursor";
     }
     else if(option=="cl_bind_cursor"){
-        return "Bind the cursor to the window.";
+        return "bind the cursor to the window";
     }
 
     else if(option=="cl_fps"){
-        return "Show FPS in-game and in the window's titlebar.";
+        return "show FPS in-game and in the window's titlebar";
     }
     else if(option=="cl_dev"){
-        return "Enable developer mode.";
+        return "enable developer mode";
     }
     else if(option=="cl_volume_global"){
-        return "The global volume modifier.\n - Valid values: 0.0 - 1.0";
+        return "the global volume modifier\n - valid values: 0.0 - 1.0";
     }
     else if(option=="cl_volume_sound"){
-        return "The volume modifier for sound effects.\n - Valid values: 0.0 - 1.0";
+        return "the volume modifier for sound effects\n - valid values: 0.0 - 1.0";
     }
     else if(option=="cl_volume_music"){
-        return "The volume modifier for music.\n - Valid values: 0.0 - 1.0";
+        return "the volume modifier for music\n - valid values: 0.0 - 1.0";
     }
     else if(option=="cl_mute_global"){
-        return "Mute all audio.";
+        return "mute all audio";
     }
     else if(option=="cl_mute_sound"){
-        return "Mute sound effects.";
+        return "mute sound effects";
     }
     else if(option=="cl_mute_music"){
-        return "Mute music.";
+        return "mute music";
     }
 
     for(int i=0;i<game_options.size();i++){

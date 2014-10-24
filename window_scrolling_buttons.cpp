@@ -34,7 +34,7 @@ void Window::build_scrolling_buttons(){
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
-                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+Strings::num_to_string(network.server_list[i].port)+")";
+                buttons[buttons.size()-1].text=network.server_list[i].get_button_text();
                 buttons[buttons.size()-1].font="small";
                 buttons[buttons.size()-1].event_function="server_list_"+Strings::num_to_string(i);
                 buttons[buttons.size()-1].set_dimensions();
@@ -47,7 +47,7 @@ void Window::build_scrolling_buttons(){
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
-                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+Strings::num_to_string(network.server_list[i].port)+")";
+                buttons[buttons.size()-1].text=network.server_list[i].get_button_text();
                 buttons[buttons.size()-1].font="small";
                 buttons[buttons.size()-1].event_function="server_list_delete_"+Strings::num_to_string(i);
                 buttons[buttons.size()-1].set_dimensions();
@@ -60,7 +60,7 @@ void Window::build_scrolling_buttons(){
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
-                buttons[buttons.size()-1].text=network.server_list[i].name+"\n("+network.server_list[i].address+"|"+Strings::num_to_string(network.server_list[i].port)+")";
+                buttons[buttons.size()-1].text=network.server_list[i].get_button_text();
                 buttons[buttons.size()-1].font="small";
                 buttons[buttons.size()-1].event_function="server_list_edit_"+Strings::num_to_string(i);
                 buttons[buttons.size()-1].set_dimensions();
@@ -73,9 +73,11 @@ void Window::build_scrolling_buttons(){
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
-                buttons[buttons.size()-1].text=network.lan_server_list[i].name+"\n("+network.lan_server_list[i].address+"|"+Strings::num_to_string(network.lan_server_list[i].port)+")";
+                buttons[buttons.size()-1].text=network.lan_server_list[i].get_button_text();
+                buttons[buttons.size()-1].tooltip_text="hold Control (or the Left Shoulder button on a gamepad) when clicking on a server to add it to the server list";
                 buttons[buttons.size()-1].font="small";
                 buttons[buttons.size()-1].event_function="lan_server_list_"+Strings::num_to_string(i);
+                buttons[buttons.size()-1].alt_function1="lan_server_list_save_"+Strings::num_to_string(i);
                 buttons[buttons.size()-1].set_dimensions();
             }
         }

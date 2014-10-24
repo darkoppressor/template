@@ -18,6 +18,9 @@ void Console::setup_commands(){
     commands.push_back("play");
     commands.push_back("toast");
     commands.push_back("exec");
+    commands.push_back("connect");
+
+    commands.push_back("sv_network_password");
 
     commands.push_back("cl_logic_update_rate");
     commands.push_back("cl_frame_rate_max");
@@ -200,14 +203,14 @@ void Console::run_commands(const vector<string>& command_list){
         if(command.length()>0){
             if(command=="commands"){
                 for(int i=0;i<commands.size();i++){
-                    if(!boost::algorithm::starts_with(commands[i],"cl_")){
+                    if(!boost::algorithm::starts_with(commands[i],"cl_") && !boost::algorithm::starts_with(commands[i],"sv_")){
                         add_text(commands[i]);
                     }
                 }
             }
             else if(command=="options"){
                 for(int i=0;i<commands.size();i++){
-                    if(boost::algorithm::starts_with(commands[i],"cl_")){
+                    if(boost::algorithm::starts_with(commands[i],"cl_") || boost::algorithm::starts_with(commands[i],"sv_")){
                         add_text(commands[i]);
                     }
                 }
@@ -254,31 +257,79 @@ void Console::run_commands(const vector<string>& command_list){
                         add_text("Unknown sound '"+command_input[1]+"'");
                     }
                 }
+                else{
+                    add_text(command+"\n - play a sound effect\nUsage:\n"+command+" SOUND");
+                }
             }
             else if(command=="toast"){
-                string toast_length="";
-                int custom_toast_length=-1;
+                if(command_input[1].length()>0){
+                    string toast_length="";
+                    int custom_toast_length=-1;
 
-                if(command_input.size()>2){
-                    custom_toast_length=Strings::string_to_long(command_input[2]);
-                }
+                    if(command_input.size()>2){
+                        custom_toast_length=Strings::string_to_long(command_input[2]);
+                    }
 
-                if(input_has_option("s",command_input[0])){
-                    toast_length="short";
-                }
-                else if(input_has_option("m",command_input[0])){
-                    toast_length="medium";
-                }
-                else if(input_has_option("l",command_input[0])){
-                    toast_length="long";
-                }
+                    if(input_has_option("s",command_input[0])){
+                        toast_length="short";
+                    }
+                    else if(input_has_option("m",command_input[0])){
+                        toast_length="medium";
+                    }
+                    else if(input_has_option("l",command_input[0])){
+                        toast_length="long";
+                    }
 
-                engine_interface.make_toast(command_input[1],toast_length,custom_toast_length);
+                    engine_interface.make_toast(command_input[1],toast_length,custom_toast_length);
+                }
+                else{
+                    add_text(command+"\n - create a toast message\nUsage:\n"+command+" [-sml] MESSAGE CUSTOMLENGTH\n - CUSTOMLENGTH is optional, and specifies a custom length in seconds\n - options:\n    -s short message duration\n    -m medium message duration\n    -l long message duration");
+                }
             }
             else if(command=="exec"){
                 if(command_input[1].length()>0){
                     exec_file(command_input[1]);
                 }
+                else{
+                    add_text(command+"\n - execute a file\nUsage:\n"+command+" FILENAME.cfg");
+                }
+            }
+            else if(command=="connect"){
+                if(command_input[1].length()>0){
+                    vector<string> connection_data;
+                    boost::algorithm::split(connection_data,command_input[1],boost::algorithm::is_any_of("|"));
+
+                    if(connection_data.size()>0){
+                        string connection_address=connection_data[0];
+
+                        unsigned short connection_port=network.port;
+                        if(connection_data.size()>1){
+                            connection_port=Strings::string_to_unsigned_long(connection_data[1]);
+                        }
+
+                        string connection_password="";
+                        if(command_input.size()>2){
+                            connection_password=command_input[2];
+                        }
+
+                        game.stop();
+
+                        network.set_server_target(connection_address,connection_port,connection_password);
+
+                        if(!network.start_as_client()){
+                            game.stop();
+                        }
+                    }
+                }
+                else{
+                    add_text(command+"\n - connect to a game server\nUsage:\n"+command+" SERVER.IP|PORT PASSWORD\n - if PORT is not specified, uses the default\n - PASSWORD is optional");
+                }
+            }
+
+            else if(command=="sv_network_password" && input_has_option("c",command_input[0])){
+                engine_interface.change_option(command,"");
+
+                add_text("\""+command+"\" set to \""+engine_interface.get_option_value(command)+"\"");
             }
 
             //If the command is a valid one but is not handled above.

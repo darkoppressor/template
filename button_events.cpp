@@ -69,6 +69,8 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         else if(button_event=="start_game"){
             engine_interface.close_all_windows();
 
+            game.stop();
+
             game.start();
         }
         else if(button_event=="stop_game"){
@@ -290,21 +292,43 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         else if(button_event=="start_server"){
             engine_interface.close_all_windows();
 
+            Window* window=engine_interface.get_window("start_server");
+
+            engine_interface.change_option("sv_network_name",window->get_info_text(0));
+            engine_interface.change_option("sv_network_password",window->get_info_text(1));
+
             game.stop();
 
             game.start();
 
-            network.start_as_server();
+            if(!network.start_as_server()){
+                game.stop();
+            }
+        }
+        else if(button_event=="start_server_window"){
+            Window* window=engine_interface.get_window("start_server");
+
+            window->set_info_text(0,engine_interface.get_option_value("sv_network_name"));
+            window->set_info_text(1,engine_interface.get_option_value("sv_network_password"));
+
+            window->toggle_on();
+            window_opened_on_top=true;
         }
         else if(button_event=="server_list_window"){
+            network.refresh_server_list();
+
             engine_interface.get_window("server_list")->toggle_on();
             window_opened_on_top=true;
         }
         else if(button_event=="server_list_delete_window"){
+            network.refresh_server_list();
+
             engine_interface.get_window("server_list_delete")->toggle_on();
             window_opened_on_top=true;
         }
         else if(button_event=="server_list_edit_window"){
+            network.refresh_server_list();
+
             engine_interface.get_window("server_list_edit")->toggle_on();
             window_opened_on_top=true;
         }
@@ -326,11 +350,12 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         }
         else if(button_event=="add_server"){
             if(parent_window!=0){
-                network.add_server(parent_window->get_info_text(0),parent_window->get_info_text(1),Strings::string_to_unsigned_long(parent_window->get_info_text(2)),parent_window->get_info_text(3));
-
-                engine_interface.get_window("server_list")->rebuild_scrolling_buttons();
-                engine_interface.get_window("server_list_delete")->rebuild_scrolling_buttons();
-                engine_interface.get_window("server_list_edit")->rebuild_scrolling_buttons();
+                string password=parent_window->get_info_text(3);
+                bool password_required=false;
+                if(password.length()>0){
+                    password_required=true;
+                }
+                network.add_server(parent_window->get_info_text(0),parent_window->get_info_text(1),Strings::string_to_unsigned_long(parent_window->get_info_text(2)),&password,password_required,0,0,"",0);
 
                 handle_button_event("close_window",parent_window);
             }
@@ -385,16 +410,55 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         else if(boost::algorithm::starts_with(button_event,"server_list_")){
             boost::algorithm::erase_first(button_event,"server_list_");
 
-            engine_interface.close_all_windows();
+            int server_index=Strings::string_to_long(button_event);
 
-            game.stop();
+            Server* server=network.get_server(server_index);
 
-            network.set_server_target(Strings::string_to_long(button_event));
+            if(server!=0){
+                //If the server requires a password but we don't have one saved
+                if(server->password_required && server->password.length()==0){
+                    network.server_list_connecting_index=server_index;
 
-            network.start_as_client();
+                    engine_interface.get_window("input_server_password")->toggle_on(true,true);
+                    window_opened_on_top=true;
+                }
+                else{
+                    engine_interface.close_all_windows();
+
+                    game.stop();
+
+                    network.set_server_target(server_index);
+
+                    if(!network.start_as_client()){
+                        game.stop();
+                    }
+                }
+            }
+        }
+        else if(button_event=="refresh_server_list"){
+            network.refresh_server_list();
         }
         else if(button_event=="lan_refresh"){
             network.lan_refresh();
+        }
+        else if(button_event=="lan_refresh_quick"){
+            network.lan_refresh_quick();
+        }
+        else if(boost::algorithm::starts_with(button_event,"lan_server_list_save_")){
+            boost::algorithm::erase_first(button_event,"lan_server_list_save_");
+
+            Server* server=network.get_lan_server(Strings::string_to_long(button_event));
+
+            if(server!=0){
+                bool server_added=network.add_server(server->name,server->address,server->port,0,server->password_required,server->slots_filled,server->slots_total,server->version,server->ping);
+
+                if(server_added){
+                    engine_interface.make_toast("Server added to list");
+                }
+                else{
+                    engine_interface.make_toast("Server updated on list");
+                }
+            }
         }
         else if(boost::algorithm::starts_with(button_event,"lan_server_list_")){
             boost::algorithm::erase_first(button_event,"lan_server_list_");
@@ -404,10 +468,10 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             Server* server=network.get_lan_server(lan_server_index);
 
             if(server!=0){
-                if(server->password.length()>0){
+                if(server->password_required){
                     network.lan_connecting_index=lan_server_index;
 
-                    engine_interface.get_window("input_lan_server_password")->toggle_on(true,true);
+                    engine_interface.get_window("input_server_password")->toggle_on(true,true);
                     window_opened_on_top=true;
                 }
                 else{
@@ -417,28 +481,40 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
 
                     network.set_lan_server_target(lan_server_index);
 
-                    network.start_as_client();
+                    if(!network.start_as_client()){
+                        game.stop();
+                    }
                 }
             }
         }
-        else if(button_event=="lan_server_password"){
+        else if(button_event=="server_password"){
             engine_interface.close_all_windows();
 
             int lan_server_index=network.lan_connecting_index;
+            int server_list_server_index=network.server_list_connecting_index;
 
             game.stop();
 
-            Window* window=engine_interface.get_window("input_lan_server_password");
+            Window* window=engine_interface.get_window("input_server_password");
 
-            network.set_lan_server_target(lan_server_index,window->get_info_text(0));
+            if(lan_server_index!=-1){
+                network.set_lan_server_target(lan_server_index,window->get_info_text(0));
+            }
+            else{
+                network.set_server_target(server_list_server_index,window->get_info_text(0));
+            }
 
             window->set_info_text(0,"");
 
-            network.start_as_client();
+            if(!network.start_as_client()){
+                game.stop();
+            }
         }
 
         else{
-            Log::add_error("Invalid button event: '"+button_event+"'");
+            if(!handle_button_event_game(button_event,parent_window,window_opened_on_top)){
+                Log::add_error("Invalid button event: '"+button_event+"'");
+            }
         }
     }
 

@@ -118,6 +118,8 @@ public:
     std::vector<Server> lan_server_list;
     //Used to keep track of the LAN server we are connecting to when a password prompt is needed before connecting to the server
     int lan_connecting_index;
+    //Ditto, but for a server in the server list
+    int server_list_connecting_index;
 
     RakNet::RakNetGUID server_id;
 
@@ -129,6 +131,8 @@ public:
     void tick();
 
     void receive_packets();
+
+    std::string translate_startup_error(RakNet::StartupResult result);
 
     std::string get_name_list();
     std::string get_ping_list();
@@ -154,11 +158,15 @@ public:
 
     // Server //
 
-    void start_as_server(bool allow_clients=true);
+    //Returns true if startup was successful
+    //Returns false if startup failed
+    bool start_as_server(bool allow_clients=true);
 
     void update_server_password();
-
+    void update_server_max_connections(unsigned int new_max,bool force);
     void update_offline_ping_response();
+
+    uint32_t get_client_count();
 
     void prepare_server_input_states();
 
@@ -187,13 +195,23 @@ public:
 
     // Client //
 
-    void set_server_target(int index);
-    void add_server(std::string get_name,std::string get_address,unsigned short get_port,std::string get_password);
+    void set_server_target(std::string get_address,unsigned short get_port,std::string get_password);
+    void set_server_target(int index,std::string get_password="");
+    //Pass 0 for get_password to not touch the password
+    //Returns true if the server was added
+    //Retursn false if the server was updated
+    bool add_server(std::string get_name,std::string get_address,unsigned short get_port,const std::string* get_password,bool password_required,uint32_t slots_filled,uint32_t slots_total,std::string version,int ping);
+    //Update the server with the passed address/port, do not add it if it is not in the list
+    //This ONLY updates transient data, and it DOES NOT touch the server name
+    void update_server(std::string get_address,unsigned short get_port,bool password_required,uint32_t slots_filled,uint32_t slots_total,std::string version,int ping);
     void remove_server(int index);
     void edit_server(int index,std::string get_name,std::string get_address,unsigned short get_port,std::string get_password);
     Server* get_server(int index);
+    void refresh_server_list();
 
-    void start_as_client();
+    //Returns true if startup was successful
+    //Returns false if startup failed
+    bool start_as_client();
     void connect_to_server();
 
     void receive_version();
@@ -219,12 +237,13 @@ public:
     // LAN Browser //
 
     void set_lan_server_target(int index,std::string get_password="");
-    void add_lan_server(std::string get_name,std::string get_address,unsigned short get_port,std::string get_password);
+    void add_lan_server(std::string get_name,std::string get_address,unsigned short get_port,bool password_required,uint32_t slots_filled,uint32_t slots_total,std::string version,int ping);
     Server* get_lan_server(int index);
 
     void lan_refresh();
+    void lan_refresh_quick();
 
-    void receive_lan_server();
+    void receive_server_browser_info();
 
     // Game-Specific //
 

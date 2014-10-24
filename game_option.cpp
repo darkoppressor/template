@@ -118,6 +118,8 @@ void Game_Option::set_value(string new_value){
     }
     else if(name=="sv_network_max_clients"){
         network.max_clients=Strings::string_to_unsigned_long(new_value);
+
+        network.update_server_max_connections(network.max_clients,false);
     }
     else if(name=="sv_network_port"){
         network.port=Strings::string_to_unsigned_long(new_value);
@@ -132,8 +134,8 @@ void Game_Option::set_value(string new_value){
         network.update_server_password();
     }
     else if(name=="sv_network_name"){
-        if(new_value.length()>128){
-            new_value.resize(128);
+        if(new_value.length()>48){
+            new_value.resize(48);
         }
 
         network.name=new_value;

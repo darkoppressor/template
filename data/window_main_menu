@@ -7,8 +7,8 @@
 	
 	<button>
 		location:-1,18
-		text:Start
-		event:start_game
+		text:Play
+		event:start_game_window
 		sound_moused:moused_1
 		sound_click:click_1
 	</button>

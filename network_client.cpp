@@ -3,22 +3,95 @@
 
 using namespace std;
 
-void Network::set_server_target(int index){
+void Network::set_server_target(string get_address,unsigned short get_port,string get_password){
+    server_address=get_address;
+    server_port=get_port;
+    server_password=get_password;
+}
+
+void Network::set_server_target(int index,string get_password){
     if(index<server_list.size()){
         server_address=server_list[index].address;
         server_port=server_list[index].port;
-        server_password=server_list[index].password;
+        if(get_password.length()>0){
+            server_password=get_password;
+        }
+        else{
+            server_password=server_list[index].password;
+        }
     }
 }
 
-void Network::add_server(string get_name,string get_address,unsigned short get_port,string get_password){
-    server_list.push_back(Server());
-    server_list[server_list.size()-1].name=get_name;
-    server_list[server_list.size()-1].address=get_address;
-    server_list[server_list.size()-1].port=get_port;
-    server_list[server_list.size()-1].password=get_password;
+bool Network::add_server(string get_name,string get_address,unsigned short get_port,const string* get_password,bool password_required,uint32_t slots_filled,uint32_t slots_total,string version,int ping){
+    bool added=false;
+
+    int existing_index=-1;
+    for(int i=0;i<server_list.size();i++){
+        if(server_list[i].matches(get_address,get_port)){
+            existing_index=i;
+            break;
+        }
+    }
+
+    //This server is not already in the list
+    if(existing_index==-1){
+        added=true;
+
+        server_list.push_back(Server());
+        server_list[server_list.size()-1].name=get_name;
+        server_list[server_list.size()-1].address=get_address;
+        server_list[server_list.size()-1].port=get_port;
+        if(get_password!=0){
+            server_list[server_list.size()-1].password=*get_password;
+        }
+        server_list[server_list.size()-1].password_required=password_required;
+        server_list[server_list.size()-1].slots_filled=slots_filled;
+        server_list[server_list.size()-1].slots_total=slots_total;
+        server_list[server_list.size()-1].version=version;
+        server_list[server_list.size()-1].ping=ping;
+    }
+    //This server is already in the list
+    else{
+        server_list[existing_index].name=get_name;
+        if(get_password!=0){
+            server_list[existing_index].password=*get_password;
+        }
+        server_list[existing_index].password_required=password_required;
+        server_list[existing_index].slots_filled=slots_filled;
+        server_list[existing_index].slots_total=slots_total;
+        server_list[existing_index].version=version;
+        server_list[existing_index].ping=ping;
+    }
+
+    engine_interface.get_window("server_list")->rebuild_scrolling_buttons();
+    engine_interface.get_window("server_list_delete")->rebuild_scrolling_buttons();
+    engine_interface.get_window("server_list_edit")->rebuild_scrolling_buttons();
 
     engine_interface.save_servers();
+
+    return added;
+}
+
+void Network::update_server(string get_address,unsigned short get_port,bool password_required,uint32_t slots_filled,uint32_t slots_total,string version,int ping){
+    int existing_index=-1;
+    for(int i=0;i<server_list.size();i++){
+        if(server_list[i].matches(get_address,get_port)){
+            existing_index=i;
+            break;
+        }
+    }
+
+    if(existing_index!=-1){
+        server_list[existing_index].password_required=password_required;
+        server_list[existing_index].slots_filled=slots_filled;
+        server_list[existing_index].slots_total=slots_total;
+        server_list[existing_index].version=version;
+        server_list[existing_index].ping=ping;
+
+        engine_interface.get_window("server_list")->rebuild_scrolling_buttons();
+        engine_interface.get_window("server_list_delete")->rebuild_scrolling_buttons();
+        engine_interface.get_window("server_list_edit")->rebuild_scrolling_buttons();
+    }
 }
 
 void Network::remove_server(int index){
@@ -52,7 +125,17 @@ Server* Network::get_server(int index){
     return ptr_server;
 }
 
-void Network::start_as_client(){
+void Network::refresh_server_list(){
+    if(status=="off"){
+        start_as_server(false);
+    }
+
+    for(int i=0;i<server_list.size();i++){
+        peer->Ping(server_list[i].address.c_str(),server_list[i].port,false);
+    }
+}
+
+bool Network::start_as_client(){
     if(status=="off"){
         peer=RakNet::RakPeerInterface::GetInstance();
 
@@ -66,11 +149,21 @@ void Network::start_as_client(){
             address=peer->GetSystemAddressFromGuid(id);
 
             connect_to_server();
+
+            return true;
         }
         else{
-            Log::add_error("Error initializing client: "+Strings::num_to_string(startup));
+            string error_message="Error initializing client: "+translate_startup_error(startup);
+
+            Log::add_error(error_message);
+
+            engine_interface.get_window("main_menu")->toggle_on("on","on");
+
+            engine_interface.make_notice(error_message);
         }
     }
+
+    return false;
 }
 
 void Network::connect_to_server(){
@@ -98,29 +191,41 @@ void Network::receive_version(){
     RakNet::RakString rstring;
 
     bitstream.ReadCompressed(rstring);
+    string game_title=rstring.C_String();
+
+    bitstream.ReadCompressed(rstring);
     string version=rstring.C_String();
 
     bitstream.ReadCompressed(rstring);
     string checksum=rstring.C_String();
 
-    string our_version=engine_interface.get_version();
-    if(version!=our_version){
-        Log::add_log("Version mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur version: "+our_version+"\nServer version: "+version);
+    string our_game_title=engine_interface.game_title;
+    if(game_title!=our_game_title){
+        Log::add_log("Game mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur game: "+our_game_title+"\nServer game: "+game_title);
 
         engine_interface.button_events_manager.handle_button_event("stop_game");
-        engine_interface.make_notice("Version mismatch with server.");
+        engine_interface.make_notice("Server is running a different game.");
     }
     else{
-        if(checksum.length()>0 && checksum!=CHECKSUM){
-            Log::add_log("Checksum mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur checksum: "+CHECKSUM+"\nServer checksum: "+checksum);
+        string our_version=engine_interface.get_version();
+        if(version!=our_version){
+            Log::add_log("Version mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur version: "+our_version+"\nServer version: "+version);
 
             engine_interface.button_events_manager.handle_button_event("stop_game");
-            engine_interface.make_notice("Checksum mismatch with server.");
+            engine_interface.make_notice("Version mismatch with server.");
         }
         else{
-            engine_interface.get_window("network_connecting")->toggle_on(true,false);
+            if(checksum.length()>0 && checksum!=CHECKSUM){
+                Log::add_log("Checksum mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur checksum: "+CHECKSUM+"\nServer checksum: "+checksum);
 
-            send_client_data(true);
+                engine_interface.button_events_manager.handle_button_event("stop_game");
+                engine_interface.make_notice("Checksum mismatch with server.");
+            }
+            else{
+                engine_interface.get_window("network_connecting")->toggle_on(true,false);
+
+                send_client_data(true);
+            }
         }
     }
 }

@@ -73,6 +73,7 @@ void Network::reset(){
     command_buffer.clear();
 
     lan_connecting_index=-1;
+    server_list_connecting_index=-1;
 
     server_id=RakNet::UNASSIGNED_RAKNET_GUID;
 }
@@ -184,14 +185,17 @@ void Network::receive_packets(){
                         Client_Data* client=get_packet_client();
 
                         if(client!=0){
-                            string msg=client->name+" ("+packet->systemAddress.ToString(true)+") has disconnected";
+                            if(client->name.length()>0){
+                                string msg=client->name+" ("+packet->systemAddress.ToString(true)+") has disconnected";
 
-                            engine_interface.add_chat(msg);
-                            send_chat_message(msg,packet->guid,true);
+                                engine_interface.add_chat(msg);
+                                send_chat_message(msg,packet->guid,true);
+                            }
 
                             int client_index=get_client_index(client);
                             if(client_index!=-1){
                                 clients.erase(clients.begin()+client_index);
+                                update_offline_ping_response();
                             }
 
                             send_client_list();
@@ -218,6 +222,7 @@ void Network::receive_packets(){
                             int client_index=get_client_index(client);
                             if(client_index!=-1){
                                 clients.erase(clients.begin()+client_index);
+                                update_offline_ping_response();
                             }
 
                             send_client_list();
@@ -267,9 +272,14 @@ void Network::receive_packets(){
                     }
                     break;
 
+                case ID_UNCONNECTED_PING:
+                    //This happens when we are the server and someone pings us for information
+                    //This is handled by RakNet, but I don't want unknown message ID logs for this
+                    break;
+
                 case ID_UNCONNECTED_PONG:
                     if(status!="off"){
-                        receive_lan_server();
+                        receive_server_browser_info();
                     }
                     break;
 
@@ -346,6 +356,45 @@ void Network::receive_packets(){
                 break;
             }
         }
+    }
+}
+
+string Network::translate_startup_error(RakNet::StartupResult result){
+    if(result==RakNet::RAKNET_ALREADY_STARTED){
+        return "RakNet already started";
+    }
+    else if(result==RakNet::INVALID_SOCKET_DESCRIPTORS){
+        return "invalid socket descriptors";
+    }
+    else if(result==RakNet::INVALID_MAX_CONNECTIONS){
+        return "invalid max connections";
+    }
+    else if(result==RakNet::SOCKET_FAMILY_NOT_SUPPORTED){
+        return "socket family not supported";
+    }
+    else if(result==RakNet::SOCKET_PORT_ALREADY_IN_USE){
+        return "socket port already in use";
+    }
+    else if(result==RakNet::SOCKET_FAILED_TO_BIND){
+        return "socket failed to bind";
+    }
+    else if(result==RakNet::SOCKET_FAILED_TEST_SEND){
+        return "socket failed test send";
+    }
+    else if(result==RakNet::PORT_CANNOT_BE_ZERO){
+        return "port cannot be zero";
+    }
+    else if(result==RakNet::FAILED_TO_CREATE_NETWORK_THREAD){
+        return "failed to create network thread";
+    }
+    else if(result==RakNet::COULD_NOT_GENERATE_GUID){
+        return "could not generate GUID";
+    }
+    else if(result==RakNet::STARTUP_OTHER_FAILURE){
+        return "other failure";
+    }
+    else{
+        return "unknown failure";
     }
 }
 
