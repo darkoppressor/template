@@ -222,6 +222,8 @@ bool Button::fire_event(Window* parent_window){
         else{
             set_state_index(state_index+1);
         }
+
+        return false;
     }
     else{
         return engine_interface.button_events_manager.handle_button_event(event_function,parent_window);
