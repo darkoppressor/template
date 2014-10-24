@@ -47,19 +47,27 @@ string Engine_Interface::get_checksum(){
     string checksum="";
     string checksum_data="";
 
+    vector<string> file_list;
+
     for(File_IO_Directory_Iterator it("data");it.evaluate();it.iterate()){
         //If the file is not a directory.
         if(it.is_regular_file()){
             string file_path=it.get_full_path();
 
-            File_IO_Load load(file_path);
+            file_list.push_back(file_path);
+        }
+    }
 
-            if(load.file_loaded()){
-                checksum_data+=load.get_data();
-            }
-            else{
-                Log::add_error("Error loading file for checksum calculation: '"+file_path+"'");
-            }
+    quick_sort(file_list);
+
+    for(int i=0;i<file_list.size();i++){
+        File_IO_Load load(file_list[i]);
+
+        if(load.file_loaded()){
+            checksum_data+=load.get_data();
+        }
+        else{
+            Log::add_error("Error loading file for checksum calculation: '"+file_list[i]+"'");
         }
     }
 
