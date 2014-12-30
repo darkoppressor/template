@@ -139,10 +139,10 @@ string Engine_Interface::get_cwd(){
     return cwd;
 }
 
-string Engine_Interface::get_save_path(){
-    string save_path=get_home_directory();
+string Engine_Interface::get_save_directory_absolute(){
+    string save_path=get_save_directory();
 
-    if(save_path.length()==0){
+    if(save_path=="./"){
         save_path=CURRENT_WORKING_DIRECTORY;
     }
 
@@ -153,7 +153,7 @@ void Engine_Interface::correct_slashes(string* str_input){
     boost::algorithm::replace_all(*str_input,"\\","/");
 }
 
-string Engine_Interface::get_home_directory(){
+string Engine_Interface::get_save_directory(){
     string str_home="./";
 
     if(option_save_location=="home"){
@@ -255,7 +255,7 @@ void Engine_Interface::make_home_directory(){
             file_io.create_directory(str_my_games);
         #endif
 
-        string str_home=get_home_directory();
+        string str_home=get_save_directory();
 
         //Remove the ending slash.
         str_home.erase(str_home.length()-1,1);
@@ -269,7 +269,7 @@ void Engine_Interface::make_home_directory(){
 void Engine_Interface::make_directories(){
     make_home_directory();
 
-    file_io.create_directory(get_home_directory()+"screenshots");
+    file_io.create_directory(get_save_directory()+"screenshots");
 }
 
 bool Engine_Interface::save_save_location(){
@@ -827,7 +827,7 @@ bool Engine_Interface::save_options(){
 
     save<<"</options>\n";
 
-    if(file_io.save_file(get_home_directory()+"options.cfg",save.str())){
+    if(file_io.save_file(get_save_directory()+"options.cfg",save.str())){
         return true;
     }
     else{
@@ -836,7 +836,7 @@ bool Engine_Interface::save_options(){
 }
 
 bool Engine_Interface::load_options(){
-    File_IO_Load load(get_home_directory()+"options.cfg");
+    File_IO_Load load(get_save_directory()+"options.cfg");
 
     if(load.file_loaded()){
         bool multi_line_comment=false;
@@ -1100,7 +1100,7 @@ bool Engine_Interface::save_game_commands(){
 
     save<<"</game_commands>\n";
 
-    if(file_io.save_file(get_home_directory()+"game_commands.cfg",save.str())){
+    if(file_io.save_file(get_save_directory()+"game_commands.cfg",save.str())){
         return true;
     }
     else{
@@ -1109,7 +1109,7 @@ bool Engine_Interface::save_game_commands(){
 }
 
 bool Engine_Interface::load_game_commands(){
-    File_IO_Load load(get_home_directory()+"game_commands.cfg");
+    File_IO_Load load(get_save_directory()+"game_commands.cfg");
 
     if(load.file_loaded()){
         bool multi_line_comment=false;
@@ -1215,7 +1215,7 @@ bool Engine_Interface::save_servers(){
 
     save<<"</servers>\n";
 
-    if(file_io.save_file(get_home_directory()+"servers.txt",save.str())){
+    if(file_io.save_file(get_save_directory()+"servers.txt",save.str())){
         return true;
     }
     else{
@@ -1224,7 +1224,7 @@ bool Engine_Interface::save_servers(){
 }
 
 bool Engine_Interface::load_servers(){
-    File_IO_Load load(get_home_directory()+"servers.txt");
+    File_IO_Load load(get_save_directory()+"servers.txt");
 
     if(load.file_loaded()){
         bool multi_line_comment=false;

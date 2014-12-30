@@ -16,6 +16,7 @@
 #include "update.h"
 #include "log.h"
 #include "strings.h"
+#include "android.h"
 #include "file_io.h"
 #include "game.h"
 #include "game_constants.h"
@@ -53,6 +54,8 @@ extern SDL_Event event;
 extern Engine_Interface engine_interface;
 
 extern Update update;
+
+extern Android android;
 
 extern File_IO file_io;
 

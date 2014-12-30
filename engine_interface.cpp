@@ -3220,8 +3220,8 @@ void Engine_Interface::make_toast(string message,string length,int custom_length
 
 void Engine_Interface::make_rumble(int controller_number,float strength,uint32_t length){
     if(controller_number==CONTROLLER_ID_ALL || controller_number==CONTROLLER_ID_TOUCH){
-        ///Play the rumble on the device with the touch controller, if possible.
-        ///I don't think there is a way to do this currently.
+        //Play the rumble on the device with the touch controller, if possible.
+        android.vibrate(length);
     }
 
     if(controller_number!=CONTROLLER_ID_TOUCH){

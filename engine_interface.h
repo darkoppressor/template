@@ -492,15 +492,15 @@ public:
     //If filename is true, the returned timestamp is in a format appropriate for a filename.
     std::string get_timestamp(bool include_date=true,bool include_time=true,bool filename=false);
 
-    //Returns a string with the absolute path to the current working directory.
+    //Returns a string with the (absolute if possible) path to the current working directory.
     std::string get_cwd();
-    //Returns a string with the absolute path to the current save location.
-    std::string get_save_path();
+    //Returns a string with the path to the (absolute if possible) current save location.
+    std::string get_save_directory_absolute();
 
     //Change any incorrect slashes to the correct type.
     void correct_slashes(std::string* str_input);
-    //Returns a string with the home directory.
-    std::string get_home_directory();
+    //Returns a string with the path to the current save location.
+    std::string get_save_directory();
     //Create the home directory.
     void make_home_directory();
     //Create the entire needed directory structure.

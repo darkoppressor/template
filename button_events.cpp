@@ -33,7 +33,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             engine_interface.save_game_commands();
         }
         else if(button_event=="show_data_location"){
-            string save_path=engine_interface.get_save_path();
+            string save_path=engine_interface.get_save_directory_absolute();
 
             vector<string> lines;
             int spacing_x=engine_interface.get_font("small")->spacing_x;

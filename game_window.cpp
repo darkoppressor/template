@@ -377,7 +377,7 @@ void Game_Window::screenshot(){
         return;
     #endif
 
-    string screenshot_name=engine_interface.get_home_directory()+"screenshots/";
+    string screenshot_name=engine_interface.get_save_directory()+"screenshots/";
     screenshot_name+=engine_interface.get_timestamp(true,true,true);
     screenshot_name+=".png";
 

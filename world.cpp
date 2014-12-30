@@ -23,6 +23,8 @@ Engine_Interface engine_interface;
 
 Update update;
 
+Android android;
+
 File_IO file_io;
 
 Network network;

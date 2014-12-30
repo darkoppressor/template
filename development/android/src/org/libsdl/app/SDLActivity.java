@@ -19,6 +19,11 @@ import android.util.Log;
 import android.graphics.*;
 import android.media.*;
 import android.hardware.*;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
+import android.content.pm.PackageManager;
 
 
 /**
@@ -26,6 +31,12 @@ import android.hardware.*;
 */
 public class SDLActivity extends Activity {
     private static final String TAG = "SDL";
+
+    //Keeps track of which sensor types the game wants on or off
+    protected static boolean[] sensors_requested;
+    protected static boolean gps_requested;
+    protected static long gps_minTime;
+    protected static float gps_minDistance;
 
     // Keep track of the paused state
     public static boolean mIsPaused, mIsSurfaceReady, mHasFocus;
@@ -43,6 +54,11 @@ public class SDLActivity extends Activity {
 
     // Audio
     protected static AudioTrack mAudioTrack;
+
+    protected static PackageManager mPackageManager;
+    protected static LocationManager mLocationManager;
+    protected static LocationListener mLocationListener;
+    protected static Handler mLocationHandler;
 
     // Load the .so
     static {
@@ -69,6 +85,16 @@ public class SDLActivity extends Activity {
         mIsPaused = false;
         mIsSurfaceReady = false;
         mHasFocus = true;
+
+        sensors_requested=null;
+        gps_requested=false;
+        gps_minTime=0L;
+        gps_minDistance=0.0f;
+
+        mPackageManager=null;
+        mLocationManager=null;
+        mLocationListener=null;
+        mLocationHandler=null;
     }
 
     // Setup
@@ -95,6 +121,19 @@ public class SDLActivity extends Activity {
         mLayout.addView(mSurface);
 
         setContentView(mLayout);
+
+        //The size of this array should be equal to SENSOR_TYPE_COUNT in android.h
+        sensors_requested=new boolean[20];
+        for(int i=0;i<sensors_requested.length;i++){
+            sensors_requested[i]=false;
+        }
+        //SDL does stuff with the accelerometer, so we set it to true and we keep it that way
+        sensors_requested[Sensor.TYPE_ACCELEROMETER-1]=true;
+
+        mPackageManager=(PackageManager)getPackageManager();
+        mLocationManager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        mLocationListener=new GPSListener();
+        mLocationHandler=new Handler(Looper.getMainLooper());
     }
 
     // Events
@@ -111,7 +150,6 @@ public class SDLActivity extends Activity {
         super.onResume();
         SDLActivity.handleResume();
     }
-
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -178,7 +216,7 @@ public class SDLActivity extends Activity {
         if (!SDLActivity.mIsPaused && SDLActivity.mIsSurfaceReady) {
             SDLActivity.mIsPaused = true;
             SDLActivity.nativePause();
-            mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, false);
+            enableFeatures(false);
         }
     }
 
@@ -190,7 +228,8 @@ public class SDLActivity extends Activity {
         if (SDLActivity.mIsPaused && SDLActivity.mIsSurfaceReady && SDLActivity.mHasFocus) {
             SDLActivity.mIsPaused = false;
             SDLActivity.nativeResume();
-            mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, true);
+            mSurface.update_available_features();
+            enableFeatures(true);
         }
     }
 
@@ -296,6 +335,128 @@ public class SDLActivity extends Activity {
                                                int is_accelerometer, int nbuttons,
                                                int naxes, int nhats, int nballs);
     public static native int nativeRemoveJoystick(int device_id);
+
+    public static native void nativeUpdateSensorAvailable(int sensortype,boolean available);
+    public static native void nativeUpdateSensorEnabled(int sensortype,boolean enabled);
+    public static native void nativeSensorUpdate(int sensortype,float[] values);
+    public static native void nativeUpdateGPSAvailable(boolean available);
+    public static native void nativeUpdateGPSAccessible(boolean accessible);
+    public static native void nativeUpdateGPSEnabled(boolean enabled);
+    public static native void nativeGPSUpdate(float accuracy,double altitude,float bearing,double latitude,double longitude,float speed);
+
+    public static void enableFeatures(boolean enabled){
+        enableSensors(enabled);
+
+        if(enabled){
+            if(gps_requested){
+                enableGPSActual(enabled,gps_minTime,gps_minDistance);
+            }
+        }
+        else{
+            enableGPSActual(enabled,0L,0.0f);
+        }
+    }
+
+    //This should only be called by the game
+    public static void enableSensor(int sensortype,boolean enabled){
+        //SDL is doing stuff with the accelerometer and we are simply piggybacking on that for that particular sensor,
+        //so don't allow the game to mess with it
+        if(sensortype!=Sensor.TYPE_ACCELEROMETER){
+            sensors_requested[sensortype-1]=enabled;
+
+            mSurface.enableSensor(sensortype,enabled);
+        }
+    }
+
+    public static void enableSensors(boolean enabled){
+        for(int i=0;i<sensors_requested.length;i++){
+            if(enabled){
+                if(sensors_requested[i]){
+                    mSurface.enableSensor(i+1,enabled);
+                }
+            }
+            else{
+                mSurface.enableSensor(i+1,enabled);
+            }
+        }
+    }
+
+    public static void vibrate(int milliseconds){
+        mSurface.vibrate((long)milliseconds);
+    }
+
+    //This should only be called by the game
+    public static void enableGPS(boolean enabled,int minTime,float minDistance){
+        gps_requested=enabled;
+        gps_minTime=(long)minTime;
+        gps_minDistance=minDistance;
+
+        enableGPSActual(enabled,gps_minTime,gps_minDistance);
+    }
+
+    protected static final class GPSListener implements LocationListener{
+        @Override
+        public void onLocationChanged(Location location){
+            SDLActivity.nativeGPSUpdate(location.getAccuracy(),location.getAltitude(),location.getBearing(),location.getLatitude(),location.getLongitude(),location.getSpeed());
+        }
+
+        @Override
+        public void onStatusChanged(String provider,int status,Bundle extras){
+        }
+
+        @Override
+        public void onProviderEnabled(String provider){
+            if(provider.equals(LocationManager.GPS_PROVIDER)){
+                SDLActivity.nativeUpdateGPSAccessible(true);
+
+                if(gps_requested){
+                    enableGPSActual(true,gps_minTime,gps_minDistance);
+                }
+            }
+        }
+
+        @Override
+        public void onProviderDisabled(String provider){
+            if(provider.equals(LocationManager.GPS_PROVIDER)){
+                SDLActivity.nativeUpdateGPSAccessible(false);
+
+                enableGPSActual(false,0L,0.0f);
+            }
+        }
+    }
+
+    public static void gpsOnUIThread(Runnable runnable){
+        mLocationHandler.post(runnable);
+    }
+
+    public static void enableGPSActual(final boolean enabled,final long minTime,final float minDistance){
+        SDLActivity.gpsOnUIThread(new Runnable(){
+            public void run(){
+                if(mSurface.is_gps_available()){
+                    if(mSurface.is_gps_accessible()){
+                        if(enabled){
+                            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,minTime,minDistance,SDLActivity.mLocationListener);
+
+                            SDLActivity.nativeUpdateGPSEnabled(true);
+                        }
+                        else{
+                            mLocationManager.removeUpdates(SDLActivity.mLocationListener);
+
+                            SDLActivity.nativeUpdateGPSEnabled(false);
+                        }
+                    }
+                    else{
+                        mLocationManager.removeUpdates(SDLActivity.mLocationListener);
+
+                        SDLActivity.nativeUpdateGPSEnabled(false);
+                    }
+                }
+                else{
+                    SDLActivity.nativeUpdateGPSEnabled(false);
+                }
+            }
+        });
+    }
 
     public static void flipBuffers() {
         SDLActivity.nativeFlipBuffers();
@@ -524,6 +685,10 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     // Sensors
     protected static SensorManager mSensorManager;
     protected static Display mDisplay;
+    protected static Vibrator mVibrator;
+    protected static PackageManager mPackageManagerSurface;
+    protected static String mPackageName;
+    protected static LocationManager mLocationManagerSurface;
 
     // Keep track of the surface size to normalize touch events
     protected static float mWidth, mHeight;
@@ -541,6 +706,10 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         mDisplay = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+        mVibrator=(Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+        mPackageManagerSurface=(PackageManager)context.getPackageManager();
+        mPackageName=context.getPackageName();
+        mLocationManagerSurface=(LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
 
         if(Build.VERSION.SDK_INT >= 12) {
             setOnGenericMotionListener(new SDLGenericMotionListener_API12());
@@ -570,6 +739,83 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         SDLActivity.handlePause();
         SDLActivity.mIsSurfaceReady = false;
         SDLActivity.onNativeSurfaceDestroyed();
+    }
+
+    public void update_available_features(){
+        check_sensor_availability(Sensor.TYPE_ACCELEROMETER);
+        check_sensor_availability(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        check_sensor_availability(Sensor.TYPE_GAME_ROTATION_VECTOR);
+        check_sensor_availability(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR);
+        check_sensor_availability(Sensor.TYPE_GRAVITY);
+        check_sensor_availability(Sensor.TYPE_GYROSCOPE);
+        check_sensor_availability(Sensor.TYPE_GYROSCOPE_UNCALIBRATED);
+        check_sensor_availability(Sensor.TYPE_LIGHT);
+        check_sensor_availability(Sensor.TYPE_LINEAR_ACCELERATION);
+        check_sensor_availability(Sensor.TYPE_MAGNETIC_FIELD);
+        check_sensor_availability(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED);
+        check_sensor_availability(Sensor.TYPE_PRESSURE);
+        check_sensor_availability(Sensor.TYPE_PROXIMITY);
+        check_sensor_availability(Sensor.TYPE_RELATIVE_HUMIDITY);
+        check_sensor_availability(Sensor.TYPE_ROTATION_VECTOR);
+        check_sensor_availability(Sensor.TYPE_STEP_COUNTER);
+        check_sensor_availability(Sensor.TYPE_STEP_DETECTOR);
+
+        check_gps_availability();
+        check_gps_accessibility();
+    }
+
+    public boolean is_gps_permitted(){
+        if(mPackageManagerSurface.checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION,mPackageName)==PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean is_gps_available(){
+        if(is_gps_permitted() && mPackageManagerSurface.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean is_gps_accessible(){
+        if(is_gps_permitted() && mLocationManagerSurface.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public void check_gps_availability(){
+        if(is_gps_available()){
+            SDLActivity.nativeUpdateGPSAvailable(true);
+        }
+        else{
+            SDLActivity.nativeUpdateGPSAvailable(false);
+        }
+    }
+
+    public void check_gps_accessibility(){
+        if(is_gps_accessible()){
+            SDLActivity.nativeUpdateGPSAccessible(true);
+        }
+        else{
+            SDLActivity.nativeUpdateGPSAccessible(false);
+        }
+    }
+
+    public void check_sensor_availability(int sensortype){
+        if(mSensorManager.getDefaultSensor(sensortype)!=null){
+            SDLActivity.nativeUpdateSensorAvailable(sensortype,true);
+        }
+        else{
+            SDLActivity.nativeUpdateSensorAvailable(sensortype,false);
+        }
     }
 
     // Called when the surface is resized
@@ -638,7 +884,8 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
             // Start up the C app thread and enable sensor input for the first time
 
             SDLActivity.mSDLThread = new Thread(new SDLMain(), "SDLThread");
-            enableSensor(Sensor.TYPE_ACCELEROMETER, true);
+            update_available_features();
+            SDLActivity.enableFeatures(true);
             SDLActivity.mSDLThread.start();
 
             // Set up a listener thread to catch when the native thread ends
@@ -749,15 +996,26 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
    }
 
     // Sensor events
-    public void enableSensor(int sensortype, boolean enabled) {
-        // TODO: This uses getDefaultSensor - what if we have >1 accels?
-        if (enabled) {
-            mSensorManager.registerListener(this,
-                            mSensorManager.getDefaultSensor(sensortype),
-                            SensorManager.SENSOR_DELAY_GAME, null);
-        } else {
-            mSensorManager.unregisterListener(this,
-                            mSensorManager.getDefaultSensor(sensortype));
+    public void enableSensor(int sensortype,boolean enabled){
+        //Prevent registering/unregistering of one shot triggers. Currently, there is only one of these
+        if(sensortype!=Sensor.TYPE_SIGNIFICANT_MOTION){
+            Sensor sensor=mSensorManager.getDefaultSensor(sensortype);
+
+            if(sensor!=null){
+                if(enabled){
+                    if(mSensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_GAME,null)){
+                        SDLActivity.nativeUpdateSensorEnabled(sensortype,true);
+                    }
+                }
+                else{
+                    mSensorManager.unregisterListener(this,sensor);
+
+                    SDLActivity.nativeUpdateSensorEnabled(sensortype,false);
+                }
+            }
+            else{
+                SDLActivity.nativeUpdateSensorEnabled(sensortype,false);
+            }
         }
     }
 
@@ -767,8 +1025,8 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+    public void onSensorChanged(SensorEvent event){
+        if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER){
             float x, y;
             switch (mDisplay.getRotation()) {
                 case Surface.ROTATION_90:
@@ -792,6 +1050,12 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                                       y / SensorManager.GRAVITY_EARTH,
                                       event.values[2] / SensorManager.GRAVITY_EARTH - 1);
         }
+
+        SDLActivity.nativeSensorUpdate(event.sensor.getType(),event.values);
+    }
+
+    public void vibrate(long milliseconds){
+        mVibrator.vibrate(milliseconds);
     }
 }
 

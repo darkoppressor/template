@@ -130,7 +130,7 @@ bool Console::input_has_option(string option,string options){
 }
 
 void Console::exec_file(string filename){
-    File_IO_Load load(engine_interface.get_home_directory()+filename);
+    File_IO_Load load(engine_interface.get_save_directory()+filename);
 
     vector<string> command_list;
 
@@ -150,7 +150,7 @@ void Console::exec_file(string filename){
         }
     }
     else{
-        Log::add_log("Failed to load file for execution: '"+engine_interface.get_home_directory()+filename+"'");
+        Log::add_log("Failed to load file for execution: '"+engine_interface.get_save_directory()+filename+"'");
     }
 
     run_commands(command_list);
