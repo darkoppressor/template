@@ -11,6 +11,18 @@
 </game_option>
 
 <game_option>
+	name:cl_rumble
+	default:true
+	description:enable rumble effects
+</game_option>
+
+<game_option>
+	name:cl_screensaver
+	default:false
+	description:enable the screensaver
+</game_option>
+
+<game_option>
 	name:cl_camera_speed
 	default:960.0
 	description:the speed of camera movement with the directional keys in pixels/second

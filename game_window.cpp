@@ -180,6 +180,7 @@ void Game_Window::set_sdl_hints(){
     SDL_SetHint(SDL_HINT_RENDER_DRIVER,"opengl");
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY,"nearest");
     SDL_SetHint(SDL_HINT_RENDER_VSYNC,Strings::num_to_string((int)engine_interface.option_vsync).c_str());
+    SDL_SetHint(SDL_HINT_VIDEO_ALLOW_SCREENSAVER,Strings::num_to_string((int)game.option_screensaver).c_str());
 }
 
 bool Game_Window::init(){

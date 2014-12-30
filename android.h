@@ -117,6 +117,7 @@ public:
     void disable_sensor(std::string sensor_type);
 
     void vibrate(uint32_t length);
+    void vibrate_stop();
 
     bool get_gps_availability();
     bool get_gps_accessibility();

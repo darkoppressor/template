@@ -401,6 +401,11 @@ public:
     //length is in milliseconds.
     void make_rumble(int controller_number,float strength,uint32_t length);
 
+    //Stop any/all rumble effects on the passed controller.
+    //Pass CONTROLLER_ID_ALL for controller_number to stop rumbling on all controllers.
+    //Pass CONTROLLER_ID_TOUCH for controller_number to stop rumbling on the touch controller.
+    void stop_rumble(int controller_number);
+
     void handle_text_input(std::string text);
 
     //Returns true if the passed button is currently pressed on the passed controller number.
@@ -526,7 +531,7 @@ public:
     std::string get_option_description(std::string option);
     void change_option(std::string option,std::string new_value);
 
-    void apply_options(const std::string& cl_effect_limit,const std::string& cl_screen_shake);
+    void apply_options(const std::string& cl_effect_limit,const std::string& cl_screen_shake,const std::string& cl_rumble);
 
     void apply_options_graphics(const std::string& cl_screen_width,const std::string& cl_screen_height,const std::string& cl_fullscreen_state,
                        const std::string& cl_fullscreen_mode,const std::string& cl_vsync,const std::string& cl_fps,const std::string& cl_hw_cursor,

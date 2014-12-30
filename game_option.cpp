@@ -15,6 +15,12 @@ string Game_Option::get_value(){
     else if(name=="cl_screen_shake"){
         return Strings::bool_to_string(game.option_screen_shake);
     }
+    else if(name=="cl_rumble"){
+        return Strings::bool_to_string(game.option_rumble);
+    }
+    else if(name=="cl_screensaver"){
+        return Strings::bool_to_string(game.option_screensaver);
+    }
     else if(name=="cl_camera_speed"){
         return Strings::num_to_string(game.option_camera_speed);
     }
@@ -82,6 +88,18 @@ void Game_Option::set_value(string new_value){
     }
     else if(name=="cl_screen_shake"){
         game.option_screen_shake=Strings::string_to_bool(new_value);
+    }
+    else if(name=="cl_rumble"){
+        game.option_rumble=Strings::string_to_bool(new_value);
+
+        if(!game.option_rumble){
+            engine_interface.stop_rumble(CONTROLLER_ID_ALL);
+        }
+    }
+    else if(name=="cl_screensaver"){
+        game.option_screensaver=Strings::string_to_bool(new_value);
+
+        main_window.set_sdl_hints();
     }
     else if(name=="cl_camera_speed"){
         game.option_camera_speed=Strings::string_to_double(new_value);

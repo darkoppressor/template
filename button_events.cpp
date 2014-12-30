@@ -90,13 +90,17 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             window->set_stated_button_state_index(0,Strings::string_to_bool(engine_interface.get_option_value("cl_screen_shake")));
             window->set_stated_button_tooltip(0,engine_interface.get_option_description("cl_screen_shake"));
 
+            window->set_stated_button_state_index(1,Strings::string_to_bool(engine_interface.get_option_value("cl_rumble")));
+            window->set_stated_button_tooltip(1,engine_interface.get_option_description("cl_rumble"));
+
             window->toggle_on();
             window_opened_on_top=true;
         }
         else if(button_event=="options" || button_event=="options_apply"){
             if(parent_window!=0){
                 engine_interface.apply_options(parent_window->get_info_text(0),
-                                               Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(0))));
+                                               Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(0))),
+                                               Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(1))));
 
                 if(button_event=="options"){
                     handle_button_event("close_window",parent_window);

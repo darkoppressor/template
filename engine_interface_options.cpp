@@ -699,9 +699,10 @@ void Engine_Interface::change_option(string option,string new_value){
     save_options();
 }
 
-void Engine_Interface::apply_options(const string& cl_effect_limit,const string& cl_screen_shake){
+void Engine_Interface::apply_options(const string& cl_effect_limit,const string& cl_screen_shake,const string& cl_rumble){
     change_option("cl_effect_limit",cl_effect_limit);
     change_option("cl_screen_shake",cl_screen_shake);
+    change_option("cl_rumble",cl_rumble);
 }
 
 void Engine_Interface::apply_options_graphics(const string& cl_screen_width,const string& cl_screen_height,const string& cl_fullscreen_state,

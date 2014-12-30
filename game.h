@@ -19,6 +19,8 @@ public:
     bool option_chat_timestamps;
     uint32_t option_max_players;
     bool option_screen_shake;
+    bool option_rumble;
+    bool option_screensaver;
 
     bool display_scoreboard;
 

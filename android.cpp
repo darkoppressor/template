@@ -336,6 +336,10 @@ void Android::vibrate(uint32_t length){
     call_android_method("vibrate","(I)V",(int)length);
 }
 
+void Android::vibrate_stop(){
+    call_android_method("vibrateStop","()V");
+}
+
 bool Android::get_gps_availability(){
     #ifdef GAME_OS_ANDROID
         return jni_get_gps_available();

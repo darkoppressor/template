@@ -3219,16 +3219,34 @@ void Engine_Interface::make_toast(string message,string length,int custom_length
 }
 
 void Engine_Interface::make_rumble(int controller_number,float strength,uint32_t length){
+    if(game.option_rumble){
+        if(controller_number==CONTROLLER_ID_ALL || controller_number==CONTROLLER_ID_TOUCH){
+            //Play the rumble on the device with the touch controller, if possible.
+            android.vibrate(length);
+        }
+
+        if(controller_number!=CONTROLLER_ID_TOUCH){
+            for(int i=0;i<controllers.size();i++){
+                if(SDL_GameControllerGetAttached(controllers[i].controller) && controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(controllers[i].haptic))){
+                    if(controller_number==CONTROLLER_ID_ALL || controller_number==i){
+                        SDL_HapticRumblePlay(controllers[i].haptic,strength,length);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Engine_Interface::stop_rumble(int controller_number){
     if(controller_number==CONTROLLER_ID_ALL || controller_number==CONTROLLER_ID_TOUCH){
-        //Play the rumble on the device with the touch controller, if possible.
-        android.vibrate(length);
+        android.vibrate_stop();
     }
 
     if(controller_number!=CONTROLLER_ID_TOUCH){
         for(int i=0;i<controllers.size();i++){
             if(SDL_GameControllerGetAttached(controllers[i].controller) && controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(controllers[i].haptic))){
                 if(controller_number==CONTROLLER_ID_ALL || controller_number==i){
-                    SDL_HapticRumblePlay(controllers[i].haptic,strength,length);
+                    SDL_HapticRumbleStop(controllers[i].haptic);
                 }
             }
         }

@@ -385,6 +385,10 @@ public class SDLActivity extends Activity {
         mSurface.vibrate((long)milliseconds);
     }
 
+    public static void vibrateStop(){
+        mSurface.vibrateStop();
+    }
+
     //This should only be called by the game
     public static void enableGPS(boolean enabled,int minTime,float minDistance){
         gps_requested=enabled;
@@ -1056,6 +1060,10 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
     public void vibrate(long milliseconds){
         mVibrator.vibrate(milliseconds);
+    }
+
+    public void vibrateStop(){
+        mVibrator.cancel();
     }
 }
 

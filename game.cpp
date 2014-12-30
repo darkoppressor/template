@@ -12,6 +12,8 @@ Game::Game(){
     option_chat_timestamps=false;
     option_max_players=0;
     option_screen_shake=false;
+    option_rumble=false;
+    option_screensaver=false;
 
     display_scoreboard=false;
 
