@@ -113,7 +113,7 @@ void Information::begin_editing(){
     }
 }
 
-void Information::scroll_up(short y_offset){
+void Information::scroll_up(int y_offset){
     if(scrolling){
         if(y_offset+y+engine_interface.get_font(font)->spacing_y*scroll_offset<y_offset+y+h-engine_interface.get_font(font)->spacing_y*2){
             scroll_offset+=1;
@@ -121,7 +121,7 @@ void Information::scroll_up(short y_offset){
     }
 }
 
-void Information::scroll_down(short y_offset){
+void Information::scroll_down(int y_offset){
     if(scrolling){
         if(y_offset+y+engine_interface.get_font(font)->spacing_y*scroll_offset+engine_interface.get_font(font)->spacing_y*Strings::newline_count(text)>y_offset+y){
             scroll_offset-=1;
@@ -129,7 +129,7 @@ void Information::scroll_down(short y_offset){
     }
 }
 
-void Information::handle_input_states(int mouse_x,int mouse_y,short x_offset,short y_offset){
+void Information::handle_input_states(int mouse_x,int mouse_y,int x_offset,int y_offset){
     if(tooltip_text.length()>0){
         Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
         Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
@@ -143,7 +143,7 @@ void Information::handle_input_states(int mouse_x,int mouse_y,short x_offset,sho
     }
 }
 
-bool Information::handle_input_events(int mouse_x,int mouse_y,short x_offset,short y_offset){
+bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y_offset){
     Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
     Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
 
@@ -192,7 +192,7 @@ void Information::animate(){
     }
 }
 
-void Information::render(short x_offset,short y_offset){
+void Information::render(int x_offset,int y_offset){
     Bitmap_Font* ptr_font=engine_interface.get_font(font);
 
     //If there is special info, we must process it before rendering.

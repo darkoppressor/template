@@ -15,13 +15,13 @@ public:
 
     //The coordinate location.
     //This location, as used by a window, is an offset from the window, not the actual screen.
-    short x,y;
+    int x,y;
 
-    short w,h;
+    int w,h;
 
     //The starting coordinates.
-    short start_x;
-    short start_y;
+    int start_x;
+    int start_y;
 
     //If true, the mouse is currently over this button.
     //If false, it is not.
@@ -83,7 +83,7 @@ public:
     void set_state_index(uint32_t get_state_index);
     std::string get_state();
 
-    bool is_moused_over(int mouse_x,int mouse_y,short x_offset,short y_offset);
+    bool is_moused_over(int mouse_x,int mouse_y,int x_offset,int y_offset);
 
     //Resets moused over state.
     //Returns true if the button was moused over.
@@ -111,7 +111,7 @@ public:
     bool fire_alt_event3(Window* parent_window);
 
     void animate();
-    void render(short x_offset,short y_offset);
+    void render(int x_offset,int y_offset);
 };
 
 #endif

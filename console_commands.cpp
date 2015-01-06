@@ -27,6 +27,7 @@ void Console::setup_commands(){
 
     commands.push_back("cl_screen_width");
     commands.push_back("cl_screen_height");
+    commands.push_back("cl_display_number");
     commands.push_back("cl_fullscreen_state");
     commands.push_back("cl_fullscreen_mode");
 

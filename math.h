@@ -3,9 +3,8 @@
 
 #include <cmath>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846264338327950288
-#endif
+const double PI=3.14159265358979323846;
+const double E=2.71828182845904523536;
 
 double degrees_to_radians(double degrees);
 double radians_to_degrees(double radians);

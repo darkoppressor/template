@@ -11,13 +11,11 @@ void Image::set_error_image(){
 }
 
 void Image::add_image(string name,SDL_Surface* surface){
-    Image_Data image_data;
+    images.push_back(Image_Data());
 
-    image_data.load_image(surface);
+    images[images.size()-1].load_image(surface);
 
     image_names.push_back(name);
-
-    images.push_back(image_data);
 }
 
 void Image::load_images(){
@@ -30,7 +28,6 @@ void Image::load_images(){
             string file_name=it.get_file_name();
 
             boost::algorithm::trim(file_name);
-            file_name.erase(file_name.end()-4,file_name.end());
 
             image_names.push_back(file_name);
         }
@@ -39,7 +36,9 @@ void Image::load_images(){
     for(int i=0;i<image_names.size();i++){
         images.push_back(Image_Data());
 
-        images[images.size()-1].load_image("data/images/"+image_names[i]+".png");
+        images[images.size()-1].load_image("data/images/"+image_names[i]);
+
+        image_names[i].erase(image_names[i].end()-4,image_names[i].end());
     }
 }
 

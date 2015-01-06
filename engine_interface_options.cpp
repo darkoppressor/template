@@ -438,6 +438,9 @@ string Engine_Interface::get_option_value(string option){
     else if(option=="cl_screen_height"){
         return Strings::num_to_string(option_screen_height);
     }
+    else if(option=="cl_display_number"){
+        return Strings::num_to_string(option_display_number);
+    }
     else if(option=="cl_fullscreen_state"){
         return Strings::bool_to_string(option_fullscreen);
     }
@@ -518,11 +521,14 @@ string Engine_Interface::get_option_description(string option){
     else if(option=="cl_screen_height"){
         return "the height of the screen in pixels\n - changes to this option are only applied when the UI is reloaded with \"reload\"";
     }
+    else if(option=="cl_display_number"){
+        return "the display number that the game's window should be placed on\n - changes to this option are only applied when the UI is reloaded with \"reload\"";
+    }
     else if(option=="cl_fullscreen_state"){
         return "enable or disable the fullscreen status of the window\n - changes to this option are only applied when the UI is reloaded with \"reload\"";
     }
     else if(option=="cl_fullscreen_mode"){
-        return "the mode used when the window is made fullscreen\n - changes to this option are only applied when the UI is reloaded with \"reload\"\n - valid values: \"standard\", \"windowed\"";
+        return "the mode used when the window is made fullscreen\n - changes to this option are only applied when the UI is reloaded with \"reload\"\n - valid values: \"standard\", \"desktop\", \"windowed\"";
     }
 
     else if(option=="cl_vsync"){
@@ -597,6 +603,9 @@ void Engine_Interface::change_option(string option,string new_value){
     }
     else if(option=="cl_screen_height"){
         option_screen_height=Strings::string_to_long(new_value);
+    }
+    else if(option=="cl_display_number"){
+        option_display_number=Strings::string_to_long(new_value);
     }
     else if(option=="cl_fullscreen_state"){
         option_fullscreen=Strings::string_to_bool(new_value);
@@ -705,16 +714,18 @@ void Engine_Interface::apply_options(const string& cl_effect_limit,const string&
     change_option("cl_rumble",cl_rumble);
 }
 
-void Engine_Interface::apply_options_graphics(const string& cl_screen_width,const string& cl_screen_height,const string& cl_fullscreen_state,
-                                     const string& cl_fullscreen_mode,const string& cl_vsync,const string& cl_fps,const string& cl_hw_cursor,
-                                     const string& cl_font_shadows){
+void Engine_Interface::apply_options_graphics(const string& cl_screen_width,const string& cl_screen_height,const string& cl_display_number,
+                                              const string& cl_fullscreen_state,const string& cl_fullscreen_mode,const string& cl_vsync,
+                                              const string& cl_fps,const string& cl_hw_cursor,const string& cl_font_shadows){
     string old_screen_width=get_option_value("cl_screen_width");
     string old_screen_height=get_option_value("cl_screen_height");
+    string old_display_number=get_option_value("cl_display_number");
     string old_fullscreen_state=get_option_value("cl_fullscreen_state");
     string old_fullscreen_mode=get_option_value("cl_fullscreen_mode");
 
     change_option("cl_screen_width",cl_screen_width);
     change_option("cl_screen_height",cl_screen_height);
+    change_option("cl_display_number",cl_display_number);
     change_option("cl_fullscreen_state",cl_fullscreen_state);
     change_option("cl_fullscreen_mode",cl_fullscreen_mode);
     change_option("cl_vsync",cl_vsync);
@@ -722,8 +733,8 @@ void Engine_Interface::apply_options_graphics(const string& cl_screen_width,cons
     change_option("cl_hw_cursor",cl_hw_cursor);
     change_option("cl_font_shadows",cl_font_shadows);
 
-    if(old_screen_width!=cl_screen_width || old_screen_height!=cl_screen_height || old_fullscreen_state!=cl_fullscreen_state ||
-       old_fullscreen_mode!=cl_fullscreen_mode){
+    if(old_screen_width!=cl_screen_width || old_screen_height!=cl_screen_height || old_display_number!=cl_display_number ||
+       old_fullscreen_state!=cl_fullscreen_state || old_fullscreen_mode!=cl_fullscreen_mode){
         reload();
     }
 }
@@ -795,6 +806,7 @@ bool Engine_Interface::save_options(){
 
     save<<"\tscreen_width:"<<option_screen_width<<"\n";
     save<<"\tscreen_height:"<<option_screen_height<<"\n";
+    save<<"\tdisplay_number:"<<option_display_number<<"\n";
     save<<"\tfullscreen_state:"<<Strings::bool_to_string(option_fullscreen)<<"\n";
     save<<"\tfullscreen_mode:"<<option_fullscreen_mode<<"\n";
 
@@ -851,6 +863,7 @@ bool Engine_Interface::load_options(){
             string str_version="version:";
             string str_screen_width="screen_width:";
             string str_screen_height="screen_height:";
+            string str_display_number="display_number:";
             string str_fullscreen="fullscreen_state:";
             string str_fullscreen_mode="fullscreen_mode:";
 
@@ -913,6 +926,13 @@ bool Engine_Interface::load_options(){
                 line.erase(0,str_screen_height.length());
 
                 option_screen_height=Strings::string_to_long(line);
+            }
+            //display_number
+            else if(!multi_line_comment && boost::algorithm::starts_with(line,str_display_number)){
+                //Clear the data name.
+                line.erase(0,str_display_number.length());
+
+                option_display_number=Strings::string_to_long(line);
             }
             //fullscreen
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_fullscreen)){

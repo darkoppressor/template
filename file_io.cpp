@@ -69,6 +69,48 @@ string File_IO_Load::get_data(){
     return data.str();
 }
 
+File_IO_Binary_Save::File_IO_Binary_Save(string get_path){
+    rwops=0;
+
+    open(get_path);
+}
+
+void File_IO_Binary_Save::open(string get_path){
+    path=get_path;
+
+    rwops=SDL_RWFromFile(path.c_str(),"wb");
+}
+
+void File_IO_Binary_Save::close(){
+    if(SDL_RWclose(rwops)!=0){
+        string msg="Error closing binary file '"+path+"': ";
+        msg+=SDL_GetError();
+        Log::add_error(msg,false);
+    }
+
+    rwops=0;
+    path="";
+}
+
+bool File_IO_Binary_Save::is_opened(){
+    if(rwops!=0){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_count){
+    size_t write_count=SDL_RWwrite(rwops,ptr,data_size,data_count);
+
+    if(write_count!=data_count){
+        string msg="Error saving binary file '"+path+"': ";
+        msg+=SDL_GetError();
+        Log::add_error(msg,false);
+    }
+}
+
 #ifdef GAME_OS_ANDROID
     bool File_IO::save_file(string path,string data,bool append,bool binary){
         string rw_mode="w";
@@ -91,30 +133,38 @@ string File_IO_Load::get_data(){
             SDL_RWclose(rwops);
 
             if(written_length!=length){
-                //We assume appending means we are working with the error log.
-                //We don't post an error about it failing because that would cause an infinite loop.
-                if(!append){
-                    string msg="Error saving file '"+path+"': ";
-                    msg+=SDL_GetError();
-                    Log::add_error(msg);
-                }
+                string msg="Error saving file '"+path+"': ";
+                msg+=SDL_GetError();
+                Log::add_error(msg,false);
 
                 return false;
             }
         }
         else{
-            //We assume appending means we are working with the error log.
-            //We don't post an error about it failing because that would cause an infinite loop.
-            if(!append){
-                string msg="Error opening file '"+path+"' for saving: ";
-                msg+=SDL_GetError();
-                Log::add_error(msg);
-            }
+            string msg="Error opening file '"+path+"' for saving: ";
+            msg+=SDL_GetError();
+            Log::add_error(msg,false);
 
             return false;
         }
 
         return true;
+    }
+
+    bool File_IO::save_important_file(string path,string data,bool append,bool binary){
+        string path_temp=path+SAVE_TEMP_FILE_SUFFIX;
+
+        if(append){
+            remove_file(path_temp);
+            copy_file(path,path_temp);
+        }
+
+        if(save_file(path_temp,data,append,binary)){
+            return rename_file(path_temp,path);
+        }
+        else{
+            return false;
+        }
     }
 
     bool File_IO::directory_exists(string path){
@@ -150,7 +200,7 @@ string File_IO_Load::get_data(){
             }
         }
         else{
-            Log::add_error("Error getting file information for file '"+path+"': "+Strings::num_to_string(errno));
+            Log::add_error("Error getting file information for file '"+path+"': "+Strings::num_to_string(errno),false);
         }
 
         return false;
@@ -165,7 +215,7 @@ string File_IO_Load::get_data(){
             }
         }
         else{
-            Log::add_error("Error getting file information for file '"+path+"': "+Strings::num_to_string(errno));
+            Log::add_error("Error getting file information for file '"+path+"': "+Strings::num_to_string(errno),false);
         }
 
         return false;
@@ -173,13 +223,63 @@ string File_IO_Load::get_data(){
 
     void File_IO::create_directory(string path){
         if(!directory_exists(path) && mkdir(path.c_str(),S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0){
-            Log::add_error("Error creating directory '"+path+"': "+Strings::num_to_string(errno));
+            Log::add_error("Error creating directory '"+path+"': "+Strings::num_to_string(errno),false);
+        }
+    }
+
+    bool File_IO::rename_file(string old_path,string new_path){
+        if(file_exists(old_path)){
+            if(rename(old_path.c_str(),new_path.c_str())!=0){
+                Log::add_error("Error renaming file '"+old_path+"' to '"+new_path+"': "+Strings::num_to_string(errno),false);
+
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    void File_IO::copy_file(string old_path,string new_path){
+        if(is_regular_file(old_path) && !file_exists(new_path)){
+            File_IO_Load load(old_path,true);
+
+            if(load.file_loaded()){
+                SDL_RWops* rwops=SDL_RWFromFile(new_path.c_str(),"wb");
+
+                if(rwops!=NULL){
+                    const char* data_chars=load.get_data().c_str();
+
+                    size_t length=SDL_strlen(data_chars);
+
+                    size_t written_length=SDL_RWwrite(rwops,data_chars,1,length);
+
+                    SDL_RWclose(rwops);
+
+                    if(written_length!=length){
+                        string msg="Error saving file '"+new_path+"' for copying to: ";
+                        msg+=SDL_GetError();
+                        Log::add_error(msg,false);
+                    }
+                }
+                else{
+                    string msg="Error opening file '"+new_path+"' for copying to: ";
+                    msg+=SDL_GetError();
+                    Log::add_error(msg,false);
+                }
+            }
+            else{
+                Log::add_error("Failed to load file for copying from: '"+old_path+"'",false);
+            }
         }
     }
 
     void File_IO::remove_file(string path){
         if(file_exists(path) && remove(path.c_str())!=0){
-            Log::add_error("Error removing file '"+path+"': "+Strings::num_to_string(errno));
+            Log::add_error("Error removing file '"+path+"': "+Strings::num_to_string(errno),false);
         }
     }
 
@@ -220,13 +320,13 @@ string File_IO_Load::get_data(){
                 return true;
             }
             else{
-                Log::add_error("External storage is not RW enabled.");
+                Log::add_error("External storage is not RW enabled.",false);
             }
         }
         else{
             string msg="External storage is unavailable: ";
             msg+=SDL_GetError();
-            Log::add_error(msg);
+            Log::add_error(msg,false);
         }
 
         return false;
@@ -340,7 +440,7 @@ string File_IO_Load::get_data(){
             }
         }
         else{
-            Log::add_error("Error getting file information for file '"+get_full_path()+"': "+Strings::num_to_string(errno));
+            Log::add_error("Error getting file information for file '"+get_full_path()+"': "+Strings::num_to_string(errno),false);
         }
 
         return false;
@@ -356,7 +456,7 @@ string File_IO_Load::get_data(){
             }
         }
         else{
-            Log::add_error("Error getting file information for file '"+get_full_path()+"': "+Strings::num_to_string(errno));
+            Log::add_error("Error getting file information for file '"+get_full_path()+"': "+Strings::num_to_string(errno),false);
         }
 
         return false;
@@ -391,30 +491,38 @@ string File_IO_Load::get_data(){
             SDL_RWclose(rwops);
 
             if(written_length!=length){
-                //We assume appending means we are working with the error log.
-                //We don't post an error about it failing because that would cause an infinite loop.
-                if(!append){
-                    string msg="Error saving file '"+path+"': ";
-                    msg+=SDL_GetError();
-                    Log::add_error(msg);
-                }
+                string msg="Error saving file '"+path+"': ";
+                msg+=SDL_GetError();
+                Log::add_error(msg,false);
 
                 return false;
             }
         }
         else{
-            //We assume appending means we are working with the error log.
-            //We don't post an error about it failing because that would cause an infinite loop.
-            if(!append){
-                string msg="Error opening file '"+path+"' for saving: ";
-                msg+=SDL_GetError();
-                Log::add_error(msg);
-            }
+            string msg="Error opening file '"+path+"' for saving: ";
+            msg+=SDL_GetError();
+            Log::add_error(msg,false);
 
             return false;
         }
 
         return true;
+    }
+
+    bool File_IO::save_important_file(string path,string data,bool append,bool binary){
+        string path_temp=path+SAVE_TEMP_FILE_SUFFIX;
+
+        if(append){
+            remove_file(path_temp);
+            copy_file(path,path_temp);
+        }
+
+        if(save_file(path_temp,data,append,binary)){
+            return rename_file(path_temp,path);
+        }
+        else{
+            return false;
+        }
     }
 
     bool File_IO::directory_exists(string path){
@@ -435,6 +543,23 @@ string File_IO_Load::get_data(){
 
     void File_IO::create_directory(string path){
         boost::filesystem::create_directory(path);
+    }
+
+    bool File_IO::rename_file(string old_path,string new_path){
+        try{
+            boost::filesystem::rename(old_path,new_path);
+
+            return true;
+        }
+        catch(...){
+            return false;
+        }
+    }
+
+    void File_IO::copy_file(string old_path,string new_path){
+        if(is_regular_file(old_path) && !file_exists(new_path)){
+            boost::filesystem::copy(old_path,new_path);
+        }
     }
 
     void File_IO::remove_file(string path){

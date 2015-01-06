@@ -14,23 +14,23 @@ public:
     std::string name;
 
     //The coordinate location and dimensions
-    short x,y;
-    short w,h;
+    int x,y;
+    int w,h;
 
     //The starting coordinates
-    short start_x;
-    short start_y;
+    int start_x;
+    int start_y;
 
     //The starting size
     //This is only used when fit_content is true
-    short start_width;
-    short start_height;
+    int start_width;
+    int start_height;
 
     bool fit_content;
 
     //The offsets from the mouse to the edge of the window.
     //Used for window movement.
-    short mouse_offset_x,mouse_offset_y;
+    int mouse_offset_x,mouse_offset_y;
 
     std::string title;
 

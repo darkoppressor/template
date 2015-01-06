@@ -11,13 +11,13 @@ public:
 
     //The coordinate location.
     //This location, as used by a window, is an offset from the window, not the actual screen.
-    short x,y;
+    int x,y;
 
-    short w,h;
+    int w,h;
 
     //The starting coordinates.
-    short start_x;
-    short start_y;
+    int start_x;
+    int start_y;
 
     //Only one of text, special_info_text, special_info_sprite, and sprite should be used.
 
@@ -72,17 +72,17 @@ public:
 
     void begin_editing();
 
-    void scroll_up(short y_offset);
-    void scroll_down(short y_offset);
+    void scroll_up(int y_offset);
+    void scroll_down(int y_offset);
 
-    void handle_input_states(int mouse_x,int mouse_y,short x_offset,short y_offset);
+    void handle_input_states(int mouse_x,int mouse_y,int x_offset,int y_offset);
 
     //Returns true if the event was consumed,
     //false otherwise.
-    bool handle_input_events(int mouse_x,int mouse_y,short x_offset,short y_offset);
+    bool handle_input_events(int mouse_x,int mouse_y,int x_offset,int y_offset);
 
     void animate();
-    void render(short x_offset,short y_offset);
+    void render(int x_offset,int y_offset);
 };
 
 #endif

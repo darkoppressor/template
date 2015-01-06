@@ -8,8 +8,8 @@ public:
 
     std::string message;
 
-    short x,y;
-    short w,h;
+    int x,y;
+    int w,h;
 
     double opacity;
     double fade_rate;

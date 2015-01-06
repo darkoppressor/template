@@ -116,6 +116,9 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             window->set_info_text(1,engine_interface.get_option_value("cl_screen_height"));
             window->set_info_tooltip(1,engine_interface.get_option_description("cl_screen_height"));
 
+            window->set_info_text(2,engine_interface.get_option_value("cl_display_number"));
+            window->set_info_tooltip(2,engine_interface.get_option_description("cl_display_number"));
+
             window->set_stated_button_state_index(0,Strings::string_to_bool(engine_interface.get_option_value("cl_fullscreen_state")));
             window->set_stated_button_tooltip(0,engine_interface.get_option_description("cl_fullscreen_state"));
 
@@ -123,8 +126,11 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             window->set_stated_button_tooltip(1,engine_interface.get_option_description("cl_vsync"));
 
             uint32_t fs_mode=0;
-            if(engine_interface.get_option_value("cl_fullscreen_mode")=="windowed"){
+            if(engine_interface.get_option_value("cl_fullscreen_mode")=="desktop"){
                 fs_mode=1;
+            }
+            else if(engine_interface.get_option_value("cl_fullscreen_mode")=="windowed"){
+                fs_mode=2;
             }
             window->set_stated_button_state_index(2,fs_mode);
             window->set_stated_button_tooltip(2,engine_interface.get_option_description("cl_fullscreen_mode"));
@@ -143,7 +149,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         }
         else if(button_event=="options_graphics" || button_event=="options_graphics_apply"){
             if(parent_window!=0){
-                engine_interface.apply_options_graphics(parent_window->get_info_text(0),parent_window->get_info_text(1),
+                engine_interface.apply_options_graphics(parent_window->get_info_text(0),parent_window->get_info_text(1),parent_window->get_info_text(2),
                                                         Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(0))),
                                                         Strings::lower_case(parent_window->get_stated_button_state(2)),
                                                         Strings::bool_to_string(Strings::string_to_bool(parent_window->get_stated_button_state(1))),

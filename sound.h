@@ -5,15 +5,22 @@
 
 #include <vector>
 #include <string>
+#include <stdint.h>
 
 #include <SDL_mixer.h>
 
 class Sound{
+private:
+
+    void _play_sound(Sound_Data* ptr_sound,int volume);
+
 public:
 
     std::vector<Sound_Data> sounds;
 
     std::vector<std::string> sound_names;
+
+    void add_sound(const Custom_Sound& sound);
 
     void load_sounds();
     void unload_sounds();
@@ -29,7 +36,6 @@ public:
     //So a low falloff means the sound will quickly falloff.
     void play_sound(std::string sound_name);
     void play_sound(std::string sound_name,double sound_x,double sound_y,double falloff=-1.0);
-    void _play_sound(Sound_Data* ptr_sound,int volume);
 
     Sound_Data* get_sound(std::string sound_name);
 };

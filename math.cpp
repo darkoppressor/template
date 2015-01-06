@@ -3,11 +3,11 @@
 using namespace std;
 
 double degrees_to_radians(double degrees){
-    return degrees*(M_PI/180.0);
+    return degrees*(PI/180.0);
 }
 
 double radians_to_degrees(double radians){
-    return radians*(180.0/M_PI);
+    return radians*(180.0/PI);
 }
 
 void reduce_angle(double& angle){

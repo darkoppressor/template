@@ -5,6 +5,14 @@
 
 using namespace std;
 
+void Sound::add_sound(const Custom_Sound& sound){
+    sounds.push_back(Sound_Data());
+
+    sounds[sounds.size()-1].create_custom_sound(sound);
+
+    sound_names.push_back(sound.name);
+}
+
 void Sound::load_sounds(){
     //Look through all of the files in the directory.
     for(File_IO_Directory_Iterator it("data/sounds");it.evaluate();it.iterate()){

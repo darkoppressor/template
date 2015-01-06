@@ -15,7 +15,6 @@ public:
     Image_Data();
 
     void load_image(std::string filename);
-
     void load_image(SDL_Surface* surface);
 
     void unload_image();

@@ -96,8 +96,9 @@ Engine_Interface::Engine_Interface(){
 
     option_screen_width=0;
     option_screen_height=0;
+    option_display_number=-1;
     option_fullscreen=false;
-    option_fullscreen_mode="windowed";
+    option_fullscreen_mode="desktop";
 
     option_vsync=false;
     option_accelerometer_controller=false;
@@ -3785,63 +3786,67 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
     switch(event.type){
         case SDL_CONTROLLERDEVICEADDED:
-            if(SDL_IsGameController(event.cdevice.which)){
-                controllers.push_back(Controller(SDL_GameControllerOpen(event.cdevice.which)));
+            if(!event_consumed){
+                if(SDL_IsGameController(event.cdevice.which)){
+                    controllers.push_back(Controller(SDL_GameControllerOpen(event.cdevice.which)));
 
-                Controller* controller_object=&controllers[controllers.size()-1];
-                SDL_GameController* controller=controller_object->controller;
+                    Controller* controller_object=&controllers[controllers.size()-1];
+                    SDL_GameController* controller=controller_object->controller;
 
-                if(controller!=0){
-                    controller_object->instance_id=SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+                    if(controller!=0){
+                        controller_object->instance_id=SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
 
-                    if(SDL_JoystickIsHaptic(SDL_GameControllerGetJoystick(controller))){
-                        controller_object->haptic=SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(controller));
+                        if(SDL_JoystickIsHaptic(SDL_GameControllerGetJoystick(controller))){
+                            controller_object->haptic=SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(controller));
 
-                        if(controller_object->haptic!=0){
-                            if(SDL_HapticRumbleSupported(controller_object->haptic)){
-                                if(SDL_HapticRumbleInit(controller_object->haptic)!=0){
-                                    string msg="Error initializing rumble for haptic on controller "+Strings::num_to_string(event.cdevice.which)+": ";
-                                    msg+=SDL_GetError();
-                                    Log::add_error(msg);
+                            if(controller_object->haptic!=0){
+                                if(SDL_HapticRumbleSupported(controller_object->haptic)){
+                                    if(SDL_HapticRumbleInit(controller_object->haptic)!=0){
+                                        string msg="Error initializing rumble for haptic on controller "+Strings::num_to_string(event.cdevice.which)+": ";
+                                        msg+=SDL_GetError();
+                                        Log::add_error(msg);
 
-                                    SDL_HapticClose(controller_object->haptic);
-                                    controller_object->haptic=0;
+                                        SDL_HapticClose(controller_object->haptic);
+                                        controller_object->haptic=0;
+                                    }
                                 }
                             }
+                            else{
+                                string msg="Error opening haptic for controller "+Strings::num_to_string(event.cdevice.which)+": ";
+                                msg+=SDL_GetError();
+                                Log::add_error(msg);
+                            }
                         }
-                        else{
-                            string msg="Error opening haptic for controller "+Strings::num_to_string(event.cdevice.which)+": ";
-                            msg+=SDL_GetError();
-                            Log::add_error(msg);
-                        }
+                    }
+                    else{
+                        string msg="Error opening controller "+Strings::num_to_string(event.cdevice.which)+": ";
+                        msg+=SDL_GetError();
+                        Log::add_error(msg);
+
+                        controllers.pop_back();
                     }
                 }
                 else{
-                    string msg="Error opening controller "+Strings::num_to_string(event.cdevice.which)+": ";
-                    msg+=SDL_GetError();
-                    Log::add_error(msg);
-
-                    controllers.pop_back();
+                    string joystick_name=SDL_JoystickNameForIndex(event.cdevice.which);
+                    Log::add_error("Joystick \""+joystick_name+"\" detected, but not supported by the game controller interface.");
                 }
-            }
-            else{
-                string joystick_name=SDL_JoystickNameForIndex(event.cdevice.which);
-                Log::add_error("Joystick \""+joystick_name+"\" detected, but not supported by the game controller interface.");
             }
             break;
 
         case SDL_CONTROLLERDEVICEREMOVED:
-            for(int i=0;i<controllers.size();i++){
-                if(event.cdevice.which==controllers[i].instance_id){
-                    if(controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(controllers[i].haptic))){
-                        SDL_HapticClose(controllers[i].haptic);
+            if(!event_consumed){
+                for(int i=0;i<controllers.size();i++){
+                    if(event.cdevice.which==controllers[i].instance_id){
+                        if(controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(controllers[i].haptic))){
+                            SDL_HapticClose(controllers[i].haptic);
+                        }
+
+                        SDL_GameControllerClose(controllers[i].controller);
+
+                        controllers.erase(controllers.begin()+i);
+
+                        break;
                     }
-
-                    SDL_GameControllerClose(controllers[i].controller);
-
-                    controllers.erase(controllers.begin()+i);
-
-                    break;
                 }
             }
             break;
@@ -4186,6 +4191,16 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
             //GUI nav mouse
             if(!event_consumed && mouse_allowed()){
                 set_gui_mode("mouse");
+            }
+            break;
+
+        case SDL_WINDOWEVENT:
+            if(!event_consumed){
+                if(event.window.event==SDL_WINDOWEVENT_MOVED){
+                    main_window.update_display_number();
+
+                    event_consumed=true;
+                }
             }
             break;
     }
@@ -4652,8 +4667,8 @@ void Engine_Interface::render_text_inputter(){
         double mid_radius=outer_radius*0.75;
         double inner_radius=50.0;
 
-        double inner_center_x=outer_center_x+mid_radius*cos(angle*(M_PI/180.0));
-        double inner_center_y=outer_center_y+mid_radius*sin(angle*(M_PI/180.0));
+        double inner_center_x=outer_center_x+mid_radius*cos(degrees_to_radians(angle));
+        double inner_center_y=outer_center_y+mid_radius*sin(degrees_to_radians(angle));
 
         string outer_circle_color=current_color_theme()->window_background;
         if(character_chunk==selected_chunk){
@@ -4680,8 +4695,8 @@ void Engine_Interface::render_text_inputter(){
                 circle_color="text_input_green";
             }
 
-            double letter_center_x=inner_center_x+letter_circle_radius*cos(letter_angle*(M_PI/180.0));
-            double letter_center_y=inner_center_y+letter_circle_radius*sin(letter_angle*(M_PI/180.0));
+            double letter_center_x=inner_center_x+letter_circle_radius*cos(degrees_to_radians(letter_angle));
+            double letter_center_y=inner_center_y+letter_circle_radius*sin(degrees_to_radians(letter_angle));
 
             string font_color=current_color_theme()->window_font;
 

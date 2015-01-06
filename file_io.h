@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 
+#include <SDL.h>
+
 #ifdef GAME_OS_ANDROID
     #include <vector>
     #include <stdint.h>
@@ -12,6 +14,8 @@
 #else
     #include <boost/filesystem.hpp>
 #endif
+
+const std::string SAVE_TEMP_FILE_SUFFIX="_TEMP";
 
 class File_IO_Load{
 public:
@@ -31,16 +35,38 @@ public:
     std::string get_data();
 };
 
+class File_IO_Binary_Save{
+public:
+
+    SDL_RWops* rwops;
+
+    std::string path;
+
+    File_IO_Binary_Save(std::string get_path);
+
+    void open(std::string get_path);
+    void close();
+
+    bool is_opened();
+
+    void write(const void* ptr,size_t data_size,size_t data_count);
+};
+
 #ifdef GAME_OS_ANDROID
     class File_IO{
     public:
         bool save_file(std::string path,std::string data,bool append=false,bool binary=false);
+        //First saves to a temporary file, then renames that file to the final file
+        bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
 
         bool directory_exists(std::string path);
         bool file_exists(std::string path);
         bool is_directory(std::string path);
         bool is_regular_file(std::string path);
         void create_directory(std::string path);
+        void rename_file(std::string old_path,std::string new_path);
+        //This does NOT overwrite new_path if it already exists
+        void copy_file(std::string old_path,std::string new_path);
         void remove_file(std::string path);
         void remove_directory(std::string path);
         std::string get_file_name(std::string path);
@@ -89,12 +115,17 @@ public:
     class File_IO{
     public:
         bool save_file(std::string path,std::string data,bool append=false,bool binary=false);
+        //First saves to a temporary file, then renames that file to the final file
+        bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
 
         bool directory_exists(std::string path);
         bool file_exists(std::string path);
         bool is_directory(std::string path);
         bool is_regular_file(std::string path);
         void create_directory(std::string path);
+        bool rename_file(std::string old_path,std::string new_path);
+        //This does NOT overwrite new_path if it already exists
+        void copy_file(std::string old_path,std::string new_path);
         void remove_file(std::string path);
         void remove_directory(std::string path);
         std::string get_file_name(std::string path);

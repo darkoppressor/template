@@ -180,6 +180,7 @@ public:
 
     int option_screen_width;
     int option_screen_height;
+    int option_display_number;
     bool option_fullscreen;
     std::string option_fullscreen_mode;
 
@@ -533,9 +534,9 @@ public:
 
     void apply_options(const std::string& cl_effect_limit,const std::string& cl_screen_shake,const std::string& cl_rumble);
 
-    void apply_options_graphics(const std::string& cl_screen_width,const std::string& cl_screen_height,const std::string& cl_fullscreen_state,
-                       const std::string& cl_fullscreen_mode,const std::string& cl_vsync,const std::string& cl_fps,const std::string& cl_hw_cursor,
-                       const std::string& cl_font_shadows);
+    void apply_options_graphics(const std::string& cl_screen_width,const std::string& cl_screen_height,const std::string& cl_display_number,
+                                const std::string& cl_fullscreen_state,const std::string& cl_fullscreen_mode,const std::string& cl_vsync,
+                                const std::string& cl_fps,const std::string& cl_hw_cursor,const std::string& cl_font_shadows);
 
     void apply_options_audio(const std::string& cl_volume_global,const std::string& cl_mute_global,
                              const std::string& cl_volume_sound,const std::string& cl_mute_sound,

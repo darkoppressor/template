@@ -12,8 +12,8 @@ public:
 
     std::string font;
 
-    short x,y;
-    short w,h;
+    int x,y;
+    int w,h;
 
     Tooltip();
 

@@ -135,7 +135,7 @@ string Button::get_state(){
     }
 }
 
-bool Button::is_moused_over(int mouse_x,int mouse_y,short x_offset,short y_offset){
+bool Button::is_moused_over(int mouse_x,int mouse_y,int x_offset,int y_offset){
     Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
     Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
 
@@ -257,7 +257,7 @@ void Button::animate(){
     }
 }
 
-void Button::render(short x_offset,short y_offset){
+void Button::render(int x_offset,int y_offset){
     Bitmap_Font* ptr_font=engine_interface.get_font(font);
 
     set_dimensions();

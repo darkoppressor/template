@@ -59,7 +59,7 @@
 	default_screen_width:1280
 	default_screen_height:720
 	default_fullscreen_state:false
-	default_fullscreen_mode:standard
+	default_fullscreen_mode:windowed
 	
 	default_vsync:false
 	default_accelerometer_controller:false

@@ -154,12 +154,12 @@ void Window::set_dimensions(){
     set_default_font();
 
     if(fit_content){
-        short side_left=-1;
-        short side_right=-1;
-        short side_up=-1;
-        short side_down=-1;
+        int side_left=-1;
+        int side_right=-1;
+        int side_up=-1;
+        int side_down=-1;
 
-        short more_height=0;
+        int more_height=0;
 
         for(int i=0;i<buttons.size();i++){
             Button* button=&buttons[i];
