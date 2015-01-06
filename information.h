@@ -66,6 +66,9 @@ public:
     void move_cursor_left();
     void move_cursor_right();
 
+    //Returns a string with the text of the line the cursor is currently on
+    std::string get_cursor_line();
+
     //Ensures that text length does not exceed max_text_length
     void check_text();
 

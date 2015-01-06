@@ -479,6 +479,7 @@ public:
     void render_gui_selector();
     void render_small_text_inputter();
     void render_text_inputter();
+    void render_text_editing();
     void render(int render_rate,double ms_per_frame,int logic_frame_rate);
     void render_loading_screen(double percentage,std::string load_message);
 

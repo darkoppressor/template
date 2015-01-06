@@ -180,9 +180,7 @@ int main(int argc,char* args[]){
 
     SDL_SetEventFilter(handle_app_events,NULL);
 
-    vector<string> command_list;
-    command_list.push_back("exec autoexec.cfg");
-    engine_interface.console.run_commands(command_list);
+    engine_interface.console.exec_file("autoexec.cfg");
 
     game_loop();
 

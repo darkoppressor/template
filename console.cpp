@@ -315,19 +315,19 @@ void Console::recall_up(){
         current_recalled_command_string--;
     }
 
-    info_input.text=recalled_command_strings[current_recalled_command_string];
+    info_input.set_text(recalled_command_strings[current_recalled_command_string]);
 }
 
 void Console::recall_down(){
     if(current_recalled_command_string<recalled_command_strings.size()-1){
         current_recalled_command_string++;
 
-        info_input.text=recalled_command_strings[current_recalled_command_string];
+        info_input.set_text(recalled_command_strings[current_recalled_command_string]);
     }
     else{
         reset_current_recalled_command_string();
 
-        info_input.text.clear();
+        info_input.set_text("");
     }
 }
 
@@ -344,7 +344,7 @@ void Console::tab_complete(){
 
             if(valid_commands.size()>0){
                 if(valid_commands.size()==1){
-                    info_input.text=valid_commands[0];
+                    info_input.set_text(valid_commands[0]);
                 }
                 else{
                     string shared_characters=info_input.text;
@@ -401,13 +401,13 @@ void Console::tab_complete(){
                         add_text("");
                     }
                     else{
-                        info_input.text=shared_characters;
+                        info_input.set_text(shared_characters);
                     }
                 }
             }
         }
         else{
-            info_input.text=commands[0];
+            info_input.set_text(commands[0]);
         }
     }
 }

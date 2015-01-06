@@ -11,7 +11,7 @@ Information::Information(){
     start_y=0;
     text="";
     tooltip_text="";
-    cursor_position=0;
+    cursor_position=-1;
     text_mutable=false;
     max_text_length=0;
     scrolling=false;
@@ -136,6 +136,31 @@ void Information::move_cursor_right(){
     }
 }
 
+string Information::get_cursor_line(){
+    if(text.length()>0){
+        int line=0;
+
+        if(cursor_position>-1){
+            line=Strings::which_line(text,cursor_position);
+        }
+
+        int line_length=Strings::length_of_line(text,line);
+
+        int first_character=Strings::which_character(text,line,0);
+
+        string line_text="";
+
+        for(int i=first_character;i<first_character+line_length && i<text.length();i++){
+            line_text+=text[i];
+        }
+
+        return line_text;
+    }
+    else{
+        return "";
+    }
+}
+
 void Information::check_text(){
     for(int i=(int)text.length()-1;i>=0 && text.length()>max_text_length;i--){
         text.erase(text.begin()+i);
@@ -158,24 +183,26 @@ void Information::add_text(string get_text){
 
     check_cursor_position();
 
-    int line_length=Strings::length_of_line(text,Strings::which_line(text,cursor_position));
+    if(scrolling){
+        int line_length=Strings::length_of_line(text,Strings::which_line(text,cursor_position));
 
-    while(line_length>scroll_width){
-        int insertion_point=cursor_position-(line_length-scroll_width-1);
+        while(line_length>scroll_width){
+            int insertion_point=cursor_position-(line_length-scroll_width-1);
 
-        if(insertion_point>=0 && insertion_point<text.length()){
-            text.insert(insertion_point,"\\n");
+            if(insertion_point>=0 && insertion_point<text.length()){
+                text.insert(insertion_point,"\\n");
 
-            text=Strings::process_newlines(text);
+                text=Strings::process_newlines(text);
 
-            cursor_position++;
+                cursor_position++;
 
-            check_text();
+                check_text();
 
-            check_cursor_position();
+                check_cursor_position();
+            }
+
+            line_length=Strings::length_of_line(text,Strings::which_line(text,cursor_position));
         }
-
-        line_length=Strings::length_of_line(text,Strings::which_line(text,cursor_position));
     }
 
     set_dimensions();

@@ -64,7 +64,7 @@ public:
         bool is_directory(std::string path);
         bool is_regular_file(std::string path);
         void create_directory(std::string path);
-        void rename_file(std::string old_path,std::string new_path);
+        bool rename_file(std::string old_path,std::string new_path);
         //This does NOT overwrite new_path if it already exists
         void copy_file(std::string old_path,std::string new_path);
         void remove_file(std::string path);

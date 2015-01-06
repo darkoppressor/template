@@ -1946,6 +1946,7 @@ void Engine_Interface::load_information(File_IO_Load* load){
 
         //If the line ends the information.
         else if(!multi_line_comment && boost::algorithm::starts_with(line,"</info>")){
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].reset_cursor_position();
             windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].set_dimensions();
             windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].center_in_window(windows[windows.size()-1].w,windows[windows.size()-1].h);
 
@@ -4585,12 +4586,13 @@ void Engine_Interface::render_gui_selector(){
 
 void Engine_Interface::render_small_text_inputter(){
     render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_border);
-    render_rectangle(window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,main_window.SCREEN_HEIGHT-window_border_thickness*2.0,0.75,current_color_theme()->window_background);
+    render_rectangle(window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,
+                     main_window.SCREEN_HEIGHT-window_border_thickness*2.0,0.75,current_color_theme()->window_background);
 
     if(mutable_info_selected()){
         Bitmap_Font* font=get_font("small");
 
-        font->show(window_border_thickness+2.0,window_border_thickness+2.0,ptr_mutable_info->text,current_color_theme()->window_font);
+        font->show(window_border_thickness+2.0,window_border_thickness+2.0,ptr_mutable_info->get_cursor_line(),current_color_theme()->window_font);
     }
 
     Bitmap_Font* font=get_font("standard");
@@ -4775,6 +4777,20 @@ void Engine_Interface::render_text_inputter(){
     }
 }
 
+void Engine_Interface::render_text_editing(){
+    if(mutable_info_selected()){
+        Bitmap_Font* font=get_font("small");
+
+        string text=ptr_mutable_info->get_cursor_line();
+
+        render_rectangle(0.0,0.0,main_window.SCREEN_WIDTH,font->spacing_y+window_border_thickness*2.0,0.75,current_color_theme()->window_border);
+        render_rectangle(window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,
+                         font->spacing_y,0.75,current_color_theme()->window_background);
+
+        font->show((main_window.SCREEN_WIDTH-(text.length()*font->spacing_x))/2.0,window_border_thickness,text,current_color_theme()->window_font);
+    }
+}
+
 void Engine_Interface::render(int render_rate,double ms_per_frame,int logic_frame_rate){
     if(!hide_gui){
         if(game.in_progress && game.paused){
@@ -4814,6 +4830,10 @@ void Engine_Interface::render(int render_rate,double ms_per_frame,int logic_fram
             else{
                 render_small_text_inputter();
             }
+        }
+
+        if(mutable_info_selected() && allow_screen_keyboard() && SDL_IsScreenKeyboardShown(main_window.screen)){
+            render_text_editing();
         }
 
         if(touch_controls){
