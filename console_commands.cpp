@@ -171,6 +171,8 @@ void Console::do_command(){
         boost::algorithm::split(command_list,info_input.text,boost::algorithm::is_any_of(";"));
 
         run_commands(command_list);
+
+        info_input.set_text("");
     }
 }
 

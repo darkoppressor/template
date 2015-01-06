@@ -7,6 +7,17 @@
 
 using namespace std;
 
+bool Strings::is_newline_character(char input){
+    string newline="\xA";
+
+    if(input==newline[0]){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 string Strings::first_letter_capital(string str_input){
     if(str_input.length()>0){
         string first_letter="";
@@ -68,10 +79,9 @@ string Strings::process_newlines(const string& str_input){
 
 int Strings::newline_count(const string& str_input){
     int newlines=0;
-    string newline="\xA";
 
     for(int i=0;i<str_input.length();i++){
-        if(str_input[i]==newline[0]){
+        if(is_newline_character(str_input[i])){
             newlines++;
         }
     }
@@ -84,6 +94,18 @@ int Strings::length_of_last_line(const string& str_input){
     boost::algorithm::split(lines,str_input,boost::algorithm::is_any_of("\xA"));
 
     return lines[lines.size()-1].length();
+}
+
+int Strings::length_of_line(const string& str_input,int line){
+    vector<string> lines;
+    boost::algorithm::split(lines,str_input,boost::algorithm::is_any_of("\xA"));
+
+    if(line>=0 && line<lines.size()){
+        return lines[line].length();
+    }
+    else{
+        return 0;
+    }
 }
 
 int Strings::longest_line(const string& str_input){
@@ -100,11 +122,90 @@ int Strings::longest_line(const string& str_input){
     return longest_line_length;
 }
 
-string Strings::erase_first_line(string str_input){
-    string newline="\xA";
+int Strings::which_line(const string& str_input,int character){
+    int line=0;
 
+    if(character<0 || character>str_input.length()-1){
+        return 0;
+    }
+
+    for(int i=0;i<character;i++){
+        if(is_newline_character(str_input[i])){
+            line++;
+        }
+    }
+
+    return line;
+}
+
+int Strings::where_on_line(const string& str_input,int character){
+    int location=0;
+
+    if(character<0 || character>str_input.length()-1){
+        return 0;
+    }
+
+    for(int i=0;i<character;i++){
+        if(is_newline_character(str_input[i])){
+            location=0;
+        }
+        else{
+            location++;
+        }
+    }
+
+    return location;
+}
+
+int Strings::which_character(const string& str_input,int line,int index_on_line){
+    int character=0;
+
+    int lines=newline_count(str_input)+1;
+
+    if(line<0 || line>lines-1){
+        return 0;
+    }
+
+    //The character index of the first character on the passed line
+    int line_start=-1;
+
+    for(int i=0,checking_line=0;i<str_input.length();i++){
+        if(is_newline_character(str_input[i])){
+            checking_line++;
+        }
+
+        if(checking_line==line){
+            if(line==0){
+                line_start=i;
+            }
+            else{
+                line_start=i+1;
+            }
+
+            break;
+        }
+    }
+
+    if(line_start>-1){
+        for(int i=line_start,checking_character=0;i<str_input.length();i++,checking_character++){
+            if(is_newline_character(str_input[i])){
+                break;
+            }
+
+            if(checking_character==index_on_line){
+                character=i;
+
+                break;
+            }
+        }
+    }
+
+    return character;
+}
+
+string Strings::erase_first_line(string str_input){
     for(int i=0;i<str_input.length();i++){
-        if(str_input[i]==newline[0]){
+        if(is_newline_character(str_input[i])){
             str_input.erase(0,1);
 
             break;

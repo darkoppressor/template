@@ -19,6 +19,21 @@ void Custom_Sound::reset(string get_name,int get_sample_rate,double get_tempo,sh
     sharps=get_sharps;
     flats=get_flats;
 
+    volumes.clear();
+    for(int i=0;i<channels;i++){
+        volumes.push_back(0.5);
+    }
+
+    waveforms.clear();
+    for(int i=0;i<channels;i++){
+        waveforms.push_back("sine");
+    }
+
+    frequencies.clear();
+    for(int i=0;i<channels;i++){
+        frequencies.push_back("C");
+    }
+
     samples.clear();
 }
 
@@ -420,21 +435,75 @@ double Custom_Sound::get_note_length(string length_string){
     }
 }
 
-void Custom_Sound::add_note(string frequency_string,string length_string){
+void Custom_Sound::add_note(string frequency_string,string length_string,string waveform_override,double volume_override){
+    RNG rng;
+
     for(uint32_t x=0;x<(uint32_t)ceil((double)sample_rate*get_note_length(length_string));x++){
-        double amplitude=sin(((get_note_frequency(frequency_string)*2.0*PI)/(double)sample_rate)*(double)x);
-
-        amplitude*=16384.0;
-        amplitude+=16384.0;
-
-        if(amplitude<-32768.0){
-            amplitude=-32768.0;
-        }
-        if(amplitude>32767.0){
-            amplitude=32767.0;
-        }
-
         for(uint32_t i=0;i<channels;i++){
+            string waveform=waveforms[i];
+            if(waveform_override!="off"){
+                waveform=waveform_override;
+            }
+
+            double volume=volumes[i];
+            if(volume_override>=0.0){
+                volume=volume_override;
+            }
+
+            if(volume<0.0){
+                volume=0.0;
+            }
+            else if(volume>1.0){
+                volume=1.0;
+            }
+
+            if(frequency_string.length()==0){
+                frequency_string=frequencies[i];
+            }
+
+            double frequency=get_note_frequency(frequency_string);
+
+            double basic_function=((frequency*2.0*PI)/(double)sample_rate)*(double)x;
+
+            double amplitude=0.0;
+
+            if(frequency>0.0){
+                if(waveform=="sine"){
+                    amplitude=sin(basic_function);
+                }
+                else if(waveform=="triangle"){
+                    amplitude=asin(sin(basic_function))*(2.0/PI);
+                }
+                else if(waveform=="square"){
+                    amplitude=sin(basic_function);
+
+                    if(amplitude<0.0){
+                        amplitude=-1.0;
+                    }
+                    else if(amplitude>0.0){
+                        amplitude=1.0;
+                    }
+                }
+                else if(waveform=="sawtooth"){
+                    amplitude=0.5-atan(tan((PI/2.0)-basic_function));
+                }
+                else if(waveform=="noise"){
+                    amplitude=sin((((double)rng.random_range(20,20000)*2.0*PI)/(double)sample_rate)*(double)x);
+                }
+            }
+
+            amplitude*=volume;
+
+            amplitude*=16384.0;
+            amplitude+=16384.0;
+
+            if(amplitude<-32768.0){
+                amplitude=-32768.0;
+            }
+            if(amplitude>32767.0){
+                amplitude=32767.0;
+            }
+
             samples.push_back((int16_t)floor(amplitude));
         }
     }

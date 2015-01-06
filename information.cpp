@@ -11,6 +11,7 @@ Information::Information(){
     start_y=0;
     text="";
     tooltip_text="";
+    cursor_position=0;
     text_mutable=false;
     max_text_length=0;
     scrolling=false;
@@ -79,14 +80,160 @@ void Information::center_in_window(int window_width,int window_height){
     }
 }
 
+void Information::reset_cursor_position(){
+    if(text_mutable){
+        if(text.length()>0){
+            cursor_position=(int)text.length()-1;
+
+            if(cursor_position<-1){
+                cursor_position=-1;
+            }
+        }
+        else{
+            cursor_position=0;
+        }
+
+        scroll_to_cursor();
+    }
+}
+
+void Information::check_cursor_position(){
+    if(text_mutable){
+        if(text.length()>0){
+            if(cursor_position>(int)text.length()-1){
+                cursor_position=(int)text.length()-1;
+            }
+
+            if(cursor_position<-1){
+                cursor_position=-1;
+            }
+        }
+        else{
+            cursor_position=0;
+        }
+
+        scroll_to_cursor();
+    }
+}
+
+void Information::move_cursor_left(){
+    if(text_mutable){
+        if(text.length()>0 && cursor_position>-1){
+            cursor_position--;
+        }
+
+        scroll_to_cursor();
+    }
+}
+
+void Information::move_cursor_right(){
+    if(text_mutable){
+        if(text.length()>0 && cursor_position<(int)text.length()-1){
+            cursor_position++;
+        }
+
+        scroll_to_cursor();
+    }
+}
+
+void Information::check_text(){
+    for(int i=(int)text.length()-1;i>=0 && text.length()>max_text_length;i--){
+        text.erase(text.begin()+i);
+    }
+}
+
+void Information::add_text(string get_text){
+    check_cursor_position();
+
+    if(text.length()==0){
+        text.insert(0,get_text);
+    }
+    else{
+        text.insert(cursor_position+1,get_text);
+    }
+
+    cursor_position+=get_text.length();
+
+    check_text();
+
+    check_cursor_position();
+
+    int line_length=Strings::length_of_line(text,Strings::which_line(text,cursor_position));
+
+    while(line_length>scroll_width){
+        int insertion_point=cursor_position-(line_length-scroll_width-1);
+
+        if(insertion_point>=0 && insertion_point<text.length()){
+            text.insert(insertion_point,"\\n");
+
+            text=Strings::process_newlines(text);
+
+            cursor_position++;
+
+            check_text();
+
+            check_cursor_position();
+        }
+
+        line_length=Strings::length_of_line(text,Strings::which_line(text,cursor_position));
+    }
+
+    set_dimensions();
+}
+
+void Information::input_backspace(){
+    check_cursor_position();
+
+    if(text.length()>0 && cursor_position>-1){
+        text.erase(cursor_position,1);
+
+        cursor_position--;
+
+        check_cursor_position();
+    }
+}
+
+void Information::input_delete(){
+    check_cursor_position();
+
+    if(text.length()>0 && cursor_position<(int)text.length()-1){
+        text.erase(cursor_position+1,1);
+
+        check_cursor_position();
+    }
+}
+
+void Information::input_newline(){
+    check_cursor_position();
+
+    if(text.length()==0){
+        text.insert(0,"\\n");
+    }
+    else{
+        text.insert(cursor_position+1,"\\n");
+    }
+
+    text=Strings::process_newlines(text);
+
+    cursor_position++;
+
+    check_text();
+
+    check_cursor_position();
+}
+
 void Information::set_text(string get_text){
     text=get_text;
+
+    reset_cursor_position();
 
     set_dimensions();
 }
 
 void Information::set_special_text(){
     text=engine_interface.special_info_manager.get_special_info_text(special_info_text);
+
+    reset_cursor_position();
 }
 
 void Information::set_special_sprite(){
@@ -107,9 +254,7 @@ void Information::begin_editing(){
     if(text_mutable){
         engine_interface.set_mutable_info(this);
 
-        if(scrolling){
-            scroll_offset=-Strings::newline_count(text);
-        }
+        scroll_to_cursor();
     }
 }
 
@@ -125,6 +270,29 @@ void Information::scroll_down(int y_offset){
     if(scrolling){
         if(y_offset+y+engine_interface.get_font(font)->spacing_y*scroll_offset+engine_interface.get_font(font)->spacing_y*Strings::newline_count(text)>y_offset+y){
             scroll_offset-=1;
+        }
+    }
+}
+
+void Information::scroll_to_cursor(){
+    if(scrolling){
+        int line=0;
+
+        if(cursor_position>-1){
+            line=Strings::which_line(text,cursor_position);
+
+            if(text.length()>0 && cursor_position<(int)text.length() && Strings::is_newline_character(text[cursor_position])){
+                line++;
+            }
+        }
+
+        int top_line=-scroll_offset;
+
+        if(line<top_line){
+            scroll_offset=-line;
+        }
+        else if(line>top_line+scroll_height-1){
+            scroll_offset=-line+scroll_height-1;
         }
     }
 }
@@ -152,6 +320,32 @@ bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y
             if(event.button.button==SDL_BUTTON_LEFT){
                 if(text_mutable){
                     if(collision_check_rect(box_a,box_b)){
+                        if(scrolling && text.length()>0){
+                            int lines=Strings::newline_count(text)+1;
+                            int top_line=-scroll_offset;
+                            bool character_clicked=false;
+
+                            for(int i=top_line,line_on_screen=0;!character_clicked && i<top_line+scroll_height;i++,line_on_screen++){
+                                if(i>=0 && i<lines){
+                                    int line_length=Strings::length_of_line(text,i);
+
+                                    Bitmap_Font* ptr_font=engine_interface.get_font(font);
+
+                                    for(int j=0;j<line_length;j++){
+                                        Collision_Rect box_character(x_offset+x+ptr_font->spacing_x*j,y_offset+y+ptr_font->spacing_y*line_on_screen,ptr_font->spacing_x,ptr_font->spacing_y);
+
+                                        if(collision_check_rect(box_a,box_character)){
+                                            cursor_position=Strings::which_character(text,i,j);
+
+                                            character_clicked=true;
+
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         begin_editing();
 
                         return true;
@@ -253,7 +447,28 @@ void Information::render(int x_offset,int y_offset){
             ptr_font->show(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y,text,font_color_real,1.0,1.0,1.0,0.0,allowed_area);
 
             if(text_mutable && engine_interface.mutable_info_this(this)){
-                ptr_font->show(x_offset+x+engine_interface.gui_border_thickness+(ptr_font->spacing_x*Strings::length_of_last_line(text)),y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y+(ptr_font->spacing_y*Strings::newline_count(text)),"\x7F",font_color_real,engine_interface.cursor_opacity*0.1,1.0,1.0,0.0,allowed_area);
+                check_cursor_position();
+
+                int cursor_x=0;
+                int cursor_y=0;
+
+                if(cursor_position>-1){
+                    cursor_x=Strings::where_on_line(text,cursor_position);
+                    cursor_y=Strings::which_line(text,cursor_position);
+
+                    if(text.length()>0){
+                        cursor_x++;
+
+                        if(cursor_position<(int)text.length() && Strings::is_newline_character(text[cursor_position])){
+                            cursor_x=0;
+                            cursor_y++;
+                        }
+                    }
+                }
+
+                ptr_font->show(x_offset+x+engine_interface.gui_border_thickness+(ptr_font->spacing_x*cursor_x),
+                               y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y+(ptr_font->spacing_y*cursor_y),
+                               Symbols::cursor(),font_color_real,engine_interface.cursor_opacity*0.1,1.0,1.0,0.0,allowed_area);
             }
         }
     }

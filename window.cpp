@@ -368,7 +368,7 @@ void Window::reset_scrolling_lists(){
 
     for(int i=0;i<informations.size();i++){
         if(informations[i].scrolling){
-            informations[i].scroll_offset=0;
+            informations[i].scroll_to_cursor();
         }
     }
 }

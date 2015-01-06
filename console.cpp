@@ -212,7 +212,7 @@ void Console::send_chat(){
             msg+=": ";
             msg+=info_input.text;
 
-            info_input.text="";
+            info_input.set_text("");
 
             if(network.status=="server"){
                 network.send_chat_message(msg,RakNet::UNASSIGNED_RAKNET_GUID,true);
@@ -545,11 +545,10 @@ void Console::render(){
                 info_temp_display.y=main_window.SCREEN_HEIGHT-info_display.h-info_input.h;
                 info_temp_display.background_type="none";
 
-                string newline="\xA";
                 int line=0;
 
                 for(int i=0;i<info_temp_display.text.length();i++){
-                    if(info_temp_display.text[i]==newline[0]){
+                    if(Strings::is_newline_character(info_temp_display.text[i])){
                         line++;
                     }
                     else{

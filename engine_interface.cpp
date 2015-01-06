@@ -3131,12 +3131,16 @@ void Engine_Interface::update_window_caption(int render_rate,double ms_per_frame
 void Engine_Interface::set_mutable_info(Information* ptr_info){
     ptr_mutable_info=ptr_info;
 
-    if(allow_screen_keyboard()){
-        SDL_StartTextInput();
-    }
-    else if(controller_text_entry_small && gui_mode=="controller"){
-        text_entry_small_selector.x=0;
-        text_entry_small_selector.y=0;
+    if(mutable_info_selected()){
+        ptr_mutable_info->check_cursor_position();
+
+        if(allow_screen_keyboard()){
+            SDL_StartTextInput();
+        }
+        else if(controller_text_entry_small && gui_mode=="controller"){
+            text_entry_small_selector.x=0;
+            text_entry_small_selector.y=0;
+        }
     }
 }
 
@@ -3285,7 +3289,7 @@ void Engine_Interface::handle_text_input(string text){
         }
 
         if(text.length()>0){
-            ptr_mutable_info->text+=text;
+            ptr_mutable_info->add_text(text);
         }
     }
 }
@@ -3459,6 +3463,18 @@ void Engine_Interface::gui_nav_down(string gui_type){
     change_gui_selected_object("down");
 }
 
+void Engine_Interface::gui_nav_left(){
+    if(mutable_info_selected()){
+        ptr_mutable_info->move_cursor_left();
+    }
+}
+
+void Engine_Interface::gui_nav_right(){
+    if(mutable_info_selected()){
+        ptr_mutable_info->move_cursor_right();
+    }
+}
+
 void Engine_Interface::gui_scroll_up(string gui_type){
     set_gui_mode(gui_type);
 
@@ -3550,25 +3566,19 @@ vector<string>* Engine_Interface::get_text_input_character_set(){
 
 void Engine_Interface::input_backspace(){
     if(mutable_info_selected()){
-        string deleted_char="";
-        deleted_char+=ptr_mutable_info->text[ptr_mutable_info->text.size()-1];
+        ptr_mutable_info->input_backspace();
+    }
+}
 
-        ptr_mutable_info->text.erase(ptr_mutable_info->text.length()-1);
-
-        if(deleted_char=="\xA"){
-            ptr_mutable_info->scroll_offset=-Strings::newline_count(ptr_mutable_info->text);
-        }
+void Engine_Interface::input_delete(){
+    if(mutable_info_selected()){
+        ptr_mutable_info->input_delete();
     }
 }
 
 void Engine_Interface::input_newline(){
     if(mutable_info_selected()){
-        ptr_mutable_info->text+="\\";
-        ptr_mutable_info->text+="n";
-        ptr_mutable_info->text=Strings::process_newlines(ptr_mutable_info->text);
-
-        ptr_mutable_info->scroll_offset=-Strings::newline_count(ptr_mutable_info->text);
-        ptr_mutable_info->scroll_offset+=ptr_mutable_info->scroll_height-1;
+        ptr_mutable_info->input_newline();
     }
 }
 
@@ -3883,6 +3893,24 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                     event_consumed=true;
                 }
+                //GUI nav controller axis left
+                if(!event_consumed && mutable_info_selected() && gui_axis_nav_last_direction!="left" &&
+                   event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTX && event.caxis.value<-controller_dead_zone){
+                    gui_axis_nav_last_direction="left";
+
+                    gui_nav_left();
+
+                    event_consumed=true;
+                }
+                //GUI nav controller axis right
+                if(!event_consumed && mutable_info_selected() && gui_axis_nav_last_direction!="right" &&
+                   event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTX && event.caxis.value>controller_dead_zone){
+                    gui_axis_nav_last_direction="right";
+
+                    gui_nav_right();
+
+                    event_consumed=true;
+                }
             }
             break;
 
@@ -4061,6 +4089,18 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                     event_consumed=true;
                 }
+                //GUI nav controller left
+                if(!event_consumed && mutable_info_selected() && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_LEFT){
+                    gui_nav_left();
+
+                    event_consumed=true;
+                }
+                //GUI nav controller right
+                if(!event_consumed && mutable_info_selected() && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_RIGHT){
+                    gui_nav_right();
+
+                    event_consumed=true;
+                }
             }
             break;
 
@@ -4087,6 +4127,12 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                     if(!event_consumed && ptr_mutable_info->allows_input("backspace") && event.key.keysym.scancode==SDL_SCANCODE_BACKSPACE && ptr_mutable_info->text.length()>0){
                         input_backspace();
+
+                        event_consumed=true;
+                    }
+
+                    if(!event_consumed && ptr_mutable_info->allows_input("backspace") && event.key.keysym.scancode==SDL_SCANCODE_DELETE && ptr_mutable_info->text.length()>0){
+                        input_delete();
 
                         event_consumed=true;
                     }
@@ -4155,6 +4201,18 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                     //GUI nav keyboard down
                     if(!event_consumed && is_any_window_open() && !console.on && event.key.keysym.scancode==SDL_SCANCODE_DOWN){
                         gui_nav_down("keyboard");
+
+                        event_consumed=true;
+                    }
+                    //GUI nav keyboard left
+                    if(!event_consumed && mutable_info_selected() && event.key.keysym.scancode==SDL_SCANCODE_LEFT){
+                        gui_nav_left();
+
+                        event_consumed=true;
+                    }
+                    //GUI nav keyboard right
+                    if(!event_consumed && mutable_info_selected() && event.key.keysym.scancode==SDL_SCANCODE_RIGHT){
+                        gui_nav_right();
 
                         event_consumed=true;
                     }

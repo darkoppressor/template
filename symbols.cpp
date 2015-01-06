@@ -17,3 +17,7 @@ string Symbols::squared(){
 string Symbols::cubed(){
     return string(1,(unsigned char)252);
 }
+
+string Symbols::cursor(){
+    return string(1,(unsigned char)128);
+}

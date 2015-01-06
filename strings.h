@@ -3,9 +3,14 @@
 
 #include <string>
 #include <sstream>
+#include <stdint.h>
 
 class Strings{
 public:
+
+    //Returns true if the passed char is the newline character
+    //Returns false otherwise
+    static bool is_newline_character(char input);
 
     static std::string first_letter_capital(std::string str_input);
 
@@ -30,8 +35,25 @@ public:
     //Simply returns the length of the string if it has only one line.
     static int length_of_last_line(const std::string& str_input);
 
+    //Returns the length of line number line in the passed string.
+    //Returns 0 if an invalid line number is passed
+    static int length_of_line(const std::string& str_input,int line);
+
     //Returns the length of the longest line in the passed string.
     static int longest_line(const std::string& str_input);
+
+    //Returns the line that the passed character is on
+    //Returns 0 if the passed character is outside the string's bounds
+    static int which_line(const std::string& str_input,int character);
+
+    //Returns the position of the passed character on its line
+    //Returns 0 if the passed character is outside the string's bounds
+    static int where_on_line(const std::string& str_input,int character);
+
+    //Returns the index into the passed string for the character located on the passed line,
+    //and at the passed position on that line
+    //Returns 0 if any part of this fails
+    static int which_character(const std::string& str_input,int line,int index_on_line);
 
     static std::string erase_first_line(std::string str_input);
 

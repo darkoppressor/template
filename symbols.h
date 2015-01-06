@@ -10,6 +10,7 @@ public:
     static std::string dot();
     static std::string squared();
     static std::string cubed();
+    static std::string cursor();
 };
 
 #endif

@@ -24,6 +24,10 @@ public:
     std::string text;
     std::string tooltip_text;
 
+    //The position of the text cursor
+    //Only applicable if the text is mutable
+    int cursor_position;
+
     //If true, text is mutable.
     //If false, text is immutable.
     bool text_mutable;
@@ -57,6 +61,19 @@ public:
 
     void center_in_window(int window_width,int window_height);
 
+    void reset_cursor_position();
+    void check_cursor_position();
+    void move_cursor_left();
+    void move_cursor_right();
+
+    //Ensures that text length does not exceed max_text_length
+    void check_text();
+
+    void add_text(std::string get_text);
+    void input_backspace();
+    void input_delete();
+    void input_newline();
+
     void set_text(std::string get_text);
 
     //If there is special info text, this function sets the text.
@@ -74,6 +91,7 @@ public:
 
     void scroll_up(int y_offset);
     void scroll_down(int y_offset);
+    void scroll_to_cursor();
 
     void handle_input_states(int mouse_x,int mouse_y,int x_offset,int y_offset);
 

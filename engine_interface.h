@@ -443,6 +443,8 @@ public:
     void gui_nav_confirm(std::string gui_type);
     void gui_nav_up(std::string gui_type);
     void gui_nav_down(std::string gui_type);
+    void gui_nav_left();
+    void gui_nav_right();
     void gui_scroll_up(std::string gui_type);
     void gui_scroll_down(std::string gui_type);
 
@@ -456,6 +458,7 @@ public:
     std::vector<std::string>* get_text_input_character_set();
 
     void input_backspace();
+    void input_delete();
     void input_newline();
 
     bool allow_screen_keyboard();
