@@ -21,6 +21,7 @@
 #include "game_option.h"
 #include "game_constants.h"
 #include "sprite.h"
+#include "custom_sound.h"
 
 ///#include "example_game_script.h"
 
@@ -314,6 +315,8 @@ public:
     void load_game_command(File_IO_Load* load);
     void load_game_option(File_IO_Load* load);
     void load_game_constant(File_IO_Load* load);
+    void load_custom_sound(File_IO_Load* load);
+    void load_custom_sound_data(File_IO_Load* load,Custom_Sound& sound);
 
     Bitmap_Font* get_font(std::string name);
     Cursor* get_cursor(std::string name);

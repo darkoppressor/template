@@ -5,36 +5,93 @@
 
 using namespace std;
 
-Custom_Sound::Custom_Sound(string get_name,int get_sample_rate,double get_tempo,short get_channels,string get_sharps,string get_flats){
-    reset(get_name,get_sample_rate,get_tempo,get_channels,get_sharps,get_flats);
-}
+Custom_Sound::Custom_Sound(){
+    sample_rate=0;
+    tempo=0.0;
+    channels=0;
 
-void Custom_Sound::reset(string get_name,int get_sample_rate,double get_tempo,short get_channels,string get_sharps,string get_flats){
-    name=get_name;
+    sharps="";
+    flats="";
 
-    sample_rate=get_sample_rate;
-    tempo=get_tempo;
-    channels=get_channels;
+    name="";
 
-    sharps=get_sharps;
-    flats=get_flats;
+    length="quarter";
 
-    volumes.clear();
     for(int i=0;i<channels;i++){
         volumes.push_back(0.5);
     }
 
-    waveforms.clear();
     for(int i=0;i<channels;i++){
         waveforms.push_back("sine");
     }
 
-    frequencies.clear();
     for(int i=0;i<channels;i++){
         frequencies.push_back("C");
     }
+}
 
-    samples.clear();
+void Custom_Sound::set_length(string get_length){
+    length=get_length;
+}
+
+void Custom_Sound::set_volumes(string get_values){
+    double default_value=0.5;
+
+    volumes.clear();
+
+    vector<string> values;
+    boost::algorithm::split(values,get_values,boost::algorithm::is_any_of(","));
+
+    for(int i=0;i<channels;i++){
+        if(i<values.size()){
+            volumes.push_back(Strings::string_to_double(values[i]));
+
+            default_value=Strings::string_to_double(values[i]);
+        }
+        else{
+            volumes.push_back(default_value);
+        }
+    }
+}
+
+void Custom_Sound::set_waveforms(string get_values){
+    string default_value="sine";
+
+    waveforms.clear();
+
+    vector<string> values;
+    boost::algorithm::split(values,get_values,boost::algorithm::is_any_of(","));
+
+    for(int i=0;i<channels;i++){
+        if(i<values.size()){
+            waveforms.push_back(values[i]);
+
+            default_value=values[i];
+        }
+        else{
+            waveforms.push_back(default_value);
+        }
+    }
+}
+
+void Custom_Sound::set_frequencies(string get_values){
+    string default_value="C";
+
+    frequencies.clear();
+
+    vector<string> values;
+    boost::algorithm::split(values,get_values,boost::algorithm::is_any_of(","));
+
+    for(int i=0;i<channels;i++){
+        if(i<values.size()){
+            frequencies.push_back(values[i]);
+
+            default_value=values[i];
+        }
+        else{
+            frequencies.push_back(default_value);
+        }
+    }
 }
 
 double Custom_Sound::get_note_frequency(string frequency_string){
@@ -409,7 +466,10 @@ double Custom_Sound::get_note_frequency(string frequency_string){
 double Custom_Sound::get_note_length(string length_string){
     double quarter_note_length=60.0/tempo;
 
-    if(length_string=="whole"){
+    if(length_string=="dotted_whole"){
+        return quarter_note_length*6.0;
+    }
+    else if(length_string=="whole"){
         return quarter_note_length*4.0;
     }
     else if(length_string=="dotted_half"){
@@ -438,6 +498,10 @@ double Custom_Sound::get_note_length(string length_string){
 void Custom_Sound::add_note(string frequency_string,string length_string,string waveform_override,double volume_override){
     RNG rng;
 
+    if(length_string.length()==0){
+        length_string=length;
+    }
+
     for(uint32_t x=0;x<(uint32_t)ceil((double)sample_rate*get_note_length(length_string));x++){
         for(uint32_t i=0;i<channels;i++){
             string waveform=waveforms[i];
@@ -461,38 +525,53 @@ void Custom_Sound::add_note(string frequency_string,string length_string,string 
                 frequency_string=frequencies[i];
             }
 
-            double frequency=get_note_frequency(frequency_string);
-
-            double basic_function=((frequency*2.0*PI)/(double)sample_rate)*(double)x;
-
             double amplitude=0.0;
 
-            if(frequency>0.0){
-                if(waveform=="sine"){
-                    amplitude=sin(basic_function);
-                }
-                else if(waveform=="triangle"){
-                    amplitude=asin(sin(basic_function))*(2.0/PI);
-                }
-                else if(waveform=="square"){
-                    amplitude=sin(basic_function);
+            vector<string> chord;
+            boost::algorithm::split(chord,frequency_string,boost::algorithm::is_any_of("+"));
 
-                    if(amplitude<0.0){
-                        amplitude=-1.0;
+            for(int c=0;c<chord.size();c++){
+                double frequency=get_note_frequency(chord[c]);
+
+                double basic_function=(frequency*2.0*PI*(double)x)/(double)sample_rate;
+
+                if(frequency>0.0){
+                    if(waveform=="sine"){
+                        amplitude+=sin(basic_function);
                     }
-                    else if(amplitude>0.0){
-                        amplitude=1.0;
+                    else if(waveform=="triangle"){
+                        amplitude+=asin(sin(basic_function))*(2.0/PI);
                     }
-                }
-                else if(waveform=="sawtooth"){
-                    amplitude=0.5-atan(tan((PI/2.0)-basic_function));
-                }
-                else if(waveform=="noise"){
-                    amplitude=sin((((double)rng.random_range(20,20000)*2.0*PI)/(double)sample_rate)*(double)x);
+                    else if(waveform=="square"){
+                        double addend=sin(basic_function);
+
+                        if(addend<0.0){
+                            addend=-1.0;
+                        }
+                        else if(addend>0.0){
+                            addend=1.0;
+                        }
+
+                        amplitude+=addend;
+                    }
+                    else if(waveform=="sawtooth"){
+                        amplitude+=0.5-atan(tan((PI/2.0)-basic_function));
+                    }
+                    else if(waveform=="noise"){
+                        amplitude+=sin((((double)rng.random_range(20,20000)*2.0*PI)/(double)sample_rate)*(double)x);
+                    }
                 }
             }
 
-            amplitude*=volume;
+            double volume_checked=volume;
+            if(volume_checked<0.0){
+                volume_checked=0.0;
+            }
+            else if(volume_checked>1.0){
+                volume_checked=1.0;
+            }
+
+            amplitude*=volume_checked;
 
             amplitude*=16384.0;
             amplitude+=16384.0;

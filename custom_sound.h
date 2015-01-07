@@ -15,7 +15,40 @@ private:
         save.write((const char*)&t,sizeof(T),1);
     }
 
+    //Convert the passed note frequency to Hz
+    double get_note_frequency(std::string frequency_string);
+
+    //Convert the passed note value to seconds
+    double get_note_length(std::string length_string);
+
 public:
+
+    //A note length string can be either one of the strings listed below OR a double value representing the length in seconds
+    //The valid note length strings are:
+    //dotted_whole
+    //whole
+    //dotted_half
+    //half
+    //dotted_quarter
+    //quarter
+    //eighth
+    //sixteenth
+
+    //Valid volume values are doubles from 0.0 to 1.0
+
+    //The valid waveform strings are:
+    //sine
+    //triangle
+    //square
+    //sawtooth
+    //noise
+
+    //Frequency strings can represent either a single frequency, or a set of frequencies added together to form a chord
+    //To form a chord, simply combine multiple frequencies into a single frequency string with plus sign separators
+    //Each individual frequency is represented by a capital letter A to G, a number 0 to 8, and an optional accidental (symbols explained below)
+    //Additionally, for convenience, a frequency consisting of only the capital letter component will act as a shortcut to the corresponding letter in octave 5
+    //Also, as a special case, a frequency of "rest" indicates a frequency value of 0.0, which is complete silence
+    //Finally, a frequency can instead be a double value, directly representing the frequency in Hz
 
     //The symbols for accidentals are:
     //# - sharp
@@ -31,93 +64,44 @@ public:
     short channels;
 
     //Letters contained in these strings are all suffixed with the respective modifier when getting their frequency
+    //These strings should just be a list of capital letters, without any separation
     std::string sharps;
     std::string flats;
 
     std::string name;
 
-    //Per channel volumes, waveforms, and frequencies
+    std::string length;
+
+    //Per-channel volumes, waveforms, and frequencies
     std::vector<double> volumes;
     std::vector<std::string> waveforms;
     std::vector<std::string> frequencies;
 
     std::vector<int16_t> samples;
 
-    Custom_Sound(std::string get_name,int get_sample_rate,double get_tempo,short get_channels,std::string get_sharps="",std::string get_flats="");
+    Custom_Sound();
 
-    void reset(std::string get_name,int get_sample_rate,double get_tempo,short get_channels,std::string get_sharps="",std::string get_flats="");
+    void set_length(std::string get_length);
 
-    template<typename... Args>
-    void set_volumes(Args const&... args){
-        volumes.clear();
+    //The following three functions setup per-channel values for volume, waveform, and frequency
+    //Pass a comma-separated list of values, one for each channel
+    //If fewer values are passed than channels exist, the last passed value will be used for all subsequent channels
+    //If no values are passed, all channels are set to a default value
+    //Passed values beyond the number of channels are discarded
 
-        std::vector<double> volume_values;
+    //Values should be doubles
+    void set_volumes(std::string get_values);
 
-        int unpack[]{0,(volume_values.push_back(args),0)...};
+    //Values should be valid waveform strings (see explanation near the top)
+    void set_waveforms(std::string get_values);
 
-        static_cast<void>(unpack);
+    //Values should be valid frequency strings (see explanation near the top)
+    void set_frequencies(std::string get_values);
 
-        for(int i=0;i<channels;i++){
-            if(i<volume_values.size()){
-                volumes.push_back(volume_values[i]);
-            }
-            else{
-                volumes.push_back(0.5);
-            }
-        }
-    }
-
-    template<typename... Args>
-    void set_waveforms(Args const&... args){
-        waveforms.clear();
-
-        std::vector<std::string> waveform_strings;
-
-        int unpack[]{0,(waveform_strings.push_back(args),0)...};
-
-        static_cast<void>(unpack);
-
-        for(int i=0;i<channels;i++){
-            if(i<waveform_strings.size()){
-                waveforms.push_back(waveform_strings[i]);
-            }
-            else{
-                waveforms.push_back("sine");
-            }
-        }
-    }
-
-    template<typename... Args>
-    void set_frequencies(Args const&... args){
-        frequencies.clear();
-
-        std::vector<std::string> frequency_strings;
-
-        int unpack[]{0,(frequency_strings.push_back(args),0)...};
-
-        static_cast<void>(unpack);
-
-        for(int i=0;i<channels;i++){
-            if(i<frequency_strings.size()){
-                frequencies.push_back(frequency_strings[i]);
-            }
-            else{
-                frequencies.push_back("C");
-            }
-        }
-    }
-
-    //Convert the passed note frequency to Hz
-    double get_note_frequency(std::string frequency_string);
-
-    //Convert the passed note value to seconds
-    double get_note_length(std::string length_string);
-
-    //Pass an empty string for frequency_string to use the currently set frequencies for each channel. Pass either a note letter, such as "A", or a number representing the frequency in Hz
-    //to specify a different frequency (for all channels)
-    //length_string should hold either a note value, such as "half", or a number representing the length in seconds
+    //Pass an empty string for frequency_string to use the currently set frequency string for each channel. Pass a frequency string to use it instead (for all channels)
+    //Pass an empty string for length_string to use the currently set length string. Pass a length string to use it instead
     //Pass "off" for waveform_override to use the currently set waveforms for each channel. Pass a waveform string to specify a different waveform (for all channels)
-    //Pass a negative number for volume_override to use the currently set volumes for each channel. Pass a positive volume value to specify a different volume (for all channels)
+    //Pass a negative number for volume_override to use the currently set volumes for each channel. Pass a positive volume value (including 0.0) to specify a different volume (for all channels)
     void add_note(std::string frequency_string,std::string length_string,std::string waveform_override="off",double volume_override=-1.0);
 
     void save(std::string path);

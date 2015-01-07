@@ -325,6 +325,7 @@ void Engine_Interface::load_data_main(){
     load_data("window");
     load_data("game_command");
     load_data("game_constant");
+    load_data("custom_sound");
 
     load_data_game();
 
@@ -410,6 +411,9 @@ bool Engine_Interface::load_data(string script){
                         }
                         else if(script=="game_constant"){
                             load_game_constant(&load);
+                        }
+                        else if(script=="custom_sound"){
+                            load_custom_sound(&load);
                         }
                         else{
                             load_data_script_game(script,&load);
@@ -2355,6 +2359,252 @@ void Engine_Interface::load_game_constant(File_IO_Load* load){
             set_game_constant(constant_name,constant_value);
 
             return;
+        }
+    }
+}
+
+void Engine_Interface::load_custom_sound(File_IO_Load* load){
+    Custom_Sound sound;
+
+    bool multi_line_comment=false;
+
+    //As long as we haven't reached the end of the file.
+    while(!load->eof()){
+        string line="";
+
+        //The option strings used in the file.
+
+        string str_name="name:";
+        string str_sample_rate="sample_rate:";
+        string str_tempo="tempo:";
+        string str_channels="channels:";
+        string str_sharps="sharps:";
+        string str_flats="flats:";
+        string str_length="length:";
+        string str_volumes="volume:";
+        string str_waveforms="waveform:";
+        string str_frequencies="frequency:";
+
+        //Grab the next line of the file.
+        load->getline(&line);
+
+        //Clear initial whitespace from the line.
+        boost::algorithm::trim(line);
+
+        //If the line ends a multi-line comment.
+        if(boost::algorithm::contains(line,"*/")){
+            multi_line_comment=false;
+        }
+        //If the line starts a multi-line comment.
+        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
+            multi_line_comment=true;
+        }
+        //If the line is a comment.
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
+            //Ignore this line.
+        }
+
+        //Load data based on the line.
+
+        //name
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
+            //Clear the data name.
+            line.erase(0,str_name.length());
+
+            sound.name=line;
+        }
+        //sample_rate
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sample_rate)){
+            //Clear the data name.
+            line.erase(0,str_sample_rate.length());
+
+            sound.sample_rate=Strings::string_to_long(line);
+        }
+        //tempo
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tempo)){
+            //Clear the data name.
+            line.erase(0,str_tempo.length());
+
+            sound.tempo=Strings::string_to_double(line);
+        }
+        //channels
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_channels)){
+            //Clear the data name.
+            line.erase(0,str_channels.length());
+
+            sound.channels=Strings::string_to_long(line);
+        }
+        //sharps
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sharps)){
+            //Clear the data name.
+            line.erase(0,str_sharps.length());
+
+            sound.sharps=line;
+        }
+        //flats
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_flats)){
+            //Clear the data name.
+            line.erase(0,str_flats.length());
+
+            sound.flats=line;
+        }
+        //length
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_length)){
+            //Clear the data name.
+            line.erase(0,str_length.length());
+
+            sound.set_length(line);
+        }
+        //volumes
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_volumes)){
+            //Clear the data name.
+            line.erase(0,str_volumes.length());
+
+            sound.set_volumes(line);
+        }
+        //waveforms
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_waveforms)){
+            //Clear the data name.
+            line.erase(0,str_waveforms.length());
+
+            sound.set_waveforms(line);
+        }
+        //frequencies
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frequencies)){
+            //Clear the data name.
+            line.erase(0,str_frequencies.length());
+
+            sound.set_frequencies(line);
+        }
+
+        //If the line begins the custom sound's data.
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,"<data>")){
+            load_custom_sound_data(load,sound);
+        }
+
+        //If the line ends the custom sound.
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</custom_sound>")){
+            sound_system.add_sound(sound);
+
+            return;
+        }
+    }
+}
+
+void Engine_Interface::load_custom_sound_data(File_IO_Load* load,Custom_Sound& sound){
+    bool multi_line_comment=false;
+
+    //As long as we haven't reached the end of the file.
+    while(!load->eof()){
+        string line="";
+
+        //The option strings used in the file.
+
+        string str_length="length:";
+        string str_volumes="volume:";
+        string str_waveforms="waveform:";
+        string str_frequencies="frequency:";
+
+        //Grab the next line of the file.
+        load->getline(&line);
+
+        //Clear initial whitespace from the line.
+        boost::algorithm::trim(line);
+
+        //If the line ends a multi-line comment.
+        if(boost::algorithm::contains(line,"*/")){
+            multi_line_comment=false;
+        }
+        //If the line starts a multi-line comment.
+        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
+            multi_line_comment=true;
+        }
+        //If the line is a comment.
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
+            //Ignore this line.
+        }
+
+        //Load data based on the line.
+
+        //length
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_length)){
+            //Clear the data name.
+            line.erase(0,str_length.length());
+
+            sound.set_length(line);
+        }
+        //volumes
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_volumes)){
+            //Clear the data name.
+            line.erase(0,str_volumes.length());
+
+            sound.set_volumes(line);
+        }
+        //waveforms
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_waveforms)){
+            //Clear the data name.
+            line.erase(0,str_waveforms.length());
+
+            sound.set_waveforms(line);
+        }
+        //frequencies
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frequencies)){
+            //Clear the data name.
+            line.erase(0,str_frequencies.length());
+
+            sound.set_frequencies(line);
+        }
+
+        //If the line ends the custom sound data.
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</data>")){
+            return;
+        }
+
+        else if(!multi_line_comment){
+            vector<string> components;
+            boost::algorithm::split(components,line,boost::algorithm::is_any_of(","));
+
+            if(components.size()>0 && components[0].length()>0){
+                string frequency="";
+                string length="";
+                string waveform="off";
+                double volume=-1.0;
+
+                if(components.size()>=4){
+                    frequency=components[0];
+                    length=components[1];
+                    waveform=components[2];
+                    volume=Strings::string_to_double(components[3]);
+                }
+                else if(components.size()==3){
+                    frequency=components[0];
+                    length=components[1];
+                    waveform=components[2];
+                }
+                else if(components.size()==2){
+                    frequency=components[0];
+                    length=components[1];
+                }
+                else{
+                    if(isdigit(components[0][0])){
+                        frequency=components[0];
+                    }
+                    else if(components[0][0]>='A' && components[0][0]<='G'){
+                        frequency=components[0];
+                    }
+                    else if(components[0]=="rest"){
+                        frequency=components[0];
+                    }
+                    else{
+                        length=components[0];
+                    }
+                }
+
+                //Allow spaces instead of underscores in note length names for convenience
+                boost::algorithm::replace_all(length," ","_");
+
+                sound.add_note(frequency,length,waveform,volume);
+            }
         }
     }
 }

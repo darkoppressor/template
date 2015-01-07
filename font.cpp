@@ -18,28 +18,31 @@ Bitmap_Font::Bitmap_Font(){
 
 void Bitmap_Font::build_font(){
     //Set the cell dimensions:
-    double cellW=sprite.get_width()/256.0;
-    double cellH=sprite.get_height();
+    double cell_width=sprite.get_width()/256.0;
+    double cell_height=sprite.get_height();
 
     //The current character we are setting.
-    short currentChar=0;
+    int current_char=0;
 
     //Go through the cell columns.
-    for(short cols=0;cols<256;cols++){
+    for(int cols=0;cols<256;cols++){
         //Set the character offset:
-        chars[currentChar].x=cellW*cols;
-        chars[currentChar].y=0.0;
+        chars[current_char].x=cell_width*cols;
+        chars[current_char].y=0.0;
+
         //Set the dimensions of the character:
-        chars[currentChar].w=cellW;
-        chars[currentChar].h=cellH;
+        chars[current_char].w=cell_width;
+        chars[current_char].h=cell_height;
+
         //Go to the next character.
-        currentChar++;
+        current_char++;
     }
 }
 
 double Bitmap_Font::get_letter_width(){
     return sprite.get_width()/256.0;
 }
+
 double Bitmap_Font::get_letter_height(){
     return sprite.get_height();
 }
@@ -65,11 +68,11 @@ void Bitmap_Font::show(double x,double y,string text,string font_color,double op
                 if(!allowed_area_present || (allowed_area_present && X>=allowed_area.x && X+get_letter_width()*scale_x<=allowed_area.x+allowed_area.w && Y>=allowed_area.y && Y+get_letter_height()*scale_y<=allowed_area.y+allowed_area.h)){
                     if(shadow_distance!=0 && engine_interface.option_font_shadows){
                         //Render the shadow.
-                        render_sprite((int)X+shadow_distance,(int)Y+shadow_distance,*image.get_image(sprite.name),&chars[ascii],opacity,scale_x,scale_y,angle,"ui_black");
+                        render_sprite(X+shadow_distance,Y+shadow_distance,*image.get_image(sprite.name),&chars[ascii],opacity,scale_x,scale_y,angle,"ui_black");
                     }
 
                     //Render the character.
-                    render_sprite((int)X,(int)Y,*image.get_image(sprite.name),&chars[ascii],opacity,scale_x,scale_y,angle,font_color);
+                    render_sprite(X,Y,*image.get_image(sprite.name),&chars[ascii],opacity,scale_x,scale_y,angle,font_color);
                 }
             }
 
