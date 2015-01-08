@@ -484,6 +484,9 @@ double Custom_Sound::get_note_length(string length_string){
     else if(length_string=="quarter"){
         return quarter_note_length;
     }
+    else if(length_string=="dotted_eighth"){
+        return quarter_note_length*0.75;
+    }
     else if(length_string=="eighth"){
         return quarter_note_length*0.5;
     }

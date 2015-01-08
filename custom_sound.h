@@ -31,6 +31,7 @@ public:
     //half
     //dotted_quarter
     //quarter
+    //dotted_eighth
     //eighth
     //sixteenth
 
