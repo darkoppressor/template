@@ -5,9 +5,9 @@
 
 namespace Version{
 	//Build date
-	static const char YEAR[]="2014";
-	static const char MONTH[]="12";
-	static const char DAY[]="30";
+	static const char YEAR[]="2015";
+	static const char MONTH[]="01";
+	static const char DAY[]="07";
 
 	//Version
 	static const int MAJOR=0;
@@ -18,10 +18,10 @@ namespace Version{
 	static const char STATUS[]="alpha";
 
 	//Engine version
-	static const std::string ENGINE_VERSION="1.1.5";
+	static const std::string ENGINE_VERSION="1.2.0";
 
 	//Engine date
-	static const std::string ENGINE_DATE="2014-12-30";
+	static const std::string ENGINE_DATE="2015-01-07";
 }
 
 #endif
