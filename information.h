@@ -24,6 +24,11 @@ public:
     std::string text;
     std::string tooltip_text;
 
+    //Holds strings for character color overrides in text
+    //An empty string means no override for that character
+    //The size of this vector must equal the length of text
+    std::vector<std::string> text_character_colors;
+
     //The position of the text cursor
     //Only applicable if the text is mutable
     int cursor_position;
@@ -78,6 +83,8 @@ public:
     void input_newline();
 
     void set_text(std::string get_text);
+
+    void set_colored_text(std::string get_text);
 
     //If there is special info text, this function sets the text.
     //This is used to create strings that take some runtime stuff into account.

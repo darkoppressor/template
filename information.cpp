@@ -257,6 +257,73 @@ void Information::set_text(string get_text){
     set_dimensions();
 }
 
+void Information::set_colored_text(string get_text){
+    string colored_text=get_text;
+
+    text_character_colors.clear();
+
+    string color="";
+    bool reading_color=false;
+    bool using_color=false;
+    bool ending_color=false;
+
+    for(int i=0;i<colored_text.length();i++){
+        if(reading_color){
+            if(colored_text[i]=='>'){
+                reading_color=false;
+                using_color=true;
+                colored_text.erase(i,1);
+                i--;
+            }
+            else{
+                color+=colored_text[i];
+                colored_text.erase(i,1);
+                i--;
+            }
+        }
+        else{
+            if(using_color){
+                if(ending_color){
+                    if(colored_text[i]=='>'){
+                        ending_color=false;
+                        using_color=false;
+                    }
+
+                    colored_text.erase(i,1);
+                    i--;
+                }
+                else{
+                    if(colored_text[i]=='<'){
+                        ending_color=true;
+                        colored_text.erase(i,1);
+                        i--;
+                    }
+                    else{
+                        text_character_colors.push_back(color);
+                    }
+                }
+            }
+            else{
+                if(colored_text[i]=='<'){
+                    color="";
+                    reading_color=true;
+                    colored_text.erase(i,1);
+                    i--;
+                }
+                else{
+                    text_character_colors.push_back("");
+                }
+            }
+        }
+    }
+
+    if(text_character_colors.size()!=colored_text.length()){
+        Log::add_error("Error parsing colored text '"+get_text+"'");
+    }
+
+    set_text(colored_text);
+}
+
 void Information::set_special_text(){
     text=engine_interface.special_info_manager.get_special_info_text(special_info_text);
 
@@ -471,7 +538,7 @@ void Information::render(int x_offset,int y_offset){
         }
 
         if(font_color_real!="<INVISIBLE>"){
-            ptr_font->show(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y,text,font_color_real,1.0,1.0,1.0,0.0,allowed_area);
+            ptr_font->show(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y,text,font_color_real,1.0,1.0,1.0,0.0,allowed_area,text_character_colors);
 
             if(text_mutable && engine_interface.mutable_info_this(this)){
                 check_cursor_position();

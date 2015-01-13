@@ -1793,6 +1793,7 @@ void Engine_Interface::load_information(File_IO_Load* load){
 
         string str_location="location:";
         string str_text="text:";
+        string str_colored_text="colored_text:";
         string str_tooltip_text="tooltip:";
         string str_text_mutable="mutable:";
         string str_max_text_length="max_text_length:";
@@ -1848,6 +1849,13 @@ void Engine_Interface::load_information(File_IO_Load* load){
             line.erase(0,str_text.length());
 
             windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].text=Strings::process_newlines(line);
+        }
+        //Colored text
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_colored_text)){
+            //Clear the data name.
+            line.erase(0,str_colored_text.length());
+
+            windows[windows.size()-1].informations[windows[windows.size()-1].informations.size()-1].set_colored_text(Strings::process_newlines(line));
         }
         //Tooltip text
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tooltip_text)){

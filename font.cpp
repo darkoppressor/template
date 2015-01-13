@@ -47,7 +47,8 @@ double Bitmap_Font::get_letter_height(){
     return sprite.get_height();
 }
 
-void Bitmap_Font::show(double x,double y,string text,string font_color,double opacity,double scale_x,double scale_y,double angle,SDL_Rect allowed_area){
+void Bitmap_Font::show(double x,double y,string text,string font_color,double opacity,double scale_x,double scale_y,double angle,
+                       SDL_Rect allowed_area,const vector<string>& character_colors){
     //Temporary offsets.
     double X=x,Y=y;
 
@@ -55,9 +56,10 @@ void Bitmap_Font::show(double x,double y,string text,string font_color,double op
     double real_spacing_y=spacing_y*scale_y;
 
     //Go through the text.
-    for(short show=0;text[show]!='\0';show++){
+    for(int show=0;text[show]!='\0';show++){
         //Get the ASCII value of the character.
         short ascii=(unsigned char)text[show];
+
         if(text[show]!='\xA'){
             if(X+get_letter_width()*scale_x>=0 && X<=main_window.SCREEN_WIDTH && Y+get_letter_height()*scale_y>=0 && Y<=main_window.SCREEN_HEIGHT){
                 bool allowed_area_present=false;
@@ -71,8 +73,14 @@ void Bitmap_Font::show(double x,double y,string text,string font_color,double op
                         render_sprite(X+shadow_distance,Y+shadow_distance,*image.get_image(sprite.name),&chars[ascii],opacity,scale_x,scale_y,angle,"ui_black");
                     }
 
+                    string character_color=font_color;
+
+                    if(character_colors.size()==text.length() && character_colors[show].length()>0){
+                        character_color=character_colors[show];
+                    }
+
                     //Render the character.
-                    render_sprite(X,Y,*image.get_image(sprite.name),&chars[ascii],opacity,scale_x,scale_y,angle,font_color);
+                    render_sprite(X,Y,*image.get_image(sprite.name),&chars[ascii],opacity,scale_x,scale_y,angle,character_color);
                 }
             }
 
