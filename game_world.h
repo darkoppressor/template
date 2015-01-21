@@ -8,6 +8,8 @@ public:
 
     ///std::vector<Example> example_objects;
 
+    Game_World();
+
     void clear_world();
     void generate_world();
 

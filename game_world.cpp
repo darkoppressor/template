@@ -4,6 +4,10 @@
 
 using namespace std;
 
+Game_World::Game_World(){
+    clear_world();
+}
+
 void Game_World::clear_world(){
     ///example_objects.clear();
 }
