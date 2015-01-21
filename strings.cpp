@@ -234,52 +234,56 @@ bool Strings::is_number(const string& str_input){
     return true;
 }
 
-string Strings::time_string(int seconds,bool highest){
+string Strings::time_string(int64_t seconds,bool highest){
+    if(seconds<0){
+        return "Negative number of seconds";
+    }
+
     string text="";
 
-    int minutes=0;
-    int hours=0;
-    int days=0;
-    int weeks=0;
-    int months=0;
-    int years=0;
+    int64_t minutes=0;
+    int64_t hours=0;
+    int64_t days=0;
+    int64_t weeks=0;
+    int64_t months=0;
+    int64_t years=0;
 
-    for(int i=seconds;i>=60;){
+    for(int64_t i=seconds;i>=60;){
         minutes++;
         i-=60;
         if(i<60){
             seconds=i;
         }
     }
-    for(int i=minutes;i>=60;){
+    for(int64_t i=minutes;i>=60;){
         hours++;
         i-=60;
         if(i<60){
             minutes=i;
         }
     }
-    for(int i=hours;i>=24;){
+    for(int64_t i=hours;i>=24;){
         days++;
         i-=24;
         if(i<24){
             hours=i;
         }
     }
-    for(int i=days;i>=7;){
+    for(int64_t i=days;i>=7;){
         weeks++;
         i-=7;
         if(i<7){
             days=i;
         }
     }
-    for(int i=weeks;i>=4;){
+    for(int64_t i=weeks;i>=4;){
         months++;
         i-=4;
         if(i<4){
             weeks=i;
         }
     }
-    for(int i=months;i>=12;){
+    for(int64_t i=months;i>=12;){
         years++;
         i-=12;
         if(i<12){

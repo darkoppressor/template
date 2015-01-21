@@ -61,7 +61,7 @@ public:
 
     //Returns a string with the time represented by seconds.
     //If highest is true, only shows the highest unit of time possible.
-    static std::string time_string(int seconds,bool highest=false);
+    static std::string time_string(int64_t seconds,bool highest=false);
 
     static bool string_to_bool(const std::string& get_string);
     static std::string bool_to_string(bool get_bool);
