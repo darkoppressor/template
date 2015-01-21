@@ -1,5 +1,7 @@
 #include "math.h"
 
+#include <cmath>
+
 using namespace std;
 
 double degrees_to_radians(double degrees){
