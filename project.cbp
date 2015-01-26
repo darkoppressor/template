@@ -364,6 +364,8 @@
 		<Unit filename="button_events.cpp" />
 		<Unit filename="button_events.h" />
 		<Unit filename="button_events_game.cpp" />
+		<Unit filename="cipher.cpp" />
+		<Unit filename="cipher.h" />
 		<Unit filename="collision.cpp" />
 		<Unit filename="collision.h" />
 		<Unit filename="color.cpp" />
