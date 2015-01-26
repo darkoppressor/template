@@ -4491,12 +4491,21 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                 //Paste
                 if(!event_consumed && (keystates[SDL_SCANCODE_LCTRL] || keystates[SDL_SCANCODE_RCTRL]) && event.key.keysym.scancode==SDL_SCANCODE_V){
-                    if(SDL_HasClipboardText()){
+					if(SDL_HasClipboardText() && mutable_info_selected()){
                         char* text=SDL_GetClipboardText();
                         string str_text=text;
                         SDL_free(text);
 
-                        handle_text_input(str_text);
+                        vector<string> lines;
+                        boost::algorithm::split(lines,str_text,boost::algorithm::is_any_of("\n"));
+
+                        for(int i=0;i<lines.size();i++){
+                            handle_text_input(lines[i]);
+
+                            if(i<lines.size()-1 && ptr_mutable_info->allows_input("newline") && ptr_mutable_info->text.length()<ptr_mutable_info->max_text_length){
+                                input_newline();
+                            }
+                        }
                     }
 
                     event_consumed=true;
