@@ -2820,6 +2820,26 @@ Window* Engine_Interface::get_top_window(){
     return 0;
 }
 
+void Engine_Interface::open_window(Window* window){
+    if(!is_window_open(window)){
+        window_z_order.insert(window_z_order.begin(),window);
+
+        reset_gui_selected_object();
+    }
+}
+
+void Engine_Interface::close_window(Window* window){
+    for(int i=0;i<window_z_order.size();i++){
+        if(window_z_order[i]==window){
+            window_z_order.erase(window_z_order.begin()+i);
+
+            reset_gui_selected_object();
+
+            break;
+        }
+    }
+}
+
 void Engine_Interface::bring_window_to_top(Window* window){
     if(is_window_open(window)){
         close_window(window);

@@ -74,26 +74,6 @@ void Engine_Interface::unload_data_game(){
     return ptr_object;
 }*/
 
-void Engine_Interface::open_window(Window* window){
-    if(!is_window_open(window)){
-        window_z_order.insert(window_z_order.begin(),window);
-
-        reset_gui_selected_object();
-    }
-}
-
-void Engine_Interface::close_window(Window* window){
-    for(int i=0;i<window_z_order.size();i++){
-        if(window_z_order[i]==window){
-            window_z_order.erase(window_z_order.begin()+i);
-
-            reset_gui_selected_object();
-
-            break;
-        }
-    }
-}
-
 void Engine_Interface::render_title_background(){
     Bitmap_Font* font=get_font("small");
 
