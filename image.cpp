@@ -18,6 +18,17 @@ void Image::add_image(string name,SDL_Surface* surface){
     image_names.push_back(name);
 }
 
+void Image::remove_image(string name){
+    for(int i=0;i<image_names.size();i++){
+        if(image_names[i]==name){
+            image_names.erase(image_names.begin()+i);
+            images.erase(images.begin()+i);
+
+            break;
+        }
+    }
+}
+
 void Image::load_images(){
     error_image=0;
 

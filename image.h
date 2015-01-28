@@ -20,6 +20,7 @@ public:
     void set_error_image();
 
     void add_image(std::string name,SDL_Surface* surface);
+    void remove_image(std::string name);
 
     void load_images();
     void unload_images();
