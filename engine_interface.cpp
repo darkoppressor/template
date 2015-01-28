@@ -3550,8 +3550,9 @@ void Engine_Interface::handle_text_input(string text){
                (ptr_mutable_info->allows_input("symbols") && ((text[i]>='!' && text[i]<='/') || (text[i]>=':' && text[i]<='@') || (text[i]>='[' && text[i]<='`') || ((unsigned char)text[i]>='{'))) ||
                (ptr_mutable_info->allows_input("symbols_posix") && (text[i]=='.' || text[i]=='_' || text[i]=='-')) ||
                (ptr_mutable_info->allows_input("space") && text[i]==' ')){
-                //Don't allow the console toggle key to be typed.
-                if(!(text[i]=='`' && (gui_mode=="mouse" || gui_mode=="keyboard") && !keystates[SDL_SCANCODE_LSHIFT] && !keystates[SDL_SCANCODE_RSHIFT])){
+                //Only allow the console toggle key's grave character to be typed if we are not in the console
+                if(!is_console_selected() ||
+                   !(text[i]=='`' && (gui_mode=="mouse" || gui_mode=="keyboard") && !keystates[SDL_SCANCODE_LSHIFT] && !keystates[SDL_SCANCODE_RSHIFT])){
                     keep_char=true;
                 }
             }
