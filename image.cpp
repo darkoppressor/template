@@ -22,6 +22,8 @@ void Image::remove_image(string name){
     for(int i=0;i<image_names.size();i++){
         if(image_names[i]==name){
             image_names.erase(image_names.begin()+i);
+
+            images[i].unload_image();
             images.erase(images.begin()+i);
 
             break;
