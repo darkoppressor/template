@@ -86,6 +86,8 @@ public:
 
     void set_colored_text(std::string get_text);
 
+    void set_sprite(std::string sprite_name);
+
     //If there is special info text, this function sets the text.
     //This is used to create strings that take some runtime stuff into account.
     void set_special_text();

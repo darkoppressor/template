@@ -324,6 +324,12 @@ void Information::set_colored_text(string get_text){
     set_text(colored_text);
 }
 
+void Information::set_sprite(string sprite_name){
+    sprite.set_name(sprite_name);
+
+    set_dimensions();
+}
+
 void Information::set_special_text(){
     text=engine_interface.special_info_manager.get_special_info_text(special_info_text);
 
@@ -331,7 +337,7 @@ void Information::set_special_text(){
 }
 
 void Information::set_special_sprite(){
-    sprite.name=engine_interface.special_info_manager.get_special_info_sprite(special_info_sprite);
+    sprite.set_name(engine_interface.special_info_manager.get_special_info_sprite(special_info_sprite));
 }
 
 bool Information::allows_input(string input_type){
