@@ -13,6 +13,19 @@ void Sound::add_sound(const Custom_Sound& sound){
     sound_names.push_back(sound.name);
 }
 
+void Sound::remove_sound(string name){
+    for(int i=0;i<sound_names.size();i++){
+        if(sound_names[i]==name){
+            sound_names.erase(sound_names.begin()+i);
+
+            sounds[i].unload_sound();
+            sounds.erase(sounds.begin()+i);
+
+            break;
+        }
+    }
+}
+
 void Sound::load_sounds(){
     //Look through all of the files in the directory.
     for(File_IO_Directory_Iterator it("data/sounds");it.evaluate();it.iterate()){

@@ -21,6 +21,7 @@ public:
     std::vector<std::string> sound_names;
 
     void add_sound(const Custom_Sound& sound);
+    void remove_sound(std::string name);
 
     void load_sounds();
     void unload_sounds();
