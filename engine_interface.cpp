@@ -4003,7 +4003,7 @@ bool Engine_Interface::handle_input_events_drag_and_drop(){
             string file=event.drop.file;
             SDL_free(event.drop.file);
 
-            ///Do something with file
+            handle_drag_and_drop(file);
 
             event_consumed=true;
         }

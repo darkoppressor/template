@@ -494,6 +494,8 @@ public:
     void render(int render_rate,double ms_per_frame,int logic_frame_rate);
     void render_loading_screen(double percentage,std::string load_message);
 
+    void handle_drag_and_drop(std::string file);
+
     std::string get_game_window_caption();
 
     void render_dev_info();

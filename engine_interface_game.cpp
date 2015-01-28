@@ -74,6 +74,10 @@ void Engine_Interface::unload_data_game(){
     return ptr_object;
 }*/
 
+void Engine_Interface::handle_drag_and_drop(string file){
+    ///Do something with file
+}
+
 void Engine_Interface::render_title_background(){
     Bitmap_Font* font=get_font("small");
 
