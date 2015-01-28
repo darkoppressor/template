@@ -61,6 +61,8 @@ Engine_Interface::Engine_Interface(){
     toast_length_medium=0;
     toast_length_long=0;
 
+    spaces_per_tab=0;
+
     logical_screen_width=0;
     logical_screen_height=0;
 
@@ -492,6 +494,7 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
         string str_toast_length_short="toast_length_short:";
         string str_toast_length_medium="toast_length_medium:";
         string str_toast_length_long="toast_length_long:";
+        string str_spaces_per_tab="spaces_per_tab:";
         string str_console_move_speed="console_move_speed:";
         string str_console_max_command_length="console_max_command_length:";
         string str_console_max_log_recall="console_max_log_recall:";
@@ -763,6 +766,13 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             line.erase(0,str_toast_length_long.length());
 
             toast_length_long=Strings::string_to_long(line);
+        }
+        //Spaces per tab
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_spaces_per_tab)){
+            //Clear the data name.
+            line.erase(0,str_spaces_per_tab.length());
+
+            spaces_per_tab=Strings::string_to_long(line);
         }
         //Console move speed
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_move_speed)){
@@ -3566,7 +3576,11 @@ void Engine_Interface::handle_text_input(string text){
         //Convert tabs into spaces
         //I realize this is not ideal (or even correct),
         //but I think it's good enough, and implementing real tabs would be a headache
-        boost::algorithm::replace_all(text,"\t","    ");
+        string tab="";
+        for(int i=0;i<spaces_per_tab;i++){
+            tab+=" ";
+        }
+        boost::algorithm::replace_all(text,"\t",tab);
 
         //Don't allow the mutable string to exceed its maximum size.
         for(int i=text.length()-1;i>=0 && ptr_mutable_info->text.length()+text.length()>ptr_mutable_info->max_text_length;i--){

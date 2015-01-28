@@ -138,6 +138,11 @@ public:
     int toast_length_medium;
     int toast_length_long;
 
+    //Tab is currently implemented as spaces
+    //I know this is gross, but I'm doing it anyway,
+    //because I do not want to implement proper tabs
+    int spaces_per_tab;
+
     //The game's logical resolution.
     //If resolution mode is fixed, the game window will be forced to remain at this resolution, ignoring the resolution option.
     //If resolution mode is scaling, the game logic will use this resolution, and the game window will scale to the resolution option.
