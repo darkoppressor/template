@@ -14,6 +14,8 @@ vector<unsigned char> Cipher::generate_characters(){
         temp_characters.push_back(i);
     }
 
+    temp_characters.push_back('\n');
+
     return temp_characters;
 }
 
