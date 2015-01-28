@@ -169,6 +169,8 @@ public:
     double window_border_thickness;
     double gui_border_thickness;
 
+    bool drag_and_drop;
+
     double touch_finger_size;
     bool touch_controller_shoulders;
     bool touch_controller_guide;
@@ -475,6 +477,7 @@ public:
 
     void prepare_for_input();
 
+    bool handle_input_events_drag_and_drop();
     bool handle_input_events_touch();
     bool handle_input_events_command_set();
     bool handle_input_events(bool event_ignore_command_set);

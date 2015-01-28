@@ -83,6 +83,8 @@ Engine_Interface::Engine_Interface(){
     window_border_thickness=0.0;
     gui_border_thickness=0.0;
 
+    drag_and_drop=false;
+
     touch_finger_size=0.0;
     touch_controller_shoulders=false;
     touch_controller_guide=false;
@@ -484,6 +486,7 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
         string str_sound_falloff="sound_falloff:";
         string str_window_border_thickness="window_border_thickness:";
         string str_gui_border_thickness="gui_border_thickness:";
+        string str_drag_and_drop="drag_and_drop:";
         string str_touch_finger_size="touch_finger_size:";
         string str_touch_controller_shoulders="touch_controller_shoulders:";
         string str_touch_controller_guide="touch_controller_guide:";
@@ -696,6 +699,13 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             line.erase(0,str_gui_border_thickness.length());
 
             gui_border_thickness=Strings::string_to_double(line);
+        }
+        //Drag and drop
+        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_drag_and_drop)){
+            //Clear the data name.
+            line.erase(0,str_drag_and_drop.length());
+
+            drag_and_drop=Strings::string_to_bool(line);
         }
         //Touch finger size
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_finger_size)){
@@ -3982,6 +3992,25 @@ void Engine_Interface::prepare_for_input(){
             window_under_mouse=&windows[closed_windows[i]];
         }
     }
+}
+
+bool Engine_Interface::handle_input_events_drag_and_drop(){
+    bool event_consumed=false;
+
+    switch(event.type){
+    case SDL_DROPFILE:
+        if(!event_consumed){
+            string file=event.drop.file;
+            SDL_free(event.drop.file);
+
+            ///Do something with file
+
+            event_consumed=true;
+        }
+        break;
+    }
+
+    return event_consumed;
 }
 
 bool Engine_Interface::handle_input_events_touch(){

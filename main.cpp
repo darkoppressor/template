@@ -179,6 +179,10 @@ int main(int argc,char* args[]){
     }
 
     SDL_SetEventFilter(handle_app_events,NULL);
+	
+	if(engine_interface.drag_and_drop){
+        SDL_EventState(SDL_DROPFILE,SDL_ENABLE);
+    }
 
     engine_interface.console.exec_file("autoexec.cfg");
 

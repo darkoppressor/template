@@ -32,6 +32,10 @@ void Update::input(){
             event_consumed=true;
         }
 
+        if(!event_consumed){
+            event_consumed=engine_interface.handle_input_events_drag_and_drop();
+        }
+
         if(!event_consumed && engine_interface.touch_controls){
             event_consumed=engine_interface.handle_input_events_touch();
         }
