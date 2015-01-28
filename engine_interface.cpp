@@ -3549,7 +3549,7 @@ void Engine_Interface::handle_text_input(string text){
                (ptr_mutable_info->allows_input("numbers") && text[i]>='0' && text[i]<='9') ||
                (ptr_mutable_info->allows_input("symbols") && ((text[i]>='!' && text[i]<='/') || (text[i]>=':' && text[i]<='@') || (text[i]>='[' && text[i]<='`') || ((unsigned char)text[i]>='{'))) ||
                (ptr_mutable_info->allows_input("symbols_posix") && (text[i]=='.' || text[i]=='_' || text[i]=='-')) ||
-               (ptr_mutable_info->allows_input("space") && text[i]==' ')){
+               (ptr_mutable_info->allows_input("space") && (text[i]==' ' || text[i]=='\t'))){
                 //Only allow the console toggle key's grave character to be typed if we are not in the console
                 if(!is_console_selected() ||
                    !(text[i]=='`' && (gui_mode=="mouse" || gui_mode=="keyboard") && !keystates[SDL_SCANCODE_LSHIFT] && !keystates[SDL_SCANCODE_RSHIFT])){
@@ -3562,6 +3562,11 @@ void Engine_Interface::handle_text_input(string text){
                 i--;
             }
         }
+
+        //Convert tabs into spaces
+        //I realize this is not ideal (or even correct),
+        //but I think it's good enough, and implementing real tabs would be a headache
+        boost::algorithm::replace_all(text,"\t","    ");
 
         //Don't allow the mutable string to exceed its maximum size.
         for(int i=text.length()-1;i>=0 && ptr_mutable_info->text.length()+text.length()>ptr_mutable_info->max_text_length;i--){
@@ -4413,6 +4418,12 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                     if(!event_consumed && ptr_mutable_info->allows_input("backspace") && event.key.keysym.scancode==SDL_SCANCODE_DELETE && ptr_mutable_info->text.length()>0){
                         input_delete();
+
+                        event_consumed=true;
+                    }
+
+                    if(!event_consumed && ptr_mutable_info->allows_input("space") && event.key.keysym.scancode==SDL_SCANCODE_TAB){
+                        handle_text_input("\t");
 
                         event_consumed=true;
                     }
