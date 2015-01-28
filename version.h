@@ -7,7 +7,7 @@ namespace Version{
 	//Build date
 	static const char YEAR[]="2015";
 	static const char MONTH[]="01";
-	static const char DAY[]="26";
+	static const char DAY[]="28";
 
 	//Version
 	static const int MAJOR=0;
@@ -21,7 +21,7 @@ namespace Version{
 	static const std::string ENGINE_VERSION="1.2.3";
 
 	//Engine date
-	static const std::string ENGINE_DATE="2015-01-26";
+	static const std::string ENGINE_DATE="2015-01-28";
 }
 
 #endif
