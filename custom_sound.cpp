@@ -16,18 +16,6 @@ Custom_Sound::Custom_Sound(){
     name="";
 
     length="quarter";
-
-    for(int i=0;i<channels;i++){
-        volumes.push_back(0.5);
-    }
-
-    for(int i=0;i<channels;i++){
-        waveforms.push_back("sine");
-    }
-
-    for(int i=0;i<channels;i++){
-        frequencies.push_back("C");
-    }
 }
 
 void Custom_Sound::set_length(string get_length){
