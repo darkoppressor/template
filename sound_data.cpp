@@ -17,6 +17,16 @@ void Sound_Data::load_sound(string filename){
     }
 }
 
+void Sound_Data::load_sound(Mix_Chunk* ptr_chunk){
+    chunk=Mix_QuickLoad_RAW(ptr_chunk->abuf,ptr_chunk->alen);
+
+    if(chunk==0){
+        string msg="Error loading sound from chunk: ";
+        msg+=Mix_GetError();
+        Log::add_error(msg);
+    }
+}
+
 void Sound_Data::create_custom_sound(const Custom_Sound& sound){
     const vector<int16_t>& buffer=sound.samples;
 

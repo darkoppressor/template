@@ -13,6 +13,14 @@ void Sound::add_sound(const Custom_Sound& sound){
     sound_names.push_back(sound.name);
 }
 
+void Sound::add_sound(string name,Mix_Chunk* chunk){
+    sounds.push_back(Sound_Data());
+
+    sounds[sounds.size()-1].load_sound(chunk);
+
+    sound_names.push_back(name);
+}
+
 void Sound::remove_sound(string name){
     for(int i=0;i<sound_names.size();i++){
         if(sound_names[i]==name){
@@ -78,10 +86,13 @@ int Sound::get_free_channel(){
     for(int i=0;i<allocated_channels;i++){
         //Check through all music tracks currently loaded.
         bool channel_taken_by_music_track=false;
+		
         for(int n=0;n<music.tracks.size();n++){
             //If this channel is equal to this track's channel, then this channel is taken.
             if(i==music.tracks[n].channel){
                 channel_taken_by_music_track=true;
+				
+				break;
             }
         }
 
@@ -162,6 +173,28 @@ void Sound::_play_sound(Sound_Data* ptr_sound,int volume){
                 Mix_Volume(channel,volume);
                 Mix_PlayChannel(channel,ptr_sound->chunk,0);
             }
+        }
+    }
+}
+
+void Sound::stop_sounds(){
+    int allocated_channels=Mix_AllocateChannels(-1);
+
+    for(int i=0;i<allocated_channels;i++){
+        //Check through all music tracks currently loaded.
+        bool channel_taken_by_music_track=false;
+
+        for(int n=0;n<music.tracks.size();n++){
+            //If this channel is equal to this track's channel, then this channel is taken.
+            if(i==music.tracks[n].channel){
+                channel_taken_by_music_track=true;
+
+                break;
+            }
+        }
+
+        if(!channel_taken_by_music_track){
+            Mix_HaltChannel(i);
         }
     }
 }

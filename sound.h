@@ -21,6 +21,7 @@ public:
     std::vector<std::string> sound_names;
 
     void add_sound(const Custom_Sound& sound);
+	void add_sound(std::string name,Mix_Chunk* chunk);
     void remove_sound(std::string name);
 
     void load_sounds();
@@ -37,6 +38,9 @@ public:
     //So a low falloff means the sound will quickly falloff.
     void play_sound(std::string sound_name);
     void play_sound(std::string sound_name,double sound_x,double sound_y,double falloff=-1.0);
+	
+	//Stop all sounds
+    void stop_sounds();
 
     Sound_Data* get_sound(std::string sound_name);
 };

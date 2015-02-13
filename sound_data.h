@@ -19,6 +19,7 @@ public:
     Sound_Data();
 
     void load_sound(std::string filename);
+	void load_sound(Mix_Chunk* ptr_chunk);
     //This function is still somewhat experimental
     //Each element in sound's buffer is a (single channel, I think) of a signed 16-bit sample
     //I believe that for stereo sound, buffer[0] and buffer[1] represent the two channels for a single sample
