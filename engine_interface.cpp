@@ -4465,7 +4465,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                         event_consumed=true;
                     }
 
-                    if(!event_consumed && ptr_mutable_info->allows_input("space") && event.key.keysym.scancode==SDL_SCANCODE_TAB){
+                    if(!event_consumed && !is_console_selected() && ptr_mutable_info->allows_input("space") && event.key.keysym.scancode==SDL_SCANCODE_TAB){
                         handle_text_input("\t");
 
                         event_consumed=true;
