@@ -15,8 +15,17 @@ void Engine_Interface::render_dev_info(){
 
     if(msg.length()>0){
         Bitmap_Font* font=engine_interface.get_font("small");
+		
+		double y=2.0;
+        if(engine_interface.option_fps){
+            y+=font->spacing_y;
 
-        render_rectangle(2.0,2.0,Strings::longest_line(msg)*font->spacing_x,Strings::newline_count(msg)*font->spacing_y,0.75,"ui_black");
-        font->show(2.0,2.0,msg,"red");
+            if(network.status!="off"){
+                y+=font->spacing_y*2.0;
+            }
+        }
+
+        render_rectangle(2.0,y,Strings::longest_line(msg)*font->spacing_x,Strings::newline_count(msg)*font->spacing_y,0.75,"ui_black");
+        font->show(2.0,y,msg,"red");
     }
 }
