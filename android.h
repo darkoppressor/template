@@ -2,6 +2,7 @@
 #define android_h
 
 #include <string>
+#include <vector>
 
 #ifdef GAME_OS_ANDROID
     #include <SDL.h>
@@ -55,10 +56,11 @@ public:
 
     int value_count;
     std::string units;
+	std::vector<std::string> value_labels;
 
     Android_Sensor();
 
-    void setup(int get_value_count,std::string get_units);
+    void setup(int get_value_count,std::string get_units,const std::vector<std::string>& get_value_labels);
 };
 
 class Android_GPS{
@@ -112,6 +114,7 @@ public:
     int get_sensor_value_count_actual(std::string sensor_type);
     int get_sensor_value_count(std::string sensor_type);
     std::string get_sensor_units(std::string sensor_type);
+	void get_sensor_value_labels(std::string sensor_type,std::string value_labels[SENSOR_VALUES_MAX]);
     void get_sensor_values(std::string sensor_type,float values[SENSOR_VALUES_MAX]);
     void enable_sensor(std::string sensor_type);
     void disable_sensor(std::string sensor_type);

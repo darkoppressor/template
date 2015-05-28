@@ -209,9 +209,14 @@ Android_Sensor::Android_Sensor(){
     units="";
 }
 
-void Android_Sensor::setup(int get_value_count,string get_units){
+void Android_Sensor::setup(int get_value_count,string get_units,const vector<string>& get_value_labels){
     value_count=get_value_count;
     units=get_units;
+
+    value_labels=get_value_labels;
+    while(value_labels.size()<SENSOR_VALUES_MAX){
+        value_labels.push_back("");
+    }
 }
 
 const string Android_GPS::UNITS_ACCURACY="m";
@@ -231,23 +236,106 @@ Android_GPS::Android_GPS(){
 }
 
 Android::Android(){
-    sensors[SENSOR_TYPE_ACCELEROMETER-1].setup(3,"m/s"+Symbols::squared());
-    sensors[SENSOR_TYPE_AMBIENT_TEMPERATURE-1].setup(1,Symbols::degrees()+"C");
-    sensors[SENSOR_TYPE_GAME_ROTATION_VECTOR-1].setup(5,"");
-    sensors[SENSOR_TYPE_GEOMAGNETIC_ROTATION_VECTOR-1].setup(5,"");
-    sensors[SENSOR_TYPE_GRAVITY-1].setup(3,"m/s"+Symbols::squared());
-    sensors[SENSOR_TYPE_GYROSCOPE-1].setup(3,"rad/s");
-    sensors[SENSOR_TYPE_GYROSCOPE_UNCALIBRATED-1].setup(6,"rad/s");
-    sensors[SENSOR_TYPE_LIGHT-1].setup(1,"lx");
-    sensors[SENSOR_TYPE_LINEAR_ACCELERATION-1].setup(3,"m/s"+Symbols::squared());
-    sensors[SENSOR_TYPE_MAGNETIC_FIELD-1].setup(3,"uT");
-    sensors[SENSOR_TYPE_MAGNETIC_FIELD_UNCALIBRATED-1].setup(6,"uT");
-    sensors[SENSOR_TYPE_PRESSURE-1].setup(1,"hPa");
-    sensors[SENSOR_TYPE_PROXIMITY-1].setup(1,"cm");
-    sensors[SENSOR_TYPE_RELATIVE_HUMIDITY-1].setup(1,"%");
-    sensors[SENSOR_TYPE_ROTATION_VECTOR-1].setup(5,"");
-    sensors[SENSOR_TYPE_STEP_COUNTER-1].setup(1,"");
-    sensors[SENSOR_TYPE_STEP_DETECTOR-1].setup(1,"");
+    vector<string> value_labels;
+
+    value_labels.clear();
+    value_labels.push_back("Acceleration on the x-axis");
+    value_labels.push_back("Acceleration on the y-axis");
+    value_labels.push_back("Acceleration on the z-axis");
+    sensors[SENSOR_TYPE_ACCELEROMETER-1].setup(3,"m/s"+Symbols::squared(),value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Ambient temperature");
+    sensors[SENSOR_TYPE_AMBIENT_TEMPERATURE-1].setup(1,Symbols::degrees()+"C",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("x*sin(theta/2)");
+    value_labels.push_back("y*sin(theta/2)");
+    value_labels.push_back("z*sin(theta/2)");
+    value_labels.push_back("cos(theta/2)");
+    sensors[SENSOR_TYPE_GAME_ROTATION_VECTOR-1].setup(4,"",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("x*sin(theta/2)");
+    value_labels.push_back("y*sin(theta/2)");
+    value_labels.push_back("z*sin(theta/2)");
+    value_labels.push_back("cos(theta/2)");
+    value_labels.push_back("Estimated heading accuracy");
+    sensors[SENSOR_TYPE_GEOMAGNETIC_ROTATION_VECTOR-1].setup(5,"",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Acceleration due to gravity on the x-axis");
+    value_labels.push_back("Acceleration due to gravity on the y-axis");
+    value_labels.push_back("Acceleration due to gravity on the z-axis");
+    sensors[SENSOR_TYPE_GRAVITY-1].setup(3,"m/s"+Symbols::squared(),value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Angular speed around the x-axis");
+    value_labels.push_back("Angular speed around the y-axis");
+    value_labels.push_back("Angular speed around the z-axis");
+    sensors[SENSOR_TYPE_GYROSCOPE-1].setup(3,"rad/s",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Uncalibrated angular speed around the x-axis");
+    value_labels.push_back("Uncalibrated angular speed around the y-axis");
+    value_labels.push_back("Uncalibrated angular speed around the z-axis");
+    value_labels.push_back("Estimated drift around the x-axis");
+    value_labels.push_back("Estimated drift around the y-axis");
+    value_labels.push_back("Estimated drift around the z-axis");
+    sensors[SENSOR_TYPE_GYROSCOPE_UNCALIBRATED-1].setup(6,"rad/s",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Ambient light level");
+    sensors[SENSOR_TYPE_LIGHT-1].setup(1,"lx",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Acceleration without gravity on the x-axis");
+    value_labels.push_back("Acceleration without gravity on the y-axis");
+    value_labels.push_back("Acceleration without gravity on the z-axis");
+    sensors[SENSOR_TYPE_LINEAR_ACCELERATION-1].setup(3,"m/s"+Symbols::squared(),value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Ambient magnetic field in the x-axis");
+    value_labels.push_back("Ambient magnetic field in the y-axis");
+    value_labels.push_back("Ambient magnetic field in the z-axis");
+    sensors[SENSOR_TYPE_MAGNETIC_FIELD-1].setup(3,"uT",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Uncalibrated ambient magnetic field in the x-axis");
+    value_labels.push_back("Uncalibrated ambient magnetic field in the y-axis");
+    value_labels.push_back("Uncalibrated ambient magnetic field in the z-axis");
+    value_labels.push_back("Estimated iron bias in the x-axis");
+    value_labels.push_back("Estimated iron bias in the y-axis");
+    value_labels.push_back("Estimated iron bias in the z-axis");
+    sensors[SENSOR_TYPE_MAGNETIC_FIELD_UNCALIBRATED-1].setup(6,"uT",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Atmospheric pressure");
+    sensors[SENSOR_TYPE_PRESSURE-1].setup(1,"hPa",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Proximity distance");
+    sensors[SENSOR_TYPE_PROXIMITY-1].setup(1,"cm",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Relative ambient air humidity");
+    sensors[SENSOR_TYPE_RELATIVE_HUMIDITY-1].setup(1,"%",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("x*sin(theta/2)");
+    value_labels.push_back("y*sin(theta/2)");
+    value_labels.push_back("z*sin(theta/2)");
+    value_labels.push_back("cos(theta/2)");
+    value_labels.push_back("Estimated heading accuracy");
+    sensors[SENSOR_TYPE_ROTATION_VECTOR-1].setup(5,"",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("Steps");
+    sensors[SENSOR_TYPE_STEP_COUNTER-1].setup(1,"",value_labels);
+
+    value_labels.clear();
+    value_labels.push_back("");
+    sensors[SENSOR_TYPE_STEP_DETECTOR-1].setup(1,"",value_labels);
 
     #ifdef GAME_OS_ANDROID
         jni_initialize();
@@ -300,6 +388,18 @@ string Android::get_sensor_units(string sensor_type){
     #endif
 
     return "";
+}
+
+void Android::get_sensor_value_labels(string sensor_type,string value_labels[SENSOR_VALUES_MAX]){
+    #ifdef GAME_OS_ANDROID
+        int sensortype=jni_get_sensor_number(sensor_type.c_str());
+
+        if(sensortype>0 && sensortype<=SENSOR_TYPE_COUNT){
+            for(int i=0;i<SENSOR_VALUES_MAX;i++){
+                value_labels[i]=sensors[sensortype-1].value_labels[i];
+            }
+        }
+    #endif
 }
 
 void Android::get_sensor_values(string sensor_type,float values[SENSOR_VALUES_MAX]){

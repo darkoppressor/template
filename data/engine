@@ -4,17 +4,12 @@
 	name:template
 	home_directory:template
 	developer:Kevin Wells
-	logical_screen_width:256
-	logical_screen_height:144
 	resolution_mode:scaling
 	logic_update_rate:60.0
 	frame_rate_max:200.0
 	axis_scroll_rate:5
-	scrolling_buttons_offset:26
 	cursor_width:2
 	cursor_height:2
-	console_height:6
-	chat_height:6
 	sound_falloff:64.0
 	window_border_thickness:2.0
     gui_border_thickness:1.0
@@ -31,14 +26,12 @@
 	toast_length_long:7
 	spaces_per_tab:4
 	console_move_speed:3840
-	console_max_command_length:63
 	console_max_log_recall:1000
 	console_max_command_recall:1000
 	console_font:small
 	console_font_color:
 	console_opacity:0.9
 	chat_move_speed:0
-	chat_max_command_length:63
 	chat_max_log_recall:1000
 	chat_max_command_recall:1000
 	chat_font:small
@@ -47,12 +40,20 @@
 	chat_line_timeout:10000
 	gui_selector_style:standard
 	controller_dead_zone:8000
-	controller_text_entry_small:true
 	cursor_render_always:false
 	cursor:standard
 	cursor_mouse_over:mouse_over
 	color_theme:standard
 	starting_windows:main_menu
+	
+	logical_screen_width:256
+	logical_screen_height:144
+	scrolling_buttons_offset:26
+	console_height:6
+	chat_height:6
+	console_max_command_length:63
+	chat_max_command_length:63
+	controller_text_entry_small:true
 	
 	// Default engine options //
 	
