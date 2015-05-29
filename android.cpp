@@ -318,7 +318,7 @@ Android::Android(){
     sensors[SENSOR_TYPE_PROXIMITY-1].setup(1,"cm",value_labels);
 
     value_labels.clear();
-    value_labels.push_back("Relative ambient air humidity");
+    value_labels.push_back("Relative ambient humidity");
     sensors[SENSOR_TYPE_RELATIVE_HUMIDITY-1].setup(1,"%",value_labels);
 
     value_labels.clear();
