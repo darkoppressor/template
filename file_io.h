@@ -24,14 +24,30 @@ public:
     std::istringstream data;
 
     File_IO_Load();
-    File_IO_Load(std::string path,bool binary=false);
+    File_IO_Load(std::string path);
 
-    void load_file(std::string path,bool binary=false);
+    void load_file(std::string path);
 
     bool file_loaded();
     bool eof();
 
     void getline(std::string* line);
+    std::string get_data();
+};
+
+class File_IO_Binary_Load{
+public:
+
+    bool load_success;
+    std::string data;
+
+    File_IO_Binary_Load();
+    File_IO_Binary_Load(std::string path);
+
+    void load_file(std::string path);
+
+    bool file_loaded();
+
     std::string get_data();
 };
 

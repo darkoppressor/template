@@ -15,18 +15,15 @@ File_IO_Load::File_IO_Load(){
     data.str("");
 }
 
-File_IO_Load::File_IO_Load(string path,bool binary){
-    load_file(path,binary);
+File_IO_Load::File_IO_Load(string path){
+    load_file(path);
 }
 
-void File_IO_Load::load_file(string path,bool binary){
+void File_IO_Load::load_file(string path){
     load_success=false;
     string str_data="";
 
     string rw_mode="r";
-    if(binary){
-        rw_mode+="b";
-    }
 
     SDL_RWops* rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
 
@@ -67,6 +64,47 @@ void File_IO_Load::getline(string* line){
 
 string File_IO_Load::get_data(){
     return data.str();
+}
+
+File_IO_Binary_Load::File_IO_Binary_Load(){
+    load_success=false;
+    data="";
+}
+
+File_IO_Binary_Load::File_IO_Binary_Load(string path){
+    load_file(path);
+}
+
+void File_IO_Binary_Load::load_file(string path){
+    load_success=false;
+    data.clear();
+
+    string rw_mode="rb";
+
+    SDL_RWops* rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
+
+    if(rwops!=NULL){
+        load_success=true;
+
+        unsigned char* data_chunk=(unsigned char*)malloc(100);
+
+        for(long length=0;(length=SDL_RWread(rwops,data_chunk,1,100))>0;){
+            for(long i=0;i<length;i++){
+                data+=data_chunk[i];
+            }
+        }
+
+        free(data_chunk);
+        SDL_RWclose(rwops);
+    }
+}
+
+bool File_IO_Binary_Load::file_loaded(){
+    return load_success;
+}
+
+string File_IO_Binary_Load::get_data(){
+    return data;
 }
 
 File_IO_Binary_Save::File_IO_Binary_Save(string get_path){
@@ -245,7 +283,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
 
     void File_IO::copy_file(string old_path,string new_path){
         if(is_regular_file(old_path) && !file_exists(new_path)){
-            File_IO_Load load(old_path,true);
+            File_IO_Binary_Load load(old_path);
 
             if(load.file_loaded()){
                 SDL_RWops* rwops=SDL_RWFromFile(new_path.c_str(),"wb");
