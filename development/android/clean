@@ -1,0 +1,25 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+rm -rf "assets"
+rm -rf "bin"
+rm -rf "gen"
+rm -rf "libs"
+rm -rf "obj"
+
+rm -rf "jni/SDL2"
+
+rm -rf "jni/SDL2_image"
+
+rm -rf "jni/SDL2_mixer"
+
+rm -rf "jni/RakNet"
+
+rm -rf "jni/boost"
+
+rm -f "jni/src/Android.mk"
+
+rm -f "ant.properties"
+rm -f "local.properties"
