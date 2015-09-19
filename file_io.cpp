@@ -209,7 +209,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
         }
     }
 
-    bool File_IO::directory_exists(string path){
+    bool File_IO::exists(string path){
         DIR* dir=0;
 
         if((dir=opendir(path.c_str()))!=0){
@@ -218,10 +218,6 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
             return true;
         }
 
-        return false;
-    }
-
-    bool File_IO::file_exists(string path){
         File_IO_Load load(path);
 
         if(load.file_loaded()){
@@ -264,13 +260,13 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
     }
 
     void File_IO::create_directory(string path){
-        if(!directory_exists(path) && mkdir(path.c_str(),S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0){
+        if(!exists(path) && mkdir(path.c_str(),S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0){
             Log::add_error("Error creating directory '"+path+"': "+Strings::num_to_string(errno),false);
         }
     }
 
     bool File_IO::rename_file(string old_path,string new_path){
-        if(file_exists(old_path)){
+        if(is_regular_file(old_path)){
             if(rename(old_path.c_str(),new_path.c_str())!=0){
                 Log::add_error("Error renaming file '"+old_path+"' to '"+new_path+"': "+Strings::num_to_string(errno),false);
 
@@ -286,7 +282,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
     }
 
     void File_IO::copy_file(string old_path,string new_path){
-        if(is_regular_file(old_path) && !file_exists(new_path)){
+        if(is_regular_file(old_path) && !exists(new_path)){
             File_IO_Binary_Load load(old_path);
 
             if(load.file_loaded()){
@@ -320,7 +316,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
     }
 
     void File_IO::remove_file(string path){
-        if(file_exists(path) && remove(path.c_str())!=0){
+        if(exists(path) && is_regular_file(path) && remove(path.c_str())!=0){
             Log::add_error("Error removing file '"+path+"': "+Strings::num_to_string(errno),false);
         }
     }
@@ -337,7 +333,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
             }
         }
 
-        if(directory_exists(path)){
+        if(exists(path) && is_directory(path)){
             rmdir(path.c_str());
         }
     }
@@ -450,7 +446,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
     }
 
     bool File_IO_Directory_Iterator_User_Data::evaluate(){
-        if(entry<entries && file_exists()){
+        if(entry<entries && exists()){
             return true;
         }
         else{
@@ -464,7 +460,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
         }
     }
 
-    bool File_IO_Directory_Iterator_User_Data::file_exists(){
+    bool File_IO_Directory_Iterator_User_Data::exists(){
         if(dir_entry!=0){
             return true;
         }
@@ -567,11 +563,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
         }
     }
 
-    bool File_IO::directory_exists(string path){
-        return boost::filesystem::exists(path);
-    }
-
-    bool File_IO::file_exists(string path){
+    bool File_IO::exists(string path){
         return boost::filesystem::exists(path);
     }
 
@@ -599,7 +591,7 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
     }
 
     void File_IO::copy_file(string old_path,string new_path){
-        if(is_regular_file(old_path) && !file_exists(new_path)){
+        if(is_regular_file(old_path) && !exists(new_path)){
             boost::filesystem::copy(old_path,new_path);
         }
     }

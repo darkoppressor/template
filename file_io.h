@@ -79,8 +79,7 @@ public:
         //First saves to a temporary file, then renames that file to the final file
         bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
 
-        bool directory_exists(std::string path);
-        bool file_exists(std::string path);
+        bool exists(std::string path);
         bool is_directory(std::string path);
         bool is_regular_file(std::string path);
         void create_directory(std::string path);
@@ -125,7 +124,7 @@ public:
 
         bool evaluate();
         void iterate();
-        bool file_exists();
+        bool exists();
         bool is_regular_file();
         bool is_directory();
         std::string get_full_path();
@@ -138,8 +137,7 @@ public:
         //First saves to a temporary file, then renames that file to the final file
         bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
 
-        bool directory_exists(std::string path);
-        bool file_exists(std::string path);
+        bool exists(std::string path);
         bool is_directory(std::string path);
         bool is_regular_file(std::string path);
         void create_directory(std::string path);
