@@ -54,6 +54,8 @@ void File_IO_Load::open(string path,bool path_is_backup,bool get_binary,bool sup
 
         if(path_is_backup){
             loaded_backup=true;
+
+            Log::add_log("Successfully opened backup file: '"+path+"'");
         }
 
         unsigned char* data_chunk=(unsigned char*)malloc(100);
