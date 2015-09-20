@@ -97,14 +97,14 @@ public:
     }
 
     template<typename Number_Type>
-    inline static std::string num_to_roman_numeral(const Number_Type& number){
+    inline static std::string convert_num_to_roman_numeral(const Number_Type& number){
         std::string message="";
 
         int num=(int)number;
 
         if(num>=4000){
             int x=(num-num%4000)/1000;
-            message="("+num_to_roman_numeral(x)+")";
+            message="("+convert_num_to_roman_numeral(x)+")";
             num%=4000;
         }
 
