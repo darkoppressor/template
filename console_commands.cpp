@@ -135,11 +135,11 @@ bool Console::input_has_option(string option,string options){
 }
 
 void Console::exec_file(string filename){
-    File_IO_Load load(engine_interface.get_save_directory()+filename);
+    File_IO_Load load(engine_interface.get_save_directory()+filename,false,false,true);
 
     vector<string> command_list;
 
-    if(load.file_loaded()){
+    if(load.is_opened()){
         while(!load.eof()){
             string line="";
 

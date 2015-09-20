@@ -5,9 +5,6 @@
 #include "log.h"
 #include "world.h"
 
-#include <cstdio>
-#include <fstream>
-
 using namespace std;
 
 void Log::clear_error_log(){

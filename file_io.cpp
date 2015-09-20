@@ -15,80 +15,46 @@
 using namespace std;
 
 File_IO_Load::File_IO_Load(){
+    binary=false;
     load_success=false;
-    data.str("");
+    loaded_backup=false;
+    data="";
+    data_stream.str("");
 }
 
-File_IO_Load::File_IO_Load(string path){
-    load_file(path);
+File_IO_Load::File_IO_Load(string path,bool path_is_backup,bool get_binary,bool suppress_errors){
+    load_success=false;
+    loaded_backup=false;
+    data="";
+    data_stream.str("");
+
+    open(path,path_is_backup,get_binary,suppress_errors);
 }
 
-void File_IO_Load::load_file(string path){
-    load_success=false;
-    string str_data="";
+void File_IO_Load::open(string path,bool path_is_backup,bool get_binary,bool suppress_errors){
+    binary=get_binary;
+
+    //Did this function call succeed?
+    //This is here because this function is recursive,
+    //and at the end, it loads data into data_stream,
+    //so a failed call that recursively called itself again
+    //should not touch data_stream at its end
+    bool succeeded=false;
 
     string rw_mode="r";
+    if(binary){
+        rw_mode+="b";
+    }
 
     SDL_RWops* rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
 
-    if(rwops!=NULL){
+    if(rwops!=0){
+        succeeded=true;
         load_success=true;
 
-        unsigned char* data_chunk=(unsigned char*)malloc(100);
-
-        for(long length=0;(length=SDL_RWread(rwops,data_chunk,1,100))>0;){
-            for(long i=0;i<length;i++){
-                str_data+=data_chunk[i];
-            }
+        if(path_is_backup){
+            loaded_backup=true;
         }
-
-        free(data_chunk);
-        SDL_RWclose(rwops);
-    }
-
-    data.str(str_data.c_str());
-}
-
-bool File_IO_Load::file_loaded(){
-    return load_success;
-}
-
-bool File_IO_Load::eof(){
-    if(data.eof()){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
-
-void File_IO_Load::getline(string* line){
-    std::getline(data,*line);
-}
-
-string File_IO_Load::get_data(){
-    return data.str();
-}
-
-File_IO_Binary_Load::File_IO_Binary_Load(){
-    load_success=false;
-    data="";
-}
-
-File_IO_Binary_Load::File_IO_Binary_Load(string path){
-    load_file(path);
-}
-
-void File_IO_Binary_Load::load_file(string path){
-    load_success=false;
-    data.clear();
-
-    string rw_mode="rb";
-
-    SDL_RWops* rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
-
-    if(rwops!=NULL){
-        load_success=true;
 
         unsigned char* data_chunk=(unsigned char*)malloc(100);
 
@@ -99,15 +65,64 @@ void File_IO_Binary_Load::load_file(string path){
         }
 
         free(data_chunk);
-        SDL_RWclose(rwops);
+
+        if(SDL_RWclose(rwops)!=0 && !suppress_errors){
+            string msg="Error closing file '"+path+"' after loading: ";
+            msg+=SDL_GetError();
+            Log::add_error(msg,false);
+        }
+    }
+    else{
+        if(!suppress_errors){
+            string msg="Error opening file '"+path+"' for loading: ";
+            msg+=SDL_GetError();
+            Log::add_error(msg,false);
+        }
+
+        string path_backup=path+SAVE_SUFFIX_BACKUP;
+
+        if(!path_is_backup && File_IO::is_regular_file(path_backup)){
+            open(path_backup,true,binary,suppress_errors);
+        }
+    }
+
+    if(!binary && succeeded){
+        data_stream.str(data.c_str());
     }
 }
 
-bool File_IO_Binary_Load::file_loaded(){
+void File_IO_Load::close(){
+    binary=false;
+    load_success=false;
+    loaded_backup=false;
+    data="";
+    data_stream.str("");
+}
+
+bool File_IO_Load::is_opened(){
     return load_success;
 }
 
-string File_IO_Binary_Load::get_data(){
+bool File_IO_Load::is_backup(){
+    return loaded_backup;
+}
+
+bool File_IO_Load::eof(){
+    if(data_stream.eof()){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+void File_IO_Load::getline(string* line){
+    if(!binary){
+        std::getline(data_stream,*line);
+    }
+}
+
+string File_IO_Load::get_data(){
     return data;
 }
 
@@ -257,7 +272,7 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
 
         File_IO_Load load(path);
 
-        if(load.file_loaded()){
+        if(load.is_opened()){
             return true;
         }
         else{
@@ -323,32 +338,26 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
     bool File_IO::copy_file(string old_path,string new_path){
         if(is_regular_file(old_path)){
             if(!exists(new_path)){
-                File_IO_Binary_Load load(old_path);
+                File_IO_Load load(old_path,false,true);
 
-                if(load.file_loaded()){
-                    SDL_RWops* rwops=SDL_RWFromFile(new_path.c_str(),"wb");
+                if(load.is_opened()){
+                    File_IO_Save save(new_path,false,true);
 
-                    if(rwops!=NULL){
+                    if(save.is_opened()){
                         const char* data_chars=load.get_data().c_str();
 
                         size_t length=SDL_strlen(data_chars);
 
-                        size_t written_length=SDL_RWwrite(rwops,data_chars,1,length);
+                        bool write_result=save.write(data_chars,1,length);
 
-                        SDL_RWclose(rwops);
+                        bool close_result=save.close();
 
-                        if(written_length!=length){
-                            string msg="Error saving file '"+new_path+"' for copying to: ";
-                            msg+=SDL_GetError();
-                            Log::add_error(msg,false);
-
+                        if(!write_result || !close_result){
                             return false;
                         }
                     }
                     else{
-                        string msg="Error opening file '"+new_path+"' for copying to: ";
-                        msg+=SDL_GetError();
-                        Log::add_error(msg,false);
+                        Log::add_error("Error opening file '"+new_path+"' for copying to",false);
 
                         return false;
                     }
@@ -452,7 +461,7 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
         entry=0;
 
         File_IO_Load load(directory+"/asset_list");
-        if(load.file_loaded()){
+        if(load.is_opened()){
             while(!load.eof()){
                 string line="";
 

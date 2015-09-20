@@ -6,8 +6,6 @@
 #include "world.h"
 #include "render.h"
 
-#include <fstream>
-
 #include <SDL_image.h>
 
 #include <boost/algorithm/string.hpp>
@@ -362,7 +360,7 @@ bool Engine_Interface::load_data(string script){
 
             File_IO_Load load(file_path);
 
-            if(load.file_loaded()){
+            if(load.is_opened()){
                 bool multi_line_comment=false;
 
                 //As long as we haven't reached the end of the file.

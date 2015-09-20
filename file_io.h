@@ -23,45 +23,37 @@ const std::string SAVE_SUFFIX_TEMPORARY="_TEMPORARY";
 const std::string SAVE_SUFFIX_BACKUP="_BACKUP";
 
 class File_IO_Load{
+private:
+
+    bool binary;
+    bool load_success;
+    bool loaded_backup;
+    std::string data;
+    std::istringstream data_stream;
+
 public:
 
-    bool load_success;
-    std::istringstream data;
-
     File_IO_Load();
-    File_IO_Load(std::string path);
+    File_IO_Load(std::string path,bool path_is_backup=false,bool get_binary=false,bool suppress_errors=false);
 
-    void load_file(std::string path);
+    void open(std::string path,bool path_is_backup,bool get_binary,bool suppress_errors);
+    void close();
 
-    bool file_loaded();
+    bool is_opened();
+    bool is_backup();
     bool eof();
 
     void getline(std::string* line);
     std::string get_data();
 };
 
-class File_IO_Binary_Load{
-public:
-
-    bool load_success;
-    std::string data;
-
-    File_IO_Binary_Load();
-    File_IO_Binary_Load(std::string path);
-
-    void load_file(std::string path);
-
-    bool file_loaded();
-
-    std::string get_data();
-};
-
 class File_IO_Save{
-public:
+private:
 
     SDL_RWops* rwops;
-
     std::string path;
+
+public:
 
     File_IO_Save(std::string get_path,bool append=false,bool binary=false);
 
@@ -79,6 +71,7 @@ private:
     static bool save_file(std::string path,std::string data,bool append,bool binary);
 
 public:
+
     //First saves to a temporary file, then renames that file to the final filename
     static bool save_atomic(std::string path,std::string data,bool backup=false,bool append=false,bool binary=false);
 
@@ -99,7 +92,7 @@ public:
 };
 
 class File_IO_Directory_Iterator{
-public:
+private:
 
     #ifdef GAME_OS_ANDROID
         std::string directory;
@@ -108,6 +101,8 @@ public:
     #else
         boost::filesystem::directory_iterator it;
     #endif
+
+public:
 
     File_IO_Directory_Iterator(std::string get_directory);
 
@@ -121,13 +116,15 @@ public:
 
 #ifdef GAME_OS_ANDROID
     class File_IO_Directory_Iterator_User_Data{
-    public:
+    private:
 
         std::string directory;
         DIR* dir;
         struct dirent* dir_entry;
         uint32_t entry;
         uint32_t entries;
+
+    public:
 
         File_IO_Directory_Iterator_User_Data(std::string get_directory);
         ~File_IO_Directory_Iterator_User_Data();

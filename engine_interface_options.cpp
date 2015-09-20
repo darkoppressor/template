@@ -6,8 +6,6 @@
 #include "world.h"
 #include "version.h"
 
-#include <fstream>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
 
@@ -67,7 +65,7 @@ string Engine_Interface::get_checksum(){
     for(int i=0;i<file_list.size();i++){
         File_IO_Load load(file_list[i]);
 
-        if(load.file_loaded()){
+        if(load.is_opened()){
             checksum_data+=load.get_data();
         }
         else{
@@ -298,7 +296,7 @@ bool Engine_Interface::save_save_location(){
 bool Engine_Interface::load_save_location(){
     File_IO_Load load("save_location.cfg");
 
-    if(load.file_loaded()){
+    if(load.is_opened()){
         bool multi_line_comment=false;
 
         //As long as we haven't reached the end of the file.
@@ -855,7 +853,7 @@ bool Engine_Interface::save_options(){
 bool Engine_Interface::load_options(){
     File_IO_Load load(get_save_directory()+"options.cfg");
 
-    if(load.file_loaded()){
+    if(load.is_opened()){
         bool multi_line_comment=false;
 
         //As long as we haven't reached the end of the file.
@@ -1136,7 +1134,7 @@ bool Engine_Interface::save_game_commands(){
 bool Engine_Interface::load_game_commands(){
     File_IO_Load load(get_save_directory()+"game_commands.cfg");
 
-    if(load.file_loaded()){
+    if(load.is_opened()){
         bool multi_line_comment=false;
 
         //As long as we haven't reached the end of the file.
@@ -1251,7 +1249,7 @@ bool Engine_Interface::save_servers(){
 bool Engine_Interface::load_servers(){
     File_IO_Load load(get_save_directory()+"servers.txt");
 
-    if(load.file_loaded()){
+    if(load.is_opened()){
         bool multi_line_comment=false;
 
         network.server_list.clear();
