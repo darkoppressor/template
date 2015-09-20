@@ -842,7 +842,7 @@ bool Engine_Interface::save_options(){
 
     save<<"</options>\n";
 
-    if(File_IO::save_atomic(get_save_directory()+"options.cfg",save.str())){
+    if(File_IO::save_atomic(get_save_directory()+"options.cfg",save.str(),true)){
         return true;
     }
     else{
@@ -1123,7 +1123,7 @@ bool Engine_Interface::save_game_commands(){
 
     save<<"</game_commands>\n";
 
-    if(File_IO::save_atomic(get_save_directory()+"game_commands.cfg",save.str())){
+    if(File_IO::save_atomic(get_save_directory()+"game_commands.cfg",save.str(),true)){
         return true;
     }
     else{
@@ -1238,7 +1238,7 @@ bool Engine_Interface::save_servers(){
 
     save<<"</servers>\n";
 
-    if(File_IO::save_atomic(get_save_directory()+"servers.txt",save.str())){
+    if(File_IO::save_atomic(get_save_directory()+"servers.txt",save.str(),true)){
         return true;
     }
     else{
