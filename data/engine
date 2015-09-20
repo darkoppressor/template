@@ -1,6 +1,6 @@
 <engine>
 	// Engine settings //
-	
+
 	name:template
 	home_directory:template
 	developer:Kevin Wells
@@ -45,7 +45,7 @@
 	cursor_mouse_over:mouse_over
 	color_theme:standard
 	starting_windows:main_menu
-	
+
 	logical_screen_width:256
 	logical_screen_height:144
 	scrolling_buttons_offset:26
@@ -54,16 +54,16 @@
 	console_max_command_length:63
 	chat_max_command_length:63
 	controller_text_entry_small:true
-	
+
 	// Default engine options //
-	
+
 	default_save_location:home
-	
+
 	default_screen_width:1280
 	default_screen_height:720
 	default_fullscreen_state:false
 	default_fullscreen_mode:windowed
-	
+
 	default_vsync:false
 	default_accelerometer_controller:false
 	default_touch_controller_state:true
@@ -72,7 +72,7 @@
 	default_screen_keyboard:true
 	default_hw_cursor:true
 	default_bind_cursor:false
-	
+
 	default_fps:false
 	default_dev:false
 	default_volume_global:1.0
