@@ -211,7 +211,7 @@ string Engine_Interface::get_save_directory(){
         #ifdef GAME_OS_ANDROID
             bool using_external_storage=false;
 
-            if(file_io.external_storage_available()){
+            if(File_IO::external_storage_available()){
                 const char* external_path=SDL_AndroidGetExternalStoragePath();
 
                 if(external_path!=0){
@@ -256,7 +256,7 @@ void Engine_Interface::make_home_directory(){
 
             correct_slashes(&str_my_games);
 
-            file_io.create_directory(str_my_games);
+            File_IO::create_directory(str_my_games);
         #endif
 
         string str_home=get_save_directory();
@@ -266,14 +266,14 @@ void Engine_Interface::make_home_directory(){
 
         correct_slashes(&str_home);
 
-        file_io.create_directory(str_home);
+        File_IO::create_directory(str_home);
     }
 }
 
 void Engine_Interface::make_directories(){
     make_home_directory();
 
-    file_io.create_directory(get_save_directory()+"screenshots");
+    File_IO::create_directory(get_save_directory()+"screenshots");
 }
 
 bool Engine_Interface::save_save_location(){
@@ -285,7 +285,7 @@ bool Engine_Interface::save_save_location(){
 
     save<<"</save_location>\n";
 
-    if(file_io.save_file("save_location.cfg",save.str())){
+    if(File_IO::save_file("save_location.cfg",save.str())){
         save_location_loaded=true;
 
         return true;
@@ -844,7 +844,7 @@ bool Engine_Interface::save_options(){
 
     save<<"</options>\n";
 
-    if(file_io.save_file(get_save_directory()+"options.cfg",save.str())){
+    if(File_IO::save_file(get_save_directory()+"options.cfg",save.str())){
         return true;
     }
     else{
@@ -1125,7 +1125,7 @@ bool Engine_Interface::save_game_commands(){
 
     save<<"</game_commands>\n";
 
-    if(file_io.save_file(get_save_directory()+"game_commands.cfg",save.str())){
+    if(File_IO::save_file(get_save_directory()+"game_commands.cfg",save.str())){
         return true;
     }
     else{
@@ -1240,7 +1240,7 @@ bool Engine_Interface::save_servers(){
 
     save<<"</servers>\n";
 
-    if(file_io.save_file(get_save_directory()+"servers.txt",save.str())){
+    if(File_IO::save_file(get_save_directory()+"servers.txt",save.str())){
         return true;
     }
     else{

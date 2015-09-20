@@ -61,8 +61,6 @@ extern Update update;
 
 extern Android android;
 
-extern File_IO file_io;
-
 extern Network network;
 
 extern Image image;

@@ -153,7 +153,7 @@ int main(int argc,char* args[]){
     }
 
     #ifdef GAME_OS_ANDROID
-        if(!file_io.external_storage_available()){
+        if(!File_IO::external_storage_available()){
             return 2;
         }
     #endif

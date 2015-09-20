@@ -29,8 +29,6 @@ Update update;
 
 Android android;
 
-File_IO file_io;
-
 Network network;
 
 Image image;

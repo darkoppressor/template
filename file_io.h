@@ -74,23 +74,23 @@ public:
 
 class File_IO{
 public:
-    bool save_file(std::string path,std::string data,bool append=false,bool binary=false);
+    static bool save_file(std::string path,std::string data,bool append=false,bool binary=false);
     //First saves to a temporary file, then renames that file to the final file
-    bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
+    static bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
 
-    bool exists(std::string path);
-    bool is_directory(std::string path);
-    bool is_regular_file(std::string path);
-    void create_directory(std::string path);
-    bool rename_file(std::string old_path,std::string new_path);
+    static bool exists(std::string path);
+    static bool is_directory(std::string path);
+    static bool is_regular_file(std::string path);
+    static void create_directory(std::string path);
+    static bool rename_file(std::string old_path,std::string new_path);
     //This does NOT overwrite new_path if it already exists
-    void copy_file(std::string old_path,std::string new_path);
-    void remove_file(std::string path);
-    void remove_directory(std::string path);
-    std::string get_file_name(std::string path);
+    static void copy_file(std::string old_path,std::string new_path);
+    static void remove_file(std::string path);
+    static void remove_directory(std::string path);
+    static std::string get_file_name(std::string path);
 
     #ifdef GAME_OS_ANDROID
-        bool external_storage_available();
+        static bool external_storage_available();
     #endif
 };
 

@@ -11,7 +11,7 @@
 using namespace std;
 
 void Log::clear_error_log(){
-    file_io.remove_file(engine_interface.get_save_directory()+"error_log.txt");
+    File_IO::remove_file(engine_interface.get_save_directory()+"error_log.txt");
 }
 
 void Log::add_error(string message,bool allow_save){
@@ -28,7 +28,7 @@ void Log::add_error(string message,bool allow_save){
 
         save<<message<<"\n";
 
-        file_io.save_file(engine_interface.get_save_directory()+"error_log.txt",save.str(),true);
+        File_IO::save_file(engine_interface.get_save_directory()+"error_log.txt",save.str(),true);
     }
 }
 
