@@ -153,62 +153,62 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
     }
 }
 
-#ifdef GAME_OS_ANDROID
-    bool File_IO::save_file(string path,string data,bool append,bool binary){
-        string rw_mode="w";
-        if(append){
-            rw_mode="a";
-        }
-        if(binary){
-            rw_mode+="b";
-        }
+bool File_IO::save_file(string path,string data,bool append,bool binary){
+    string rw_mode="w";
+    if(append){
+        rw_mode="a";
+    }
+    if(binary){
+        rw_mode+="b";
+    }
 
-        SDL_RWops* rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
+    SDL_RWops* rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
 
-        if(rwops!=NULL){
-            const char* data_chars=data.c_str();
+    if(rwops!=NULL){
+        const char* data_chars=data.c_str();
 
-            size_t length=SDL_strlen(data_chars);
+        size_t length=SDL_strlen(data_chars);
 
-            size_t written_length=SDL_RWwrite(rwops,data_chars,1,length);
+        size_t written_length=SDL_RWwrite(rwops,data_chars,1,length);
 
-            SDL_RWclose(rwops);
+        SDL_RWclose(rwops);
 
-            if(written_length!=length){
-                string msg="Error saving file '"+path+"': ";
-                msg+=SDL_GetError();
-                Log::add_error(msg,false);
-
-                return false;
-            }
-        }
-        else{
-            string msg="Error opening file '"+path+"' for saving: ";
+        if(written_length!=length){
+            string msg="Error saving file '"+path+"': ";
             msg+=SDL_GetError();
             Log::add_error(msg,false);
 
             return false;
         }
+    }
+    else{
+        string msg="Error opening file '"+path+"' for saving: ";
+        msg+=SDL_GetError();
+        Log::add_error(msg,false);
 
-        return true;
+        return false;
     }
 
-    bool File_IO::save_important_file(string path,string data,bool append,bool binary){
-        string path_temp=path+SAVE_TEMP_FILE_SUFFIX;
+    return true;
+}
 
-        if(append){
-            remove_file(path_temp);
-            copy_file(path,path_temp);
-        }
+bool File_IO::save_important_file(string path,string data,bool append,bool binary){
+    string path_temp=path+SAVE_TEMP_FILE_SUFFIX;
 
-        if(save_file(path_temp,data,append,binary)){
-            return rename_file(path_temp,path);
-        }
-        else{
-            return false;
-        }
+    if(append){
+        remove_file(path_temp);
+        copy_file(path,path_temp);
     }
 
+    if(save_file(path_temp,data,append,binary)){
+        return rename_file(path_temp,path);
+    }
+    else{
+        return false;
+    }
+}
+
+#ifdef GAME_OS_ANDROID
     bool File_IO::exists(string path){
         DIR* dir=0;
 
@@ -508,61 +508,6 @@ void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_cou
         return dir_entry->d_name;
     }
 #else
-    bool File_IO::save_file(string path,string data,bool append,bool binary){
-        string rw_mode="w";
-        if(append){
-            rw_mode="a";
-        }
-        if(binary){
-            rw_mode+="b";
-        }
-
-        SDL_RWops* rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
-
-        if(rwops!=NULL){
-            const char* data_chars=data.c_str();
-
-            size_t length=SDL_strlen(data_chars);
-
-            size_t written_length=SDL_RWwrite(rwops,data_chars,1,length);
-
-            SDL_RWclose(rwops);
-
-            if(written_length!=length){
-                string msg="Error saving file '"+path+"': ";
-                msg+=SDL_GetError();
-                Log::add_error(msg,false);
-
-                return false;
-            }
-        }
-        else{
-            string msg="Error opening file '"+path+"' for saving: ";
-            msg+=SDL_GetError();
-            Log::add_error(msg,false);
-
-            return false;
-        }
-
-        return true;
-    }
-
-    bool File_IO::save_important_file(string path,string data,bool append,bool binary){
-        string path_temp=path+SAVE_TEMP_FILE_SUFFIX;
-
-        if(append){
-            remove_file(path_temp);
-            copy_file(path,path_temp);
-        }
-
-        if(save_file(path_temp,data,append,binary)){
-            return rename_file(path_temp,path);
-        }
-        else{
-            return false;
-        }
-    }
-
     bool File_IO::exists(string path){
         return boost::filesystem::exists(path);
     }

@@ -72,44 +72,50 @@ public:
     void write(const void* ptr,size_t data_size,size_t data_count);
 };
 
-#ifdef GAME_OS_ANDROID
-    class File_IO{
-    public:
-        bool save_file(std::string path,std::string data,bool append=false,bool binary=false);
-        //First saves to a temporary file, then renames that file to the final file
-        bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
+class File_IO{
+public:
+    bool save_file(std::string path,std::string data,bool append=false,bool binary=false);
+    //First saves to a temporary file, then renames that file to the final file
+    bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
 
-        bool exists(std::string path);
-        bool is_directory(std::string path);
-        bool is_regular_file(std::string path);
-        void create_directory(std::string path);
-        bool rename_file(std::string old_path,std::string new_path);
-        //This does NOT overwrite new_path if it already exists
-        void copy_file(std::string old_path,std::string new_path);
-        void remove_file(std::string path);
-        void remove_directory(std::string path);
-        std::string get_file_name(std::string path);
+    bool exists(std::string path);
+    bool is_directory(std::string path);
+    bool is_regular_file(std::string path);
+    void create_directory(std::string path);
+    bool rename_file(std::string old_path,std::string new_path);
+    //This does NOT overwrite new_path if it already exists
+    void copy_file(std::string old_path,std::string new_path);
+    void remove_file(std::string path);
+    void remove_directory(std::string path);
+    std::string get_file_name(std::string path);
 
+    #ifdef GAME_OS_ANDROID
         bool external_storage_available();
-    };
+    #endif
+};
 
-    class File_IO_Directory_Iterator{
-    public:
+class File_IO_Directory_Iterator{
+public:
 
+    #ifdef GAME_OS_ANDROID
         std::string directory;
         std::vector<std::string> asset_list;
         uint32_t entry;
+    #else
+        boost::filesystem::directory_iterator it;
+    #endif
 
-        File_IO_Directory_Iterator(std::string get_directory);
+    File_IO_Directory_Iterator(std::string get_directory);
 
-        bool evaluate();
-        void iterate();
-        bool is_directory();
-        bool is_regular_file();
-        std::string get_full_path();
-        std::string get_file_name();
-    };
+    bool evaluate();
+    void iterate();
+    bool is_directory();
+    bool is_regular_file();
+    std::string get_full_path();
+    std::string get_file_name();
+};
 
+#ifdef GAME_OS_ANDROID
     class File_IO_Directory_Iterator_User_Data{
     public:
 
@@ -127,39 +133,6 @@ public:
         bool exists();
         bool is_regular_file();
         bool is_directory();
-        std::string get_full_path();
-        std::string get_file_name();
-    };
-#else
-    class File_IO{
-    public:
-        bool save_file(std::string path,std::string data,bool append=false,bool binary=false);
-        //First saves to a temporary file, then renames that file to the final file
-        bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
-
-        bool exists(std::string path);
-        bool is_directory(std::string path);
-        bool is_regular_file(std::string path);
-        void create_directory(std::string path);
-        bool rename_file(std::string old_path,std::string new_path);
-        //This does NOT overwrite new_path if it already exists
-        void copy_file(std::string old_path,std::string new_path);
-        void remove_file(std::string path);
-        void remove_directory(std::string path);
-        std::string get_file_name(std::string path);
-    };
-
-    class File_IO_Directory_Iterator{
-    public:
-
-        boost::filesystem::directory_iterator it;
-
-        File_IO_Directory_Iterator(std::string get_directory);
-
-        bool evaluate();
-        void iterate();
-        bool is_directory();
-        bool is_regular_file();
         std::string get_full_path();
         std::string get_file_name();
     };
