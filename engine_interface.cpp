@@ -351,7 +351,7 @@ void Engine_Interface::load_data_game_options(){
     load_data("game_option");
 }
 
-bool Engine_Interface::load_data(string script){
+bool Engine_Interface::load_data(string tag){
     //Look through all of the files in the directory.
     for(File_IO_Directory_Iterator it("data");it.evaluate();it.iterate()){
         //If the file is not a directory.
@@ -386,49 +386,49 @@ bool Engine_Interface::load_data(string script){
                         //Ignore this line.
                     }
 
-                    //If the line begins an instance of the passed script type.
-                    else if(!multi_line_comment && boost::algorithm::starts_with(line,"<"+script+">")){
-                        if(script=="engine"){
+                    //If the line begins an instance of the passed tag type.
+                    else if(!multi_line_comment && boost::algorithm::starts_with(line,"<"+tag+">")){
+                        if(tag=="engine"){
                             load_engine_data(&load);
                         }
-                        else if(script=="font"){
+                        else if(tag=="font"){
                             load_font(&load);
                         }
-                        else if(script=="cursor"){
+                        else if(tag=="cursor"){
                             load_cursor(&load);
                         }
-                        else if(script=="color"){
+                        else if(tag=="color"){
                             load_color(&load);
                         }
-                        else if(script=="color_theme"){
+                        else if(tag=="color_theme"){
                             load_color_theme(&load);
                         }
-                        else if(script=="animation"){
+                        else if(tag=="animation"){
                             load_animation(&load);
                         }
-                        else if(script=="window"){
+                        else if(tag=="window"){
                             load_window(&load);
                         }
-                        else if(script=="game_command"){
+                        else if(tag=="game_command"){
                             load_game_command(&load);
                         }
-                        else if(script=="game_option"){
+                        else if(tag=="game_option"){
                             load_game_option(&load);
                         }
-                        else if(script=="game_constant"){
+                        else if(tag=="game_constant"){
                             load_game_constant(&load);
                         }
-                        else if(script=="custom_sound"){
+                        else if(tag=="custom_sound"){
                             load_custom_sound(&load);
                         }
                         else{
-                            load_data_script_game(script,&load);
+                            load_data_tag_game(tag,&load);
                         }
                     }
                 }
             }
             else{
-                Log::add_error("Error loading script data: '"+script+"'");
+                Log::add_error("Error loading tag data: '"+tag+"'");
 
                 return false;
             }
@@ -1101,100 +1101,35 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
 void Engine_Interface::load_font(File_IO_Load* load){
     fonts.push_back(Bitmap_Font());
 
-    bool multi_line_comment=false;
+    vector<string> lines=Data_Reader::read_data(load,"</font>");
 
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
+    for(size_t i=0;i<lines.size();i++){
+        string& line=lines[i];
 
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_sprite="sprite:";
-        string str_spacing_x="spacing_x:";
-        string str_spacing_y="spacing_y:";
-        string str_gui_padding_x="gui_padding_x:";
-        string str_gui_padding_y="gui_padding_y:";
-        string str_shadow_distance="shadow_distance:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //Name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
+        if(Data_Reader::check_prefix(line,"name:")){
             fonts[fonts.size()-1].name=line;
         }
-        //Sprite
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sprite)){
-            //Clear the data name.
-            line.erase(0,str_sprite.length());
-
+        else if(Data_Reader::check_prefix(line,"sprite:")){
             fonts[fonts.size()-1].sprite.name=line;
         }
-        //Spacing x
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_spacing_x)){
-            //Clear the data name.
-            line.erase(0,str_spacing_x.length());
-
+        else if(Data_Reader::check_prefix(line,"spacing_x:")){
             fonts[fonts.size()-1].spacing_x=Strings::string_to_long(line);
         }
-        //Spacing y
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_spacing_y)){
-            //Clear the data name.
-            line.erase(0,str_spacing_y.length());
-
+        else if(Data_Reader::check_prefix(line,"spacing_y:")){
             fonts[fonts.size()-1].spacing_y=Strings::string_to_long(line);
         }
-        //GUI padding x
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_padding_x)){
-            //Clear the data name.
-            line.erase(0,str_gui_padding_x.length());
-
+        else if(Data_Reader::check_prefix(line,"gui_padding_x:")){
             fonts[fonts.size()-1].gui_padding_x=Strings::string_to_long(line);
         }
-        //GUI padding y
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_padding_y)){
-            //Clear the data name.
-            line.erase(0,str_gui_padding_y.length());
-
+        else if(Data_Reader::check_prefix(line,"gui_padding_y:")){
             fonts[fonts.size()-1].gui_padding_y=Strings::string_to_long(line);
         }
-        //Shadow distance
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_shadow_distance)){
-            //Clear the data name.
-            line.erase(0,str_shadow_distance.length());
-
+        else if(Data_Reader::check_prefix(line,"shadow_distance:")){
             fonts[fonts.size()-1].shadow_distance=Strings::string_to_long(line);
         }
-
-        //If the line ends the font.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</font>")){
-            fonts[fonts.size()-1].build_font();
-
-            return;
-        }
     }
+
+    fonts[fonts.size()-1].build_font();
 }
 
 void Engine_Interface::load_cursor(File_IO_Load* load){

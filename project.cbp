@@ -379,6 +379,8 @@
 		<Unit filename="cursor.h" />
 		<Unit filename="custom_sound.cpp" />
 		<Unit filename="custom_sound.h" />
+		<Unit filename="data_reader.cpp" />
+		<Unit filename="data_reader.h" />
 		<Unit filename="dev_info.cpp" />
 		<Unit filename="engine_interface.cpp" />
 		<Unit filename="engine_interface.h" />

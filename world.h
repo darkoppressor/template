@@ -27,6 +27,7 @@
 #include "network.h"
 #include "symbols.h"
 #include "sorting.h"
+#include "data_reader.h"
 
 #include <string>
 #include <sstream>

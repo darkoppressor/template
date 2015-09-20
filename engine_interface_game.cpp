@@ -6,73 +6,49 @@
 #include "world.h"
 #include "render.h"
 
-#include <boost/algorithm/string.hpp>
-
 using namespace std;
 
 void Engine_Interface::load_data_game(){
-    ///load_data("example_game_script");
+    ///load_data("example_game_tag");
 }
 
-void Engine_Interface::load_data_script_game(string script,File_IO_Load* load){
-    /**if(script=="example_game_script"){
-        load_example_game_script(load);
+void Engine_Interface::load_data_tag_game(string tag,File_IO_Load* load){
+    /**if(tag=="example_game_tag"){
+        load_example_game_tag(load);
     }*/
 }
 
 void Engine_Interface::unload_data_game(){
-    ///example_game_scripts.clear();
+    ///example_game_tags.clear();
 }
 
-/**void Engine_Interface::load_example_game_script(File_IO_Load* load){
-    example_game_scripts.push_back(Example_Game_Script());
+/**void Engine_Interface::load_example_game_tag(File_IO_Load* load){
+    example_game_tags.push_back(Example_Game_Tag());
 
-    bool multi_line_comment=false;
+    vector<string> lines=Data_Reader::read_data(load,"</example_game_tag>");
 
-    while(!load->eof()){
-        string line="";
+    for(size_t i=0;i<lines.size();i++){
+        string& line=lines[i];
 
-        string str_name="name:";
-
-        load->getline(&line);
-        boost::algorithm::trim(line);
-
-        if(boost::algorithm::contains(line,"*/
-                                      /**")){
-            multi_line_comment=false;
-        }
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-        }
-
-        //name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            line.erase(0,str_name.length());
-
-            example_game_scripts[example_game_scripts.size()-1].name=line;
-        }
-
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</example_game_script>")){
-            return;
+        if(Data_Reader::check_prefix(line,"name:")){
+            example_game_tags.back().name=line;
         }
     }
 }*/
 
-/**Example_Game_Script* Engine_Interface::get_example_game_script(string name){
-    Example_Game_Script* ptr_object=0;
+/**Example_Game_Tag* Engine_Interface::get_example_game_tag(string name){
+    Example_Game_Tag* ptr_object=0;
 
-    for(int i=0;i<example_game_scripts.size();i++){
-        if(example_game_scripts[i].name==name){
-            ptr_object=&example_game_scripts[i];
+    for(int i=0;i<example_game_tags.size();i++){
+        if(example_game_tags[i].name==name){
+            ptr_object=&example_game_tags[i];
 
             break;
         }
     }
 
     if(ptr_object==0){
-        Log::add_error("Error accessing example game script '"+name+"'");
+        Log::add_error("Error accessing example game tag '"+name+"'");
     }
 
     return ptr_object;

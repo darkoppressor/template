@@ -27,7 +27,7 @@
 #include "sprite.h"
 #include "custom_sound.h"
 
-///#include "example_game_script.h"
+///#include "example_game_tag.h"
 
 #include <string>
 
@@ -99,7 +99,7 @@ public:
     std::vector<Animation> animations;
     std::vector<Window> windows;
 
-    ///std::vector<Example_Game_Script> example_game_scripts;
+    ///std::vector<Example_Game_Tag> example_game_tags;
 
     Tooltip tooltip;
 
@@ -301,15 +301,15 @@ public:
     //Loads only game options.
     void load_data_game_options();
 
-    //Load any data of the passed script type.
-    //Returns false if passed script type's data could not be loaded.
+    //Load any data of the passed tag type.
+    //Returns false if passed tag type's data could not be loaded.
     //Returns true otherwise.
-    void load_data_script_game(std::string script,File_IO_Load* load);
+    void load_data_tag_game(std::string tag,File_IO_Load* load);
 
-    //Load any data of the passed script type.
-    //Returns false if passed script type's data could not be loaded.
+    //Load any data of the passed tag type.
+    //Returns false if passed tag type's data could not be loaded.
     //Returns true otherwise.
-    bool load_data(std::string script);
+    bool load_data(std::string tag);
 
     void unload_data_game();
     void unload_data();
@@ -338,8 +338,8 @@ public:
     Game_Command* get_game_command(std::string name);
     Game_Option* get_game_option(std::string name);
 
-    ///void load_example_game_script(File_IO_Load* load);
-    ///Example_Game_Script* get_example_game_script(std::string name);
+    ///void load_example_game_tag(File_IO_Load* load);
+    ///Example_Game_Tag* get_example_game_tag(std::string name);
 
     Color_Theme* current_color_theme();
     bool animation_exists(std::string animation_name);
