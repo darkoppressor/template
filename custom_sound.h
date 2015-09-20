@@ -15,7 +15,7 @@ class Custom_Sound{
 private:
 
     template<typename T>
-    void write_binary(File_IO_Binary_Save& save,const T& t){
+    void write_binary(File_IO_Save& save,const T& t){
         save.write((const char*)&t,sizeof(T),1);
     }
 

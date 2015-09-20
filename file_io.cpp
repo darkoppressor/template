@@ -111,49 +111,16 @@ string File_IO_Binary_Load::get_data(){
     return data;
 }
 
-File_IO_Binary_Save::File_IO_Binary_Save(string get_path){
-    rwops=0;
-
-    open(get_path);
-}
-
-void File_IO_Binary_Save::open(string get_path){
-    path=get_path;
-
-    rwops=SDL_RWFromFile(path.c_str(),"wb");
-}
-
-void File_IO_Binary_Save::close(){
-    if(SDL_RWclose(rwops)!=0){
-        string msg="Error closing binary file '"+path+"': ";
-        msg+=SDL_GetError();
-        Log::add_error(msg,false);
-    }
-
+File_IO_Save::File_IO_Save(string get_path,bool append,bool binary){
     rwops=0;
     path="";
+
+    open(get_path,append,binary);
 }
 
-bool File_IO_Binary_Save::is_opened(){
-    if(rwops!=0){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
+void File_IO_Save::open(string get_path,bool append,bool binary){
+    path=get_path;
 
-void File_IO_Binary_Save::write(const void* ptr,size_t data_size,size_t data_count){
-    size_t write_count=SDL_RWwrite(rwops,ptr,data_size,data_count);
-
-    if(write_count!=data_count){
-        string msg="Error saving binary file '"+path+"': ";
-        msg+=SDL_GetError();
-        Log::add_error(msg,false);
-    }
-}
-
-bool File_IO::save_file(string path,string data,bool append,bool binary){
     string rw_mode="w";
     if(append){
         rw_mode="a";
@@ -162,45 +129,115 @@ bool File_IO::save_file(string path,string data,bool append,bool binary){
         rw_mode+="b";
     }
 
-    SDL_RWops* rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
+    rwops=SDL_RWFromFile(path.c_str(),rw_mode.c_str());
 
-    if(rwops!=NULL){
+    if(!is_opened()){
+        string msg="Error opening file '"+path+"' for saving: ";
+        msg+=SDL_GetError();
+        Log::add_error(msg,false);
+    }
+}
+
+bool File_IO_Save::close(){
+    int close_result=SDL_RWclose(rwops);
+
+    rwops=0;
+
+    if(close_result!=0){
+        string msg="Error closing file '"+path+"' after saving: ";
+        msg+=SDL_GetError();
+        Log::add_error(msg,false);
+
+        path="";
+
+        return false;
+    }
+    else{
+        path="";
+
+        return true;
+    }
+}
+
+bool File_IO_Save::is_opened(){
+    if(rwops!=0){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+bool File_IO_Save::write(const void* ptr,size_t data_size,size_t data_count){
+    size_t write_count=SDL_RWwrite(rwops,ptr,data_size,data_count);
+
+    if(write_count!=data_count){
+        string msg="Error saving file '"+path+"': ";
+        msg+=SDL_GetError();
+        Log::add_error(msg,false);
+
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+bool File_IO::save_file(string path,string data,bool append,bool binary){
+    File_IO_Save save(path,append,binary);
+
+    if(save.is_opened()){
         const char* data_chars=data.c_str();
 
         size_t length=SDL_strlen(data_chars);
 
-        size_t written_length=SDL_RWwrite(rwops,data_chars,1,length);
+        bool write_result=save.write(data_chars,1,length);
 
-        SDL_RWclose(rwops);
+        bool close_result=save.close();
 
-        if(written_length!=length){
-            string msg="Error saving file '"+path+"': ";
-            msg+=SDL_GetError();
-            Log::add_error(msg,false);
-
+        if(!write_result || !close_result){
             return false;
         }
     }
     else{
-        string msg="Error opening file '"+path+"' for saving: ";
-        msg+=SDL_GetError();
-        Log::add_error(msg,false);
-
         return false;
     }
 
     return true;
 }
 
-bool File_IO::save_important_file(string path,string data,bool append,bool binary){
-    string path_temp=path+SAVE_TEMP_FILE_SUFFIX;
+bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool binary){
+    string path_temp=path+SAVE_SUFFIX_TEMPORARY;
 
     if(append){
-        remove_file(path_temp);
-        copy_file(path,path_temp);
+        if(exists(path_temp)){
+            if(!remove_file(path_temp)){
+                return false;
+            }
+        }
+
+        if(exists(path)){
+            if(!copy_file(path,path_temp)){
+                return false;
+            }
+        }
     }
 
     if(save_file(path_temp,data,append,binary)){
+        if(backup && exists(path)){
+            string path_backup=path+SAVE_SUFFIX_BACKUP;
+
+            if(exists(path_backup)){
+                if(!remove_file(path_backup)){
+                    return false;
+                }
+            }
+
+            if(!rename_file(path,path_backup)){
+                return false;
+            }
+        }
+
         return rename_file(path_temp,path);
     }
     else{
@@ -277,48 +314,88 @@ bool File_IO::save_important_file(string path,string data,bool append,bool binar
             }
         }
         else{
+            Log::add_error("Error renaming file; '"+old_path+"' is not a regular file",false);
+
             return false;
         }
     }
 
-    void File_IO::copy_file(string old_path,string new_path){
-        if(is_regular_file(old_path) && !exists(new_path)){
-            File_IO_Binary_Load load(old_path);
+    bool File_IO::copy_file(string old_path,string new_path){
+        if(is_regular_file(old_path)){
+            if(!exists(new_path)){
+                File_IO_Binary_Load load(old_path);
 
-            if(load.file_loaded()){
-                SDL_RWops* rwops=SDL_RWFromFile(new_path.c_str(),"wb");
+                if(load.file_loaded()){
+                    SDL_RWops* rwops=SDL_RWFromFile(new_path.c_str(),"wb");
 
-                if(rwops!=NULL){
-                    const char* data_chars=load.get_data().c_str();
+                    if(rwops!=NULL){
+                        const char* data_chars=load.get_data().c_str();
 
-                    size_t length=SDL_strlen(data_chars);
+                        size_t length=SDL_strlen(data_chars);
 
-                    size_t written_length=SDL_RWwrite(rwops,data_chars,1,length);
+                        size_t written_length=SDL_RWwrite(rwops,data_chars,1,length);
 
-                    SDL_RWclose(rwops);
+                        SDL_RWclose(rwops);
 
-                    if(written_length!=length){
-                        string msg="Error saving file '"+new_path+"' for copying to: ";
+                        if(written_length!=length){
+                            string msg="Error saving file '"+new_path+"' for copying to: ";
+                            msg+=SDL_GetError();
+                            Log::add_error(msg,false);
+
+                            return false;
+                        }
+                    }
+                    else{
+                        string msg="Error opening file '"+new_path+"' for copying to: ";
                         msg+=SDL_GetError();
                         Log::add_error(msg,false);
+
+                        return false;
                     }
                 }
                 else{
-                    string msg="Error opening file '"+new_path+"' for copying to: ";
-                    msg+=SDL_GetError();
-                    Log::add_error(msg,false);
+                    Log::add_error("Failed to load file for copying from: '"+old_path+"'",false);
+
+                    return false;
                 }
             }
             else{
-                Log::add_error("Failed to load file for copying from: '"+old_path+"'",false);
+                Log::add_error("Error copying file to '"+new_path+"': file exists",false);
+
+                return false;
             }
         }
+        else{
+            Log::add_error("Error copying file; '"+old_path+"' is not a regular file",false);
+
+            return false;
+        }
+
+        return true;
     }
 
-    void File_IO::remove_file(string path){
-        if(exists(path) && is_regular_file(path) && remove(path.c_str())!=0){
-            Log::add_error("Error removing file '"+path+"': "+Strings::num_to_string(errno),false);
+    bool File_IO::remove_file(string path){
+        if(exists(path)){
+            if(is_regular_file(path)){
+                if(remove(path.c_str())!=0){
+                    Log::add_error("Error removing file '"+path+"': "+Strings::num_to_string(errno),false);
+
+                    return false;
+                }
+            }
+            else{
+                Log::add_error("Error removing file; '"+path+"' is not a regular file",false);
+
+                return false;
+            }
         }
+        else{
+            Log::add_error("Error removing file; '"+path+"' does not exist",false);
+
+            return false;
+        }
+
+        return true;
     }
 
     void File_IO::remove_directory(string path){
@@ -530,19 +607,63 @@ bool File_IO::save_important_file(string path,string data,bool append,bool binar
 
             return true;
         }
+        catch(boost::filesystem::filesystem_error e){
+            string error_message=e.what();
+            Log::add_error("Error renaming file '"+old_path+"': "+error_message,false);
+
+            return false;
+        }
         catch(...){
+            Log::add_error("Error renaming file '"+old_path+"'",false);
+
             return false;
         }
     }
 
-    void File_IO::copy_file(string old_path,string new_path){
-        if(is_regular_file(old_path) && !exists(new_path)){
-            boost::filesystem::copy(old_path,new_path);
+    bool File_IO::copy_file(string old_path,string new_path){
+        if(is_regular_file(old_path)){
+            if(!exists(new_path)){
+                try{
+                    boost::filesystem::copy(old_path,new_path);
+                }
+                catch(boost::filesystem::filesystem_error e){
+                    string error_message=e.what();
+                    Log::add_error("Error copying file '"+old_path+"': "+error_message,false);
+
+                    return false;
+                }
+                catch(...){
+                    Log::add_error("Error copying file '"+old_path+"'",false);
+
+                    return false;
+                }
+            }
+            else{
+                Log::add_error("Error copying file to '"+new_path+"': file exists",false);
+
+                return false;
+            }
         }
+        else{
+            Log::add_error("Error copying file; '"+old_path+"' is not a regular file",false);
+
+            return false;
+        }
+
+        return true;
     }
 
-    void File_IO::remove_file(string path){
-        boost::filesystem::remove(path);
+    bool File_IO::remove_file(string path){
+        bool remove_result=boost::filesystem::remove(path);
+
+        if(!remove_result){
+            Log::add_error("Error removing file; '"+path+"' does not exist",false);
+
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     void File_IO::remove_directory(string path){

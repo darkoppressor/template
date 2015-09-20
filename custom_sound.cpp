@@ -584,7 +584,7 @@ void Custom_Sound::add_note(string frequency_string,string length_string,string 
 }
 
 void Custom_Sound::save(string path){
-    File_IO_Binary_Save save(path);
+    File_IO_Save save(path,false,true);
 
     if(save.is_opened()){
         vector<char> buffer;

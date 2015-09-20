@@ -28,7 +28,7 @@ void Log::add_error(string message,bool allow_save){
 
         save<<message<<"\n";
 
-        File_IO::save_file(engine_interface.get_save_directory()+"error_log.txt",save.str(),true);
+        File_IO::save_atomic(engine_interface.get_save_directory()+"error_log.txt",save.str(),false,true);
     }
 }
 

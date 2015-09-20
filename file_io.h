@@ -19,7 +19,8 @@
     #include <boost/filesystem.hpp>
 #endif
 
-const std::string SAVE_TEMP_FILE_SUFFIX="_TEMP";
+const std::string SAVE_SUFFIX_TEMPORARY="_TEMPORARY";
+const std::string SAVE_SUFFIX_BACKUP="_BACKUP";
 
 class File_IO_Load{
 public:
@@ -55,28 +56,31 @@ public:
     std::string get_data();
 };
 
-class File_IO_Binary_Save{
+class File_IO_Save{
 public:
 
     SDL_RWops* rwops;
 
     std::string path;
 
-    File_IO_Binary_Save(std::string get_path);
+    File_IO_Save(std::string get_path,bool append=false,bool binary=false);
 
-    void open(std::string get_path);
-    void close();
+    void open(std::string get_path,bool append,bool binary);
+    bool close();
 
     bool is_opened();
 
-    void write(const void* ptr,size_t data_size,size_t data_count);
+    bool write(const void* ptr,size_t data_size,size_t data_count);
 };
 
 class File_IO{
+private:
+
+    static bool save_file(std::string path,std::string data,bool append,bool binary);
+
 public:
-    static bool save_file(std::string path,std::string data,bool append=false,bool binary=false);
-    //First saves to a temporary file, then renames that file to the final file
-    static bool save_important_file(std::string path,std::string data,bool append=false,bool binary=false);
+    //First saves to a temporary file, then renames that file to the final filename
+    static bool save_atomic(std::string path,std::string data,bool backup=false,bool append=false,bool binary=false);
 
     static bool exists(std::string path);
     static bool is_directory(std::string path);
@@ -84,8 +88,8 @@ public:
     static void create_directory(std::string path);
     static bool rename_file(std::string old_path,std::string new_path);
     //This does NOT overwrite new_path if it already exists
-    static void copy_file(std::string old_path,std::string new_path);
-    static void remove_file(std::string path);
+    static bool copy_file(std::string old_path,std::string new_path);
+    static bool remove_file(std::string path);
     static void remove_directory(std::string path);
     static std::string get_file_name(std::string path);
 
