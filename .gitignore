@@ -15,7 +15,6 @@ development/android/jni/include/cheese-engine/**
 development/android/jni/armeabi/**
 development/android/jni/armeabi-v7a/**
 development/android/jni/x86/**
-development/android/jni/src/Android.mk
 development/android/ant.properties
 development/android/local.properties
 
