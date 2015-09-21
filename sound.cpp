@@ -90,12 +90,12 @@ int Sound::get_free_channel(){
     for(int i=0;i<allocated_channels;i++){
         //Check through all music tracks currently loaded.
         bool channel_taken_by_music_track=false;
-		
+
         for(int n=0;n<music.tracks.size();n++){
             //If this channel is equal to this track's channel, then this channel is taken.
             if(i==music.tracks[n].channel){
                 channel_taken_by_music_track=true;
-				
+
 				break;
             }
         }
