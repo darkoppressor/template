@@ -6,6 +6,8 @@
 #include "world.h"
 #include "version.h"
 
+#include <engine_version.h>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
 
@@ -26,23 +28,23 @@ Version_Series::Version_Series(int get_major_1,int get_minor_1,int get_micro_1,i
 }
 
 string Engine_Interface::get_version(){
-    return Strings::num_to_string(Version::MAJOR)+"."+Strings::num_to_string(Version::MINOR)+"."+Strings::num_to_string(Version::MICRO);
+    return Strings::num_to_string(Version::get_major())+"."+Strings::num_to_string(Version::get_minor())+"."+Strings::num_to_string(Version::get_micro());
 }
 
 string Engine_Interface::get_build_date(){
-    string year=Version::YEAR;
-    string month=Version::MONTH;
-    string day=Version::DAY;
+    string year=Version::get_year();
+    string month=Version::get_month();
+    string day=Version::get_day();
 
     return year+"-"+month+"-"+day;
 }
 
 string Engine_Interface::get_engine_version(){
-    return Version::ENGINE_VERSION;
+    return Engine_Version::get_engine_version();
 }
 
 string Engine_Interface::get_engine_date(){
-    return Version::ENGINE_DATE;
+    return Engine_Version::get_engine_date();
 }
 
 string Engine_Interface::get_checksum(){
@@ -393,9 +395,9 @@ int Engine_Interface::which_version_series(vector<Version_Series>* version_serie
 }
 
 bool Engine_Interface::version_compatible(string name_to_check){
-    int current_major=Version::MAJOR;
-    int current_minor=Version::MINOR;
-    int current_micro=Version::MICRO;
+    int current_major=Version::get_major();
+    int current_minor=Version::get_minor();
+    int current_micro=Version::get_micro();
 
     int major=0;
     int minor=0;

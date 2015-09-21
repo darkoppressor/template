@@ -7,25 +7,18 @@
 
 #include <string>
 
-namespace Version{
-	//Build date
-	static const char YEAR[]="2015";
-	static const char MONTH[]="05";
-	static const char DAY[]="28";
+class Version{
+public:
 
-	//Version
-	static const int MAJOR=0;
-	static const int MINOR=0;
-	static const int MICRO=1;
+    static std::string get_year();
+    static std::string get_month();
+    static std::string get_day();
 
-	//Status
-	static const char STATUS[]="alpha";
+    static int get_major();
+    static int get_minor();
+    static int get_micro();
 
-	//Engine version
-	static const std::string ENGINE_VERSION="1.2.7";
-
-	//Engine date
-	static const std::string ENGINE_DATE="2015-05-28";
-}
+    static std::string get_status();
+};
 
 #endif
