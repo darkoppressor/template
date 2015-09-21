@@ -18,10 +18,10 @@ void Engine_Interface::render_dev_info(){
     }
 
     if(msg.length()>0){
-        Bitmap_Font* font=engine_interface.get_font("small");
-		
+        Bitmap_Font* font=get_font("small");
+
 		double y=2.0;
-        if(engine_interface.option_fps){
+        if(option_fps){
             y+=font->spacing_y;
 
             if(network.status!="off"){
