@@ -9,10 +9,10 @@
 using namespace std;
 
 Touch_Controller::Touch_Controller(){
-    scale(1280.0,720.0);
+    scale(1280.0,720.0,false,false);
 }
 
-void Touch_Controller::scale(double resolution_x,double resolution_y){
+void Touch_Controller::scale(double resolution_x,double resolution_y,bool touch_controller_xy,bool touch_controller_guide){
     //The native resolution of the touch controller.
     double native_x=1280.0;
     double native_y=720.0;
@@ -23,11 +23,11 @@ void Touch_Controller::scale(double resolution_x,double resolution_y){
 
     double anchor_r_dpad=192.0*scale_mean;
     double anchor_r_main=192.0*scale_mean;
-    if(!engine_interface.touch_controller_xy){
+    if(!touch_controller_xy){
         anchor_r_main=128.0*scale_mean;
     }
     double anchor_w_middle=464.0*scale_x;
-    if(!engine_interface.touch_controller_guide){
+    if(!touch_controller_guide){
         anchor_w_middle=304.0*scale_x;
     }
     double anchor_h_middle=96.0*scale_y;
@@ -109,7 +109,7 @@ void Touch_Controller::scale(double resolution_x,double resolution_y){
     main_x.y=anchor_top_main+anchor_r_main;
 
     main_b.r=button_size_standard;
-    if(engine_interface.touch_controller_xy){
+    if(touch_controller_xy){
         main_b.x=anchor_left_main+(anchor_r_main*2.0)-button_size_standard;
         main_b.y=anchor_top_main+anchor_r_main;
     }
@@ -123,7 +123,7 @@ void Touch_Controller::scale(double resolution_x,double resolution_y){
     main_y.y=anchor_top_main+button_size_standard;
 
     main_a.r=button_size_standard;
-    if(engine_interface.touch_controller_xy){
+    if(touch_controller_xy){
         main_a.x=anchor_left_main+anchor_r_main;
         main_a.y=anchor_top_main+(anchor_r_main*2.0)-button_size_standard;
     }

@@ -414,7 +414,7 @@ bool Game_Window::init(){
     int actual_width=0;
     int actual_height=0;
     SDL_GetRendererOutputSize(renderer,&actual_width,&actual_height);
-    engine_interface.touch_controller.scale(actual_width,actual_height);
+    engine_interface.touch_controller.scale(actual_width,actual_height,engine_interface.touch_controller_xy,engine_interface.touch_controller_guide);
 
     if(Mix_Init(MIX_INIT_OGG)==0){
         msg="SDL2_mixer initialization failed: ";
@@ -635,7 +635,7 @@ void Game_Window::reinitialize(){
         int actual_width=0;
         int actual_height=0;
         SDL_GetRendererOutputSize(renderer,&actual_width,&actual_height);
-        engine_interface.touch_controller.scale(actual_width,actual_height);
+        engine_interface.touch_controller.scale(actual_width,actual_height,engine_interface.touch_controller_xy,engine_interface.touch_controller_guide);
     }
 }
 
