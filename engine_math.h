@@ -2,8 +2,8 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#ifndef math_h
-#define math_h
+#ifndef engine_math_h
+#define engine_math_h
 
 const double PI=3.14159265358979323846;
 const double E=2.71828182845904523536;
