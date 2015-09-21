@@ -380,17 +380,11 @@
 		<Unit filename="button_events.cpp" />
 		<Unit filename="button_events.h" />
 		<Unit filename="button_events_game.cpp" />
-		<Unit filename="collision.cpp" />
-		<Unit filename="collision.h" />
-		<Unit filename="color.cpp" />
-		<Unit filename="color.h" />
 		<Unit filename="color_theme.cpp" />
 		<Unit filename="color_theme.h" />
 		<Unit filename="console.cpp" />
 		<Unit filename="console.h" />
 		<Unit filename="console_commands.cpp" />
-		<Unit filename="coords.cpp" />
-		<Unit filename="coords.h" />
 		<Unit filename="cursor.cpp" />
 		<Unit filename="cursor.h" />
 		<Unit filename="custom_sound.cpp" />
@@ -402,10 +396,6 @@
 		<Unit filename="engine_interface.h" />
 		<Unit filename="engine_interface_game.cpp" />
 		<Unit filename="engine_interface_options.cpp" />
-		<Unit filename="engine_math.cpp" />
-		<Unit filename="engine_math.h" />
-		<Unit filename="file_io.cpp" />
-		<Unit filename="file_io.h" />
 		<Unit filename="font.cpp" />
 		<Unit filename="font.h" />
 		<Unit filename="game.cpp" />
@@ -430,8 +420,6 @@
 		<Unit filename="image_data.h" />
 		<Unit filename="information.cpp" />
 		<Unit filename="information.h" />
-		<Unit filename="log.cpp" />
-		<Unit filename="log.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
 		<Unit filename="music.cpp" />
@@ -442,8 +430,6 @@
 		<Unit filename="network_client.cpp" />
 		<Unit filename="network_game.cpp" />
 		<Unit filename="network_server.cpp" />
-		<Unit filename="pixels.cpp" />
-		<Unit filename="pixels.h" />
 		<Unit filename="render.cpp" />
 		<Unit filename="render.h" />
 		<Unit filename="rng.cpp" />
@@ -465,8 +451,6 @@
 		<Unit filename="special_info.h" />
 		<Unit filename="sprite.cpp" />
 		<Unit filename="sprite.h" />
-		<Unit filename="strings.cpp" />
-		<Unit filename="strings.h" />
 		<Unit filename="symbols.cpp" />
 		<Unit filename="symbols.h" />
 		<Unit filename="timer.cpp" />
@@ -479,8 +463,6 @@
 		<Unit filename="touch_controller.h" />
 		<Unit filename="update.cpp" />
 		<Unit filename="update.h" />
-		<Unit filename="vector.cpp" />
-		<Unit filename="vector.h" />
 		<Unit filename="version.cpp" />
 		<Unit filename="version.h" />
 		<Unit filename="window.cpp" />
