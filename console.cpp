@@ -5,6 +5,9 @@
 #include "console.h"
 #include "world.h"
 
+#include <strings.h>
+#include <log.h>
+
 #include <boost/algorithm/string.hpp>
 
 using namespace std;
@@ -150,7 +153,7 @@ void Console::toggle_on(){
 
 void Console::add_text(string text){
     if(chat && game.option_chat_timestamps){
-        text=engine_interface.get_timestamp(false)+" "+text;
+        text=Log::get_timestamp(false)+" "+text;
     }
 
     //If the text extends beyond the text box, wrap it around.

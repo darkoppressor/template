@@ -5,6 +5,9 @@
 #include "network.h"
 #include "world.h"
 
+#include <strings.h>
+#include <log.h>
+
 #include <boost/algorithm/string.hpp>
 
 using namespace std;

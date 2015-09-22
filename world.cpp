@@ -4,13 +4,14 @@
 
 #include "world.h"
 
+#include <engine.h>
+#include <image_manager.h>
+#include <sound_manager.h>
+#include <music_manager.h>
+#include <rtt_manager.h>
+
 using namespace std;
 
-bool world_loaded=false;
-
-bool save_location_loaded=false;
-
-string CURRENT_WORKING_DIRECTORY="./";
 string CHECKSUM="";
 
 double UPDATE_RATE=60.0;
@@ -31,14 +32,6 @@ Android android;
 
 Network network;
 
-Image image;
-
-Rtt_Manager rtt_manager;
-
-Music music;
-
-Sound sound_system;
-
 Game game;
 
 bool load_world(){
@@ -52,15 +45,15 @@ bool load_world(){
         return false;
     }
 
-    image.load_images();
+    Image_Manager::load_images();
 
-    sound_system.load_sounds();
+    Sound_Manager::load_sounds();
 
-    music.prepare_tracks();
+    Music_Manager::prepare_tracks();
 
     engine_interface.load_data_main();
 
-    rtt_manager.create_textures();
+    ///Rtt_Manager::add_texture(main_window.renderer,"example",1024.0,1024.0);
 
     engine_interface.console.setup(false);
     engine_interface.chat.setup(true);
@@ -72,24 +65,24 @@ bool load_world(){
     engine_interface.load_servers();
 
     //To be safe, this should be at the very bottom of load_world().
-    image.set_error_image();
+    Image_Manager::set_error_image();
 
-    world_loaded=true;
+    Engine::world_loaded=true;
 
     return true;
 }
 
 void unload_world(){
-    if(world_loaded){
-        world_loaded=false;
+    if(Engine::world_loaded){
+        Engine::world_loaded=false;
 
-        image.unload_images();
+        Image_Manager::unload_images();
 
-        rtt_manager.unload_textures();
+        Rtt_Manager::unload_textures();
 
-        sound_system.unload_sounds();
+        Sound_Manager::unload_sounds();
 
-        music.unload_tracks();
+        Music_Manager::unload_tracks();
 
         engine_interface.unload_data();
     }

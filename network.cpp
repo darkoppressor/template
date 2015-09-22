@@ -5,6 +5,9 @@
 #include "network.h"
 #include "world.h"
 
+#include <strings.h>
+#include <log.h>
+
 using namespace std;
 
 Client_Data::Client_Data(RakNet::RakNetGUID get_id,RakNet::SystemAddress get_address,string get_name,bool get_is_us){

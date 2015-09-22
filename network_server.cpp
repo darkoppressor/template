@@ -5,6 +5,9 @@
 #include "network.h"
 #include "world.h"
 
+#include <strings.h>
+#include <log.h>
+
 using namespace std;
 
 bool Network::start_as_server(bool allow_clients){

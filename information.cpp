@@ -4,7 +4,12 @@
 
 #include "information.h"
 #include "world.h"
-#include "render.h"
+
+#include <collision.h>
+#include <strings.h>
+#include <log.h>
+#include <symbols.h>
+#include <render.h>
 
 using namespace std;
 
@@ -406,7 +411,7 @@ void Information::handle_input_states(int mouse_x,int mouse_y,int x_offset,int y
         Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
         Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
 
-        if(engine_interface.mouse_allowed() && engine_interface.gui_mode=="mouse" && collision_check_rect(box_a,box_b)){
+        if(engine_interface.mouse_allowed() && engine_interface.gui_mode=="mouse" && Collision::check_rect(box_a,box_b)){
             engine_interface.tooltip.setup(tooltip_text,mouse_x,mouse_y);
         }
         else if((engine_interface.gui_mode=="keyboard" || engine_interface.gui_mode=="controller") && engine_interface.is_gui_object_selected(this)){
@@ -423,7 +428,7 @@ bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y
         case SDL_MOUSEBUTTONDOWN:
             if(event.button.button==SDL_BUTTON_LEFT){
                 if(text_mutable){
-                    if(collision_check_rect(box_a,box_b)){
+                    if(Collision::check_rect(box_a,box_b)){
                         if(scrolling && text.length()>0){
                             int lines=Strings::newline_count(text)+1;
                             int top_line=-scroll_offset;
@@ -438,7 +443,7 @@ bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y
                                     for(int j=0;j<line_length;j++){
                                         Collision_Rect box_character(x_offset+x+ptr_font->spacing_x*j,y_offset+y+ptr_font->spacing_y*line_on_screen,ptr_font->spacing_x,ptr_font->spacing_y);
 
-                                        if(collision_check_rect(box_a,box_character)){
+                                        if(Collision::check_rect(box_a,box_character)){
                                             cursor_position=Strings::which_character(text,i,j);
 
                                             character_clicked=true;
@@ -461,7 +466,7 @@ bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y
         case SDL_MOUSEWHEEL:
             if(event.wheel.y<0){
                 if(scrolling){
-                    if(collision_check_rect(box_a,box_b)){
+                    if(Collision::check_rect(box_a,box_b)){
                         scroll_down(y_offset);
 
                         return true;
@@ -470,7 +475,7 @@ bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y
             }
             else if(event.wheel.y>0){
                 if(scrolling){
-                    if(collision_check_rect(box_a,box_b)){
+                    if(Collision::check_rect(box_a,box_b)){
                         scroll_up(y_offset);
 
                         return true;
@@ -506,17 +511,17 @@ void Information::render(int x_offset,int y_offset){
     }
 
     if(sprite.name.length()>0 && background_type=="sprite"){
-        sprite.render(x_offset+x,y_offset+y,background_opacity);
+        sprite.render(main_window.renderer,x_offset+x,y_offset+y,background_opacity);
     }
     else if(background_type=="standard"){
         //Render the border.
         if(engine_interface.current_color_theme()->information_border!="<INVISIBLE>"){
-            render_rectangle(x_offset+x,y_offset+y,w,h,background_opacity,engine_interface.current_color_theme()->information_border);
+            Render::render_rectangle(main_window.renderer,x_offset+x,y_offset+y,w,h,background_opacity,engine_interface.current_color_theme()->information_border);
         }
 
         //Render the background.
         if(engine_interface.current_color_theme()->information_background!="<INVISIBLE>"){
-            render_rectangle(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,background_opacity,engine_interface.current_color_theme()->information_background);
+            Render::render_rectangle(main_window.renderer,x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,background_opacity,engine_interface.current_color_theme()->information_background);
         }
     }
 
@@ -578,6 +583,6 @@ void Information::render(int x_offset,int y_offset){
     }
     //If the information has a sprite, and it is not already being used as the background.
     else if(sprite.name.length()>0 && background_type!="sprite"){
-        sprite.render(x_offset+x,y_offset+y);
+        sprite.render(main_window.renderer,x_offset+x,y_offset+y);
     }
 }

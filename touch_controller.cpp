@@ -3,8 +3,12 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include "touch_controller.h"
-#include "render.h"
 #include "world.h"
+
+#include <collision.h>
+#include <image_data.h>
+#include <image_manager.h>
+#include <render.h>
 
 using namespace std;
 
@@ -214,50 +218,50 @@ vector<SDL_GameControllerButton> Touch_Controller::check_for_button_press(float 
 
     vector<SDL_GameControllerButton> touch_buttons;
 
-    if(collision_check_circ(circle_touch,dpad_left)){
+    if(Collision::check_circ(circle_touch,dpad_left)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_LEFT);
     }
-    else if(collision_check_circ(circle_touch,dpad_up)){
+    else if(Collision::check_circ(circle_touch,dpad_up)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_UP);
     }
-    else if(collision_check_circ(circle_touch,dpad_right)){
+    else if(Collision::check_circ(circle_touch,dpad_right)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
     }
-    else if(collision_check_circ(circle_touch,dpad_down)){
+    else if(Collision::check_circ(circle_touch,dpad_down)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_DOWN);
     }
 
-    else if(collision_check_circ(circle_touch,dpad_left_up)){
+    else if(Collision::check_circ(circle_touch,dpad_left_up)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_LEFT);
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_UP);
     }
-    else if(collision_check_circ(circle_touch,dpad_up_right)){
+    else if(Collision::check_circ(circle_touch,dpad_up_right)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_UP);
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
     }
-    else if(collision_check_circ(circle_touch,dpad_right_down)){
+    else if(Collision::check_circ(circle_touch,dpad_right_down)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_DOWN);
     }
-    else if(collision_check_circ(circle_touch,dpad_down_left)){
+    else if(Collision::check_circ(circle_touch,dpad_down_left)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_DOWN);
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_DPAD_LEFT);
     }
 
-    else if(engine_interface.touch_controller_xy && collision_check_circ(circle_touch,main_x)){
+    else if(engine_interface.touch_controller_xy && Collision::check_circ(circle_touch,main_x)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_X);
     }
-    else if(engine_interface.touch_controller_xy && collision_check_circ(circle_touch,main_y)){
+    else if(engine_interface.touch_controller_xy && Collision::check_circ(circle_touch,main_y)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_Y);
     }
-    else if(collision_check_circ(circle_touch,main_b)){
+    else if(Collision::check_circ(circle_touch,main_b)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_B);
     }
-    else if(collision_check_circ(circle_touch,main_a)){
+    else if(Collision::check_circ(circle_touch,main_a)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_A);
     }
 
-    else if(collision_check_circ(circle_touch,main_x_y)){
+    else if(Collision::check_circ(circle_touch,main_x_y)){
         if(engine_interface.touch_controller_xy){
             touch_buttons.push_back(SDL_CONTROLLER_BUTTON_X);
             touch_buttons.push_back(SDL_CONTROLLER_BUTTON_Y);
@@ -267,33 +271,33 @@ vector<SDL_GameControllerButton> Touch_Controller::check_for_button_press(float 
             touch_buttons.push_back(SDL_CONTROLLER_BUTTON_A);
         }
     }
-    else if(engine_interface.touch_controller_xy && collision_check_circ(circle_touch,main_y_b)){
+    else if(engine_interface.touch_controller_xy && Collision::check_circ(circle_touch,main_y_b)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_Y);
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_B);
     }
-    else if(collision_check_circ(circle_touch,main_b_a)){
+    else if(Collision::check_circ(circle_touch,main_b_a)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_B);
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_A);
     }
-    else if(engine_interface.touch_controller_xy && collision_check_circ(circle_touch,main_a_x)){
+    else if(engine_interface.touch_controller_xy && Collision::check_circ(circle_touch,main_a_x)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_A);
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_X);
     }
 
-    else if(engine_interface.touch_controller_shoulders && collision_check_circ(circle_touch,shoulder_left)){
+    else if(engine_interface.touch_controller_shoulders && Collision::check_circ(circle_touch,shoulder_left)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
     }
-    else if(engine_interface.touch_controller_shoulders && collision_check_circ(circle_touch,shoulder_right)){
+    else if(engine_interface.touch_controller_shoulders && Collision::check_circ(circle_touch,shoulder_right)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
     }
 
-    else if(collision_check_circ_rect(circle_touch,back_button)){
+    else if(Collision::check_circ_rect(circle_touch,back_button)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_BACK);
     }
-    else if(collision_check_circ_rect(circle_touch,start)){
+    else if(Collision::check_circ_rect(circle_touch,start)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_START);
     }
-    else if(engine_interface.touch_controller_guide && collision_check_circ_rect(circle_touch,guide)){
+    else if(engine_interface.touch_controller_guide && Collision::check_circ_rect(circle_touch,guide)){
         touch_buttons.push_back(SDL_CONTROLLER_BUTTON_GUIDE);
     }
 
@@ -309,33 +313,33 @@ void Touch_Controller::render(){
     double scale_y=(double)main_window.SCREEN_HEIGHT/(double)actual_height;
     double scale_mean=(scale_x+scale_y)/2.0;
 
-    Image_Data* image_dpad=image.get_image("touch_controller_dpad");
-    render_texture(anchor_dpad.x*scale_x-anchor_dpad.r*scale_mean,anchor_dpad.y*scale_y-anchor_dpad.r*scale_mean,*image_dpad,engine_interface.option_touch_controller_opacity,scale_anchor_dpad*scale_mean,scale_anchor_dpad*scale_mean);
+    Image_Data* image_dpad=Image_Manager::get_image("touch_controller_dpad");
+    Render::render_texture(main_window.renderer,anchor_dpad.x*scale_x-anchor_dpad.r*scale_mean,anchor_dpad.y*scale_y-anchor_dpad.r*scale_mean,image_dpad,engine_interface.option_touch_controller_opacity,scale_anchor_dpad*scale_mean,scale_anchor_dpad*scale_mean);
 
     if(engine_interface.touch_controller_xy){
-        Image_Data* image_main=image.get_image("touch_controller_main");
-        render_texture(anchor_main.x*scale_x-anchor_main.r*scale_mean,anchor_main.y*scale_y-anchor_main.r*scale_mean,*image_main,engine_interface.option_touch_controller_opacity,scale_anchor_main*scale_mean,scale_anchor_main*scale_mean);
+        Image_Data* image_main=Image_Manager::get_image("touch_controller_main");
+        Render::render_texture(main_window.renderer,anchor_main.x*scale_x-anchor_main.r*scale_mean,anchor_main.y*scale_y-anchor_main.r*scale_mean,image_main,engine_interface.option_touch_controller_opacity,scale_anchor_main*scale_mean,scale_anchor_main*scale_mean);
     }
     else{
-        Image_Data* image_main=image.get_image("touch_controller_main_small");
-        render_texture(anchor_main.x*scale_x-anchor_main.r*scale_mean,anchor_main.y*scale_y-anchor_main.r*scale_mean,*image_main,engine_interface.option_touch_controller_opacity,scale_anchor_main*scale_mean,scale_anchor_main*scale_mean);
+        Image_Data* image_main=Image_Manager::get_image("touch_controller_main_small");
+        Render::render_texture(main_window.renderer,anchor_main.x*scale_x-anchor_main.r*scale_mean,anchor_main.y*scale_y-anchor_main.r*scale_mean,image_main,engine_interface.option_touch_controller_opacity,scale_anchor_main*scale_mean,scale_anchor_main*scale_mean);
     }
 
     if(engine_interface.touch_controller_shoulders){
-        Image_Data* image_shoulder_left=image.get_image("touch_controller_shoulder_left");
-        render_texture(shoulder_left.x*scale_x-shoulder_left.r*scale_mean,shoulder_left.y*scale_y-shoulder_left.r*scale_mean,*image_shoulder_left,engine_interface.option_touch_controller_opacity,scale_shoulders*scale_mean,scale_shoulders*scale_mean);
+        Image_Data* image_shoulder_left=Image_Manager::get_image("touch_controller_shoulder_left");
+        Render::render_texture(main_window.renderer,shoulder_left.x*scale_x-shoulder_left.r*scale_mean,shoulder_left.y*scale_y-shoulder_left.r*scale_mean,image_shoulder_left,engine_interface.option_touch_controller_opacity,scale_shoulders*scale_mean,scale_shoulders*scale_mean);
 
-        Image_Data* image_shoulder_right=image.get_image("touch_controller_shoulder_right");
-        render_texture(shoulder_right.x*scale_x-shoulder_right.r*scale_mean,shoulder_right.y*scale_y-shoulder_right.r*scale_mean,*image_shoulder_right,engine_interface.option_touch_controller_opacity,scale_shoulders*scale_mean,scale_shoulders*scale_mean);
+        Image_Data* image_shoulder_right=Image_Manager::get_image("touch_controller_shoulder_right");
+        Render::render_texture(main_window.renderer,shoulder_right.x*scale_x-shoulder_right.r*scale_mean,shoulder_right.y*scale_y-shoulder_right.r*scale_mean,image_shoulder_right,engine_interface.option_touch_controller_opacity,scale_shoulders*scale_mean,scale_shoulders*scale_mean);
     }
 
     if(engine_interface.touch_controller_guide){
-        Image_Data* image_middle=image.get_image("touch_controller_middle");
-        render_texture(anchor_middle.x*scale_x,anchor_middle.y*scale_y,*image_middle,engine_interface.option_touch_controller_opacity,scale_anchor_middle_x*scale_x,scale_anchor_middle_y*scale_y);
+        Image_Data* image_middle=Image_Manager::get_image("touch_controller_middle");
+        Render::render_texture(main_window.renderer,anchor_middle.x*scale_x,anchor_middle.y*scale_y,image_middle,engine_interface.option_touch_controller_opacity,scale_anchor_middle_x*scale_x,scale_anchor_middle_y*scale_y);
     }
     else{
-        Image_Data* image_middle=image.get_image("touch_controller_middle_small");
-        render_texture(anchor_middle.x*scale_x,anchor_middle.y*scale_y,*image_middle,engine_interface.option_touch_controller_opacity,scale_anchor_middle_x*scale_x,scale_anchor_middle_y*scale_y);
+        Image_Data* image_middle=Image_Manager::get_image("touch_controller_middle_small");
+        Render::render_texture(main_window.renderer,anchor_middle.x*scale_x,anchor_middle.y*scale_y,image_middle,engine_interface.option_touch_controller_opacity,scale_anchor_middle_x*scale_x,scale_anchor_middle_y*scale_y);
     }
 
     ///NOTE:
@@ -343,76 +347,76 @@ void Touch_Controller::render(){
     /**Collision_Circ* show_circ=0;
 
     show_circ=&dpad_left;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"red");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"red");
 
     show_circ=&dpad_up;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"red");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"red");
 
     show_circ=&dpad_right;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"red");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"red");
 
     show_circ=&dpad_down;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"red");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"red");
 
     show_circ=&dpad_left_up;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"green");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"green");
 
     show_circ=&dpad_up_right;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"green");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"green");
 
     show_circ=&dpad_right_down;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"green");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"green");
 
     show_circ=&dpad_down_left;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"green");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"green");
 
     if(engine_interface.touch_controller_xy){
         show_circ=&main_x;
-        render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"red");
+        Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"red");
 
         show_circ=&main_y;
-        render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"red");
+        Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"red");
     }
 
     show_circ=&main_b;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"red");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"red");
 
     show_circ=&main_a;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"red");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"red");
 
 
     show_circ=&main_x_y;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"green");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"green");
 
     if(engine_interface.touch_controller_xy){
         show_circ=&main_y_b;
-        render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"green");
+        Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"green");
 
         show_circ=&main_a_x;
-        render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"green");
+        Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"green");
     }
 
     show_circ=&main_b_a;
-    render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"green");
+    Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"green");
 
     if(engine_interface.touch_controller_shoulders){
         show_circ=&shoulder_left;
-        render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"yellow");
+        Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"yellow");
 
         show_circ=&shoulder_right;
-        render_circle(show_circ->x,show_circ->y,show_circ->r,0.5,"yellow");
+        Render::render_circle(main_window.renderer,show_circ->x,show_circ->y,show_circ->r,0.5,"yellow");
     }
 
     Collision_Rect* show_box=0;
 
     show_box=&back_button;
-    render_rectangle(show_box->x,show_box->y,show_box->w,show_box->h,0.5,"blue");
+    Render::render_rectangle(main_window.renderer,show_box->x,show_box->y,show_box->w,show_box->h,0.5,"blue");
 
     show_box=&start;
-    render_rectangle(show_box->x,show_box->y,show_box->w,show_box->h,0.5,"blue");
+    Render::render_rectangle(main_window.renderer,show_box->x,show_box->y,show_box->w,show_box->h,0.5,"blue");
 
     if(engine_interface.touch_controller_guide){
         show_box=&guide;
-        render_rectangle(show_box->x,show_box->y,show_box->w,show_box->h,0.5,"blue");
+        Render::render_rectangle(main_window.renderer,show_box->x,show_box->y,show_box->w,show_box->h,0.5,"blue");
     }*/
 }

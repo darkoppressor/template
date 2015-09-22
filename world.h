@@ -5,29 +5,13 @@
 #ifndef world_h
 #define world_h
 
-#include "collision.h"
-#include "vector.h"
-#include "coords.h"
-#include "pixels.h"
-#include "math.h"
-
 #include "game_window.h"
-#include "image.h"
-#include "rtt_manager.h"
-#include "music.h"
-#include "sound.h"
 #include "engine_interface.h"
 #include "update.h"
-#include "log.h"
-#include "strings.h"
 #include "android.h"
-#include "file_io.h"
 #include "game.h"
 #include "game_constants.h"
 #include "network.h"
-#include "symbols.h"
-#include "sorting.h"
-#include "data_reader.h"
 
 #include <string>
 #include <sstream>
@@ -39,11 +23,6 @@
 const int CONTROLLER_ID_ALL=-1;
 const int CONTROLLER_ID_TOUCH=-2;
 
-extern bool world_loaded;
-
-extern bool save_location_loaded;
-
-extern std::string CURRENT_WORKING_DIRECTORY;
 extern std::string CHECKSUM;
 
 extern double UPDATE_RATE;
@@ -63,14 +42,6 @@ extern Update update;
 extern Android android;
 
 extern Network network;
-
-extern Image image;
-
-extern Rtt_Manager rtt_manager;
-
-extern Music music;
-
-extern Sound sound_system;
 
 extern Game game;
 

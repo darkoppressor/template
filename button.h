@@ -5,7 +5,7 @@
 #ifndef button_h
 #define button_h
 
-#include "sprite.h"
+#include <sprite.h>
 
 #include <string>
 #include <vector>

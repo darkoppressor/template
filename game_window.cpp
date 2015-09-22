@@ -3,10 +3,13 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include "game_window.h"
-#include "world.h"
-#include "render.h"
+#include "strings.h"
+#include "log.h"
+#include "directories.h"
+#include "engine_data.h"
+#include "options.h"
 
-#include <time.h>
+#include <ctime>
 #include <string>
 
 #include <SDL_image.h>
@@ -40,29 +43,29 @@ void Game_Window::cleanup_video(){
 }
 
 bool Game_Window::set_resolution(int* desired_resolution_x,int* desired_resolution_y){
-    if(engine_interface.resolution_mode=="fixed"){
-        SCREEN_WIDTH=engine_interface.logical_screen_width;
-        SCREEN_HEIGHT=engine_interface.logical_screen_height;
+    if(Engine_Data::resolution_mode=="fixed"){
+        SCREEN_WIDTH=Engine_Data::logical_screen_width;
+        SCREEN_HEIGHT=Engine_Data::logical_screen_height;
 
         *desired_resolution_x=SCREEN_WIDTH;
         *desired_resolution_y=SCREEN_HEIGHT;
     }
-    else if(engine_interface.resolution_mode=="scaling"){
-        SCREEN_WIDTH=engine_interface.logical_screen_width;
-        SCREEN_HEIGHT=engine_interface.logical_screen_height;
+    else if(Engine_Data::resolution_mode=="scaling"){
+        SCREEN_WIDTH=Engine_Data::logical_screen_width;
+        SCREEN_HEIGHT=Engine_Data::logical_screen_height;
 
-        *desired_resolution_x=engine_interface.option_screen_width;
-        *desired_resolution_y=engine_interface.option_screen_height;
+        *desired_resolution_x=Options::screen_width;
+        *desired_resolution_y=Options::screen_height;
     }
-    else if(engine_interface.resolution_mode=="standard"){
-        SCREEN_WIDTH=engine_interface.option_screen_width;
-        SCREEN_HEIGHT=engine_interface.option_screen_height;
+    else if(Engine_Data::resolution_mode=="standard"){
+        SCREEN_WIDTH=Options::screen_width;
+        SCREEN_HEIGHT=Options::screen_height;
 
         *desired_resolution_x=SCREEN_WIDTH;
         *desired_resolution_y=SCREEN_HEIGHT;
     }
     else{
-        Log::add_error("Invalid value for resolution_mode: '"+engine_interface.resolution_mode+"'");
+        Log::add_error("Invalid value for resolution_mode: '"+Engine_Data::resolution_mode+"'");
         return false;
     }
 
@@ -154,26 +157,26 @@ Engine_Rect Game_Window::get_display_resolution_max(int display_number){
 }
 
 bool Game_Window::set_position(int* desired_resolution_x,int* desired_resolution_y,int* position_x,int* position_y){
-    if(engine_interface.option_display_number!=-1){
+    if(Options::display_number!=-1){
         int displays=SDL_GetNumVideoDisplays();
 
         if(displays>=1){
-            if(engine_interface.option_display_number>=displays){
-                engine_interface.option_display_number=0;
+            if(Options::display_number>=displays){
+                Options::display_number=0;
 
                 engine_interface.save_options();
             }
 
             SDL_Rect display_bounds={0,0,0,0};
 
-            if(SDL_GetDisplayBounds(engine_interface.option_display_number,&display_bounds)==0){
-                if(engine_interface.resolution_mode!="fixed" && engine_interface.option_fullscreen){
-                    if(engine_interface.option_fullscreen_mode=="desktop"){
+            if(SDL_GetDisplayBounds(Options::display_number,&display_bounds)==0){
+                if(Engine_Data::resolution_mode!="fixed" && Options::fullscreen){
+                    if(Options::fullscreen_mode=="desktop"){
                         *desired_resolution_x=display_bounds.w;
                         *desired_resolution_y=display_bounds.h;
                     }
-                    else if(engine_interface.option_fullscreen_mode=="standard"){
-                        Engine_Rect display_res_max=get_display_resolution_max(engine_interface.option_display_number);
+                    else if(Options::fullscreen_mode=="standard"){
+                        Engine_Rect display_res_max=get_display_resolution_max(Options::display_number);
 
                         if(display_res_max.w>-1 && display_res_max.h>-1){
                             if(*desired_resolution_x>display_res_max.w || *desired_resolution_y>display_res_max.h){
@@ -186,7 +189,7 @@ bool Game_Window::set_position(int* desired_resolution_x,int* desired_resolution
                             }
                         }
                     }
-                    else if(engine_interface.option_fullscreen_mode=="windowed"){
+                    else if(Options::fullscreen_mode=="windowed"){
                         *desired_resolution_x=display_bounds.w;
                         *desired_resolution_y=display_bounds.h;
                     }
@@ -198,7 +201,7 @@ bool Game_Window::set_position(int* desired_resolution_x,int* desired_resolution
                 return true;
             }
             else{
-                string msg="Unable to get display bounds for display #"+Strings::num_to_string(engine_interface.option_display_number)+": ";
+                string msg="Unable to get display bounds for display #"+Strings::num_to_string(Options::display_number)+": ";
                 msg+=SDL_GetError();
                 Log::add_error(msg);
             }
@@ -228,25 +231,25 @@ bool Game_Window::initialize_video(){
     //Set up the screen:
     uint32_t flags=0;
 
-    if(engine_interface.option_bind_cursor){
+    if(Options::bind_cursor){
         flags=SDL_WINDOW_INPUT_GRABBED;
     }
 
-    if(engine_interface.option_fullscreen){
-        if(engine_interface.option_fullscreen_mode=="desktop"){
+    if(Options::fullscreen){
+        if(Options::fullscreen_mode=="desktop"){
             screen=SDL_CreateWindow(engine_interface.game_title.c_str(),position_x,position_y,
                                     0,0,flags|SDL_WINDOW_FULLSCREEN_DESKTOP);
         }
-        else if(engine_interface.option_fullscreen_mode=="standard"){
+        else if(Options::fullscreen_mode=="standard"){
             screen=SDL_CreateWindow(engine_interface.game_title.c_str(),position_x,position_y,
                                     desired_resolution_x,desired_resolution_y,flags|SDL_WINDOW_FULLSCREEN);
         }
-        else if(engine_interface.option_fullscreen_mode=="windowed"){
+        else if(Options::fullscreen_mode=="windowed"){
             screen=SDL_CreateWindow(engine_interface.game_title.c_str(),position_x,position_y,
                                     desired_resolution_x,desired_resolution_y,flags|SDL_WINDOW_BORDERLESS);
         }
         else{
-            Log::add_error("Invalid value for fullscreen_mode: '"+engine_interface.option_fullscreen_mode+"'");
+            Log::add_error("Invalid value for fullscreen_mode: '"+Options::fullscreen_mode+"'");
             return false;
         }
     }
@@ -263,7 +266,7 @@ bool Game_Window::initialize_video(){
         return false;
     }
 
-    if(engine_interface.resolution_mode!="fixed" && engine_interface.option_fullscreen){
+    if(Engine_Data::resolution_mode!="fixed" && Options::fullscreen){
         int window_width=0;
         int window_height=0;
         SDL_GetWindowSize(screen,&window_width,&window_height);
@@ -272,7 +275,7 @@ bool Game_Window::initialize_video(){
         Engine_Rect display_res_max=get_display_resolution_max();
 
         if(display_res.w>-1 && display_res.h>-1){
-            if(engine_interface.option_fullscreen_mode=="standard"){
+            if(Options::fullscreen_mode=="standard"){
                 if(display_res_max.w>-1 && display_res_max.h>-1){
                     if(window_width>display_res_max.w || window_height>display_res_max.h){
                         Log::add_error("Window dimensions of "+Strings::num_to_string(window_width)+"x"+Strings::num_to_string(window_height)+" exceed the maximum display dimensions of "+
@@ -296,7 +299,7 @@ bool Game_Window::initialize_video(){
                     }
                 }
             }
-            else if(engine_interface.option_fullscreen_mode=="windowed"){
+            else if(Options::fullscreen_mode=="windowed"){
                 if(window_width!=display_res.w || window_height!=display_res.h){
                     SDL_SetWindowSize(screen,display_res.w,display_res.h);
                     SDL_SetWindowPosition(screen,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED);
@@ -370,7 +373,7 @@ bool Game_Window::init_sdl(){
         return false;
     }
 
-    CURRENT_WORKING_DIRECTORY=engine_interface.get_cwd();
+    Directories::CURRENT_WORKING_DIRECTORY=Directories::get_cwd();
     CHECKSUM=engine_interface.get_checksum();
 
     return true;
@@ -379,7 +382,7 @@ bool Game_Window::init_sdl(){
 void Game_Window::set_sdl_hints(){
     SDL_SetHint(SDL_HINT_RENDER_DRIVER,"opengl");
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY,"nearest");
-    SDL_SetHint(SDL_HINT_RENDER_VSYNC,Strings::num_to_string((int)engine_interface.option_vsync).c_str());
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC,Strings::num_to_string((int)Options::vsync).c_str());
     SDL_SetHint(SDL_HINT_VIDEO_ALLOW_SCREENSAVER,Strings::num_to_string((int)game.option_screensaver).c_str());
 }
 
@@ -452,7 +455,7 @@ bool Game_Window::init(){
 
     for(int i=0;i<SDL_NumJoysticks();i++){
         if(SDL_IsGameController(i)){
-            if(engine_interface.option_accelerometer_controller || !boost::algorithm::icontains(SDL_JoystickNameForIndex(i),"accelerometer")){
+            if(Options::accelerometer_controller || !boost::algorithm::icontains(SDL_JoystickNameForIndex(i),"accelerometer")){
                 engine_interface.controllers.push_back(Controller(SDL_GameControllerOpen(i)));
 
                 Controller* controller_object=&engine_interface.controllers[engine_interface.controllers.size()-1];
@@ -525,7 +528,7 @@ bool Game_Window::init(){
         }
     }
 
-    if(engine_interface.option_touch_controller_state && SDL_GetNumTouchDevices()>0){
+    if(Options::touch_controller_state && SDL_GetNumTouchDevices()>0){
         engine_interface.touch_controls=true;
     }
 
@@ -536,8 +539,8 @@ void Game_Window::update_display_number(){
     int display_index=SDL_GetWindowDisplayIndex(screen);
 
     if(display_index>=0){
-        if(display_index!=engine_interface.option_display_number){
-            engine_interface.option_display_number=display_index;
+        if(display_index!=Options::display_number){
+            Options::display_number=display_index;
 
             engine_interface.save_options();
         }
@@ -558,12 +561,12 @@ void Game_Window::reinitialize(){
     if(set_resolution(&desired_resolution_x,&desired_resolution_y)){
         bool position_adjusted=set_position(&desired_resolution_x,&desired_resolution_y,&position_x,&position_y);
 
-        if(!position_adjusted && engine_interface.resolution_mode!="fixed" && engine_interface.option_fullscreen){
+        if(!position_adjusted && Engine_Data::resolution_mode!="fixed" && Options::fullscreen){
             Engine_Rect display_res=get_display_resolution();
             Engine_Rect display_res_max=get_display_resolution_max();
 
             if(display_res.w>-1 && display_res.h>-1){
-                if(engine_interface.option_fullscreen_mode=="standard"){
+                if(Options::fullscreen_mode=="standard"){
                     if(display_res_max.w>-1 && display_res_max.h>-1){
                         if(desired_resolution_x>display_res_max.w || desired_resolution_y>display_res_max.h){
                             Log::add_error("Window dimensions of "+Strings::num_to_string(desired_resolution_x)+"x"+Strings::num_to_string(desired_resolution_y)+" exceed the maximum display dimensions of "+
@@ -574,7 +577,7 @@ void Game_Window::reinitialize(){
                         }
                     }
                 }
-                else if(engine_interface.option_fullscreen_mode=="windowed"){
+                else if(Options::fullscreen_mode=="windowed"){
                     if(desired_resolution_x!=display_res.w || desired_resolution_y!=display_res.h){
                         desired_resolution_x=display_res.w;
                         desired_resolution_y=display_res.h;
@@ -585,8 +588,8 @@ void Game_Window::reinitialize(){
 
         int toggle_fullscreen=0;
 
-        if(engine_interface.option_fullscreen){
-            if(engine_interface.option_fullscreen_mode=="desktop"){
+        if(Options::fullscreen){
+            if(Options::fullscreen_mode=="desktop"){
                 if(position_adjusted){
                     toggle_fullscreen=SDL_SetWindowFullscreen(screen,0);
                 }
@@ -599,7 +602,7 @@ void Game_Window::reinitialize(){
                     toggle_fullscreen=SDL_SetWindowFullscreen(screen,SDL_WINDOW_FULLSCREEN_DESKTOP);
                 }
             }
-            else if(engine_interface.option_fullscreen_mode=="standard"){
+            else if(Options::fullscreen_mode=="standard"){
                 toggle_fullscreen=SDL_SetWindowFullscreen(screen,0);
 
                 if(toggle_fullscreen==0){
@@ -612,7 +615,7 @@ void Game_Window::reinitialize(){
                     toggle_fullscreen=SDL_SetWindowFullscreen(screen,SDL_WINDOW_FULLSCREEN);
                 }
             }
-            else if(engine_interface.option_fullscreen_mode=="windowed"){
+            else if(Options::fullscreen_mode=="windowed"){
                 toggle_fullscreen=SDL_SetWindowFullscreen(screen,0);
                 SDL_SetWindowBordered(screen,SDL_FALSE);
                 SDL_SetWindowSize(screen,desired_resolution_x,desired_resolution_y);
@@ -645,8 +648,8 @@ void Game_Window::screenshot(){
         return;
     #endif
 
-    string screenshot_name=engine_interface.get_save_directory()+"screenshots/";
-    screenshot_name+=engine_interface.get_timestamp(true,true,true);
+    string screenshot_name=Directories::get_save_directory()+"screenshots/";
+    screenshot_name+=Log::get_timestamp(true,true,true);
     screenshot_name+=".png";
 
     int actual_width=0;

@@ -10,8 +10,7 @@
 #include <SDL.h>
 
 class Game_Window{
-    private:
-    public:
+public:
 
     Game_Window();
 

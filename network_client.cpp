@@ -5,6 +5,10 @@
 #include "network.h"
 #include "world.h"
 
+#include <strings.h>
+#include <log.h>
+#include <sound_manager.h>
+
 using namespace std;
 
 void Network::set_server_target(string get_address,unsigned short get_port,string get_password){
@@ -404,5 +408,5 @@ void Network::receive_sound(){
     RakNet::RakString rstring;
     bitstream.ReadCompressed(rstring);
 
-    sound_system.play_sound(rstring.C_String());
+    Sound_Manager::play_sound(rstring.C_String());
 }

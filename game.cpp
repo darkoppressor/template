@@ -4,7 +4,11 @@
 
 #include "game.h"
 #include "world.h"
-#include "render.h"
+
+#include <strings.h>
+#include <render.h>
+#include <sound_manager.h>
+#include <music_manager.h>
 
 using namespace std;
 
@@ -119,13 +123,13 @@ void Game::manage_music(){
 
     if(music_to_play.length()>0){
         if(music_to_play!=current_music){
-            music.restart_track(music_to_play);
+            Music_Manager::restart_track(music_to_play);
         }
 
-        music.play_track(music_to_play);
+        Music_Manager::play_track(music_to_play);
     }
     else{
-        music.stop_track();
+        Music_Manager::stop_track();
     }
 
     current_music=music_to_play;
@@ -134,7 +138,7 @@ void Game::manage_music(){
 void Game::toggle_pause(){
     paused=!paused;
 
-    sound_system.play_sound("pause");
+    Sound_Manager::play_sound("pause");
 }
 
 void Game::start(){
@@ -309,7 +313,7 @@ void Game::render_scoreboard(){
         string name_list=network.get_name_list();
         string ping_list=network.get_ping_list();
 
-        render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0.5,"ui_black");
+        Render::render_rectangle(main_window.renderer,0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0.5,"ui_black");
 
         font->show(72,(main_window.SCREEN_HEIGHT-(Strings::newline_count(name_list)+1)*font->spacing_y)/2.0,name_list,"ui_white");
         font->show(168,(main_window.SCREEN_HEIGHT-(Strings::newline_count(ping_list)+1)*font->spacing_y)/2.0,ping_list,"ui_white");

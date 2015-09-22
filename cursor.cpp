@@ -3,8 +3,10 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include "cursor.h"
-#include "render.h"
 #include "world.h"
+
+#include <pixels.h>
+#include <render.h>
 
 using namespace std;
 
@@ -15,7 +17,7 @@ Cursor::Cursor(){
 }
 
 void Cursor::load_hw_cursor(){
-    SDL_Surface* surface=load_image("data/images/"+sprite.name+".png");
+    SDL_Surface* surface=Render::load_image("data/images/"+sprite.name+".png");
     SDL_Surface* surface_final=0;
 
     if(sprite.is_animated()){
@@ -33,7 +35,7 @@ void Cursor::load_hw_cursor(){
 
         for(int x=0;x<width;x++){
             for(int y=0;y<height;y++){
-                surface_put_pixel(surface_final,x,y,surface_get_pixel(surface,x,y));
+                Pixels::surface_put_pixel(surface_final,x,y,Pixels::surface_get_pixel(surface,x,y));
             }
         }
 
@@ -69,6 +71,6 @@ void Cursor::render(int x,int y){
     else{
         SDL_ShowCursor(SDL_DISABLE);
 
-        sprite.render(x,y);
+        sprite.render(main_window.renderer,x,y);
     }
 }

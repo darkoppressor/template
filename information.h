@@ -5,7 +5,7 @@
 #ifndef information_h
 #define information_h
 
-#include "sprite.h"
+#include <sprite.h>
 
 #include <string>
 #include <vector>

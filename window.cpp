@@ -4,7 +4,12 @@
 
 #include "window.h"
 #include "world.h"
-#include "render.h"
+
+#include <collision.h>
+#include <coords.h>
+#include <strings.h>
+#include <log.h>
+#include <render.h>
 
 using namespace std;
 
@@ -582,7 +587,7 @@ bool Window::handle_input_events(){
                         Collision_Rect box_b(x,y,w,h);
 
                         //If no buttons were just clicked and the title bar of the window is clicked.
-                        if(!button_clicked && collision_check_rect(box_a,box_b)){
+                        if(!button_clicked && Collision::check_rect(box_a,box_b)){
                             //Begin moving the window.
                             moving=true;
                             mouse_offset_x=mouse_x-x;
@@ -602,7 +607,7 @@ bool Window::handle_input_events(){
                             Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
                             Collision_Rect box_b(x,y+engine_interface.scrolling_buttons_offset,w,h-engine_interface.scrolling_buttons_offset-6);
 
-                            if(collision_check_rect(box_a,box_b)){
+                            if(Collision::check_rect(box_a,box_b)){
                                 scroll_down();
 
                                 event_consumed=true;
@@ -614,7 +619,7 @@ bool Window::handle_input_events(){
                             Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
                             Collision_Rect box_b(x,y+engine_interface.scrolling_buttons_offset,w,h-engine_interface.scrolling_buttons_offset-6);
 
-                            if(collision_check_rect(box_a,box_b)){
+                            if(Collision::check_rect(box_a,box_b)){
                                 scroll_up();
 
                                 event_consumed=true;
@@ -700,7 +705,7 @@ void Window::render(){
         //Render the border if it's just a solid color.
         if(border.name.length()==0){
             if(engine_interface.current_color_theme()->window_border!="<INVISIBLE>"){
-                render_rectangle(x,y,w,h,1.0,engine_interface.current_color_theme()->window_border);
+                Render::render_rectangle(main_window.renderer,x,y,w,h,1.0,engine_interface.current_color_theme()->window_border);
             }
         }
 
@@ -723,18 +728,18 @@ void Window::render(){
                 background_y=y-abs(h-background.get_height())/2;
             }
 
-            background.render(background_x,background_y);
+            background.render(main_window.renderer,background_x,background_y);
         }
         //Render the background if it's just a solid color.
         else{
             if(engine_interface.current_color_theme()->window_background!="<INVISIBLE>"){
-                render_rectangle(x+engine_interface.window_border_thickness,y+engine_interface.window_border_thickness,w-engine_interface.window_border_thickness*2.0,h-engine_interface.window_border_thickness*2.0,1.0,engine_interface.current_color_theme()->window_background);
+                Render::render_rectangle(main_window.renderer,x+engine_interface.window_border_thickness,y+engine_interface.window_border_thickness,w-engine_interface.window_border_thickness*2.0,h-engine_interface.window_border_thickness*2.0,1.0,engine_interface.current_color_theme()->window_background);
             }
         }
 
         //Render the title bar.
         if(engine_interface.current_color_theme()->window_title_bar!="<INVISIBLE>"){
-            render_rectangle(x+engine_interface.window_border_thickness+2,y+engine_interface.window_border_thickness+2,w-engine_interface.window_border_thickness*2.0-4,ptr_font->spacing_y,1.0,engine_interface.current_color_theme()->window_title_bar);
+            Render::render_rectangle(main_window.renderer,x+engine_interface.window_border_thickness+2,y+engine_interface.window_border_thickness+2,w-engine_interface.window_border_thickness*2.0-4,ptr_font->spacing_y,1.0,engine_interface.current_color_theme()->window_title_bar);
         }
 
         //Display the window's title.
@@ -766,7 +771,7 @@ void Window::render(){
                 border_y=y-abs(h-border.get_height())/2;
             }
 
-            border.render(border_x,border_y);
+            border.render(main_window.renderer,border_x,border_y);
         }
 
         for(int i=0;i<informations.size();i++){

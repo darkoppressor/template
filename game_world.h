@@ -17,8 +17,8 @@ public:
     void clear_world();
     void generate_world();
 
-    void tick();
     void ai();
+    void tick();
     void movement();
     void events();
     void animate();

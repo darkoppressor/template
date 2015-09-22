@@ -5,6 +5,9 @@
 #include "screen_shake.h"
 #include "world.h"
 
+#include <collision.h>
+#include <math_vector.h>
+
 using namespace std;
 
 Screen_Shake::Screen_Shake(){
@@ -43,7 +46,7 @@ void Screen_Shake::change_direction(){
     else{
         Collision_Rect box(x,y,2.0,2.0);
         Collision_Rect box_mid(0.0,0.0,2.0,2.0);
-        direction=get_angle_to_rect(box,box_mid,box_mid);
+        direction=Collision::get_angle_to_rect(box,box_mid,box_mid);
     }
 }
 

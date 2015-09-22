@@ -7,7 +7,8 @@
 
 #include "button.h"
 #include "information.h"
-#include "sprite.h"
+
+#include <sprite.h>
 
 #include <vector>
 #include <string>

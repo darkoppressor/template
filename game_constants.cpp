@@ -5,6 +5,8 @@
 #include "game_constants.h"
 #include "world.h"
 
+#include <strings.h>
+
 using namespace std;
 
 double ZOOM_RATE=0.0;

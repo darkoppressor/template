@@ -5,6 +5,8 @@
 #include "android.h"
 #include "world.h"
 
+#include <symbols.h>
+
 using namespace std;
 
 #ifdef GAME_OS_ANDROID

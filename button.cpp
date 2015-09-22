@@ -4,7 +4,11 @@
 
 #include "button.h"
 #include "world.h"
-#include "render.h"
+
+#include <collision.h>
+#include <strings.h>
+#include <render.h>
+#include <sound_manager.h>
 
 using namespace std;
 
@@ -143,7 +147,7 @@ bool Button::is_moused_over(int mouse_x,int mouse_y,int x_offset,int y_offset){
     Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
     Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
 
-    if(engine_interface.mouse_allowed() && engine_interface.gui_mode=="mouse" && collision_check_rect(box_a,box_b)){
+    if(engine_interface.mouse_allowed() && engine_interface.gui_mode=="mouse" && Collision::check_rect(box_a,box_b)){
         return true;
     }
     else if((engine_interface.gui_mode=="keyboard" || engine_interface.gui_mode=="controller") && engine_interface.is_gui_object_selected(this)){
@@ -169,7 +173,7 @@ void Button::reset_clicked(){
 
 void Button::mouse_over(bool previously_moused_over){
     if(!previously_moused_over && mouse_over_sound.length()>0 && !clicked){
-        sound_system.play_sound(mouse_over_sound);
+        Sound_Manager::play_sound(mouse_over_sound);
     }
 
     moused_over=true;
@@ -202,7 +206,7 @@ bool Button::mouse_button_up(Window* parent_window){
         }
 
         if(event_fire_sound.length()>0){
-            sound_system.play_sound(event_fire_sound);
+            Sound_Manager::play_sound(event_fire_sound);
         }
     }
 
@@ -275,17 +279,17 @@ void Button::render(int x_offset,int y_offset){
     if(!moused_over && !clicked){
         //If we are using sprites for the button instead of the standard system.
         if(sprite.name.length()>0){
-            sprite.render(x_offset+x,y_offset+y);
+            sprite.render(main_window.renderer,x_offset+x,y_offset+y);
         }
         else{
             //Render the border.
             if(engine_interface.current_color_theme()->button_border!="<INVISIBLE>"){
-                render_rectangle(x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
+                Render::render_rectangle(main_window.renderer,x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
             }
 
             //Render the background.
             if(engine_interface.current_color_theme()->button_background!="<INVISIBLE>"){
-                render_rectangle(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background);
+                Render::render_rectangle(main_window.renderer,x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background);
             }
 
             //Display the button's text.
@@ -298,17 +302,17 @@ void Button::render(int x_offset,int y_offset){
     else if(moused_over && !clicked){
         //If we are using sprites for the button instead of the standard system.
         if(sprite_moused.name.length()>0){
-            sprite_moused.render(x_offset+x,y_offset+y);
+            sprite_moused.render(main_window.renderer,x_offset+x,y_offset+y);
         }
         else{
             //Render the border.
             if(engine_interface.current_color_theme()->button_border!="<INVISIBLE>"){
-                render_rectangle(x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
+                Render::render_rectangle(main_window.renderer,x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
             }
 
             //Render the background.
             if(engine_interface.current_color_theme()->button_background_moused!="<INVISIBLE>"){
-                render_rectangle(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_moused);
+                Render::render_rectangle(main_window.renderer,x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_moused);
             }
 
             //Display the button's text.
@@ -321,17 +325,17 @@ void Button::render(int x_offset,int y_offset){
     else if(clicked){
         //If we are using sprites for the button instead of the standard system.
         if(sprite_click.name.length()>0){
-            sprite_click.render(x_offset+x,y_offset+y);
+            sprite_click.render(main_window.renderer,x_offset+x,y_offset+y);
         }
         else{
             //Render the border.
             if(engine_interface.current_color_theme()->button_border!="<INVISIBLE>"){
-                render_rectangle(x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
+                Render::render_rectangle(main_window.renderer,x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
             }
 
             //Render the background.
             if(engine_interface.current_color_theme()->button_background_click!="<INVISIBLE>"){
-                render_rectangle(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_click);
+                Render::render_rectangle(main_window.renderer,x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_click);
             }
 
             //Display the button's text.

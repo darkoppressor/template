@@ -3,8 +3,10 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include "toast.h"
-#include "render.h"
 #include "world.h"
+
+#include <strings.h>
+#include <render.h>
 
 using namespace std;
 
@@ -53,12 +55,12 @@ void Toast::render(){
 
     //Render the border.
     if(engine_interface.current_color_theme()->toast_border!="<INVISIBLE>"){
-        render_rectangle(x,y,w,h,opacity,engine_interface.current_color_theme()->toast_border);
+        Render::render_rectangle(main_window.renderer,x,y,w,h,opacity,engine_interface.current_color_theme()->toast_border);
     }
 
     //Render the background.
     if(engine_interface.current_color_theme()->toast_background!="<INVISIBLE>"){
-        render_rectangle(x+engine_interface.gui_border_thickness,y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,opacity,engine_interface.current_color_theme()->toast_background);
+        Render::render_rectangle(main_window.renderer,x+engine_interface.gui_border_thickness,y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,opacity,engine_interface.current_color_theme()->toast_background);
     }
 
     //Display the message text.

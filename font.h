@@ -8,33 +8,36 @@
 #include "sprite.h"
 #include "collision.h"
 
-#include <SDL.h>
 #include <string>
 #include <vector>
 
-static const SDL_Rect FONT_DEFAULT_ALLOWED_AREA={-1,-1,0,0};
+#include <SDL.h>
 
 class Bitmap_Font{
-public:
+private:
 
-    //The individual characters in the texture.
+    static const SDL_Rect FONT_DEFAULT_ALLOWED_AREA;
+
+    //The individual characters in the texture
     Collision_Rect chars[256];
 
     std::string name;
 
     Sprite sprite;
 
-    //Character spacing.
+    //Character spacing
     int spacing_x;
-    //Line spacing.
+    //Line spacing
     int spacing_y;
 
     int gui_padding_x;
     int gui_padding_y;
 
-    //The distance the drop shadow should be rendered from the font's location.
-    //A distance of 0 means no shadow.
+    //The distance the drop shadow should be rendered from the font's location
+    //A distance of 0 means no shadow
     int shadow_distance;
+
+public:
 
     Bitmap_Font();
 

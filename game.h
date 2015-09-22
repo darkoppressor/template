@@ -5,10 +5,11 @@
 #ifndef game_h
 #define game_h
 
-#include "rng.h"
-#include "collision.h"
 #include "screen_shake.h"
 #include "game_world.h"
+
+#include <rng.h>
+#include <collision.h>
 
 #include <string>
 #include <vector>

@@ -6,7 +6,8 @@
 #define console_h
 
 #include "information.h"
-#include "timer.h"
+
+#include <timer.h>
 
 #include <string>
 #include <vector>

@@ -5,6 +5,9 @@
 #include "special_info.h"
 #include "world.h"
 
+#include <strings.h>
+#include <log.h>
+
 using namespace std;
 
 string Special_Info::get_special_info_text(string special_info){

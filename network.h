@@ -6,7 +6,8 @@
 #define network_h
 
 #include "server.h"
-#include "timer.h"
+
+#include <timer.h>
 
 #include "raknet/Source/RakPeerInterface.h"
 #include "raknet/Source/RakNetVersion.h"

@@ -5,6 +5,11 @@
 #include "main.h"
 #include "world.h"
 
+#include <file_io.h>
+#include <log.h>
+#include <directories.h>
+#include <timer.h>
+
 #ifdef GAME_OS_OSX
     #include <CoreFoundation/CoreFoundation.h>
 #endif
@@ -166,7 +171,7 @@ int main(int argc,char* args[]){
         return 4;
     }
 
-    engine_interface.make_directories();
+    Directories::make_directories();
 
     Log::clear_error_log();
 

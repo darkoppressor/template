@@ -5,6 +5,10 @@
 #include "button_events.h"
 #include "world.h"
 
+#include <strings.h>
+#include <log.h>
+#include <directories.h>
+
 #include <boost/algorithm/string.hpp>
 
 using namespace std;
@@ -37,7 +41,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             engine_interface.save_game_commands();
         }
         else if(button_event=="show_data_location"){
-            string save_path=engine_interface.get_save_directory_absolute();
+            string save_path=Directories::get_save_directory_absolute();
 
             vector<string> lines;
             int spacing_x=engine_interface.get_font("small")->spacing_x;

@@ -4,7 +4,9 @@
 
 #include "tooltip.h"
 #include "world.h"
-#include "render.h"
+
+#include <strings.h>
+#include <render.h>
 
 using namespace std;
 
@@ -93,12 +95,12 @@ void Tooltip::render(){
 
         //Render the border.
         if(engine_interface.current_color_theme()->tooltip_border!="<INVISIBLE>"){
-            render_rectangle(x,y,w,h,1.0,engine_interface.current_color_theme()->tooltip_border);
+            Render::render_rectangle(main_window.renderer,x,y,w,h,1.0,engine_interface.current_color_theme()->tooltip_border);
         }
 
         //Render the background.
         if(engine_interface.current_color_theme()->tooltip_background!="<INVISIBLE>"){
-            render_rectangle(x+engine_interface.gui_border_thickness,y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->tooltip_background);
+            Render::render_rectangle(main_window.renderer,x+engine_interface.gui_border_thickness,y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->tooltip_background);
         }
 
         //Display the message text.

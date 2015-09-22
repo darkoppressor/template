@@ -5,6 +5,12 @@
 #include "console.h"
 #include "world.h"
 
+#include <file_io.h>
+#include <strings.h>
+#include <log.h>
+#include <directories.h>
+#include <sound_manager.h>
+
 #include <boost/algorithm/string.hpp>
 
 using namespace std;
@@ -135,7 +141,7 @@ bool Console::input_has_option(string option,string options){
 }
 
 void Console::exec_file(string filename){
-    File_IO_Load load(engine_interface.get_save_directory()+filename,false,false,true);
+    File_IO_Load load(Directories::get_save_directory()+filename,false,false,true);
 
     vector<string> command_list;
 
@@ -155,7 +161,7 @@ void Console::exec_file(string filename){
         }
     }
     else{
-        Log::add_log("Failed to load file for execution: '"+engine_interface.get_save_directory()+filename+"'");
+        Log::add_log("Failed to load file for execution: '"+Directories::get_save_directory()+filename+"'");
     }
 
     run_commands(command_list);
@@ -255,10 +261,10 @@ void Console::run_commands(const vector<string>& command_list){
             }
             else if(command=="play"){
                 if(command_input[1].length()>0){
-                    if(sound_system.get_sound(command_input[1])!=0){
+                    if(Sound_Manager::get_sound(command_input[1])!=0){
                         add_text("Playing sound '"+command_input[1]+"'");
 
-                        sound_system.play_sound(command_input[1]);
+                        Sound_Manager::play_sound(command_input[1]);
                     }
                     else{
                         add_text("Unknown sound '"+command_input[1]+"'");

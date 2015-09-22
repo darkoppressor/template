@@ -5,29 +5,27 @@
 #ifndef engine_interface_h
 #define engine_interface_h
 
-#include "file_io.h"
-#include "rng.h"
 #include "special_info.h"
 #include "button_events.h"
 #include "font.h"
 #include "cursor.h"
-#include "color.h"
 #include "tooltip.h"
 #include "toast.h"
-#include "color_theme.h"
-#include "animation.h"
 #include "window.h"
-#include "timer.h"
 #include "console.h"
 #include "touch_controller.h"
-#include "coords.h"
 #include "game_command.h"
 #include "game_option.h"
 #include "game_constants.h"
-#include "sprite.h"
-#include "custom_sound.h"
 
 ///#include "example_game_tag.h"
+
+#include <coords.h>
+#include <file_io.h>
+#include <rng.h>
+#include <color_theme.h>
+#include <custom_sound.h>
+#include <sprite.h>
 
 #include <string>
 
@@ -94,9 +92,7 @@ public:
 
     std::vector<Bitmap_Font> fonts;
     std::vector<Cursor> cursors;
-    std::vector<Color> colors;
     std::vector<Color_Theme> color_themes;
-    std::vector<Animation> animations;
     std::vector<Window> windows;
 
     ///std::vector<Example_Game_Tag> example_game_tags;
@@ -147,16 +143,6 @@ public:
     //because I do not want to implement proper tabs
     int spaces_per_tab;
 
-    //The game's logical resolution.
-    //If resolution mode is fixed, the game window will be forced to remain at this resolution, ignoring the resolution option.
-    //If resolution mode is scaling, the game logic will use this resolution, and the game window will scale to the resolution option.
-    //If resolution mode is standard, this is ignored, and logical resolution matches the resolution option.
-    int logical_screen_width;
-    int logical_screen_height;
-
-    //How the game handles different logical resolutions and resolution options.
-    std::string resolution_mode;
-
     int axis_scroll_rate;
 
     int scrolling_buttons_offset;
@@ -167,8 +153,6 @@ public:
     //These heights are in lines of text.
     int console_height;
     int chat_height;
-
-    double sound_falloff;
 
     double window_border_thickness;
     double gui_border_thickness;
@@ -181,38 +165,11 @@ public:
     bool touch_controller_xy;
 
     std::string game_title;
-    std::string home_directory;
     std::string developer;
 
     std::vector<std::string> starting_windows;
 
-    std::string option_save_location;
-
     std::string option_version;
-
-    int option_screen_width;
-    int option_screen_height;
-    int option_display_number;
-    bool option_fullscreen;
-    std::string option_fullscreen_mode;
-
-    bool option_vsync;
-    bool option_accelerometer_controller;
-    bool option_touch_controller_state;
-    double option_touch_controller_opacity;
-    bool option_font_shadows;
-    bool option_screen_keyboard;
-	bool option_hw_cursor;
-	bool option_bind_cursor;
-
-    bool option_fps;
-    bool option_dev;
-    double option_volume_global;
-    double option_volume_sound;
-    double option_volume_music;
-    bool option_mute_global;
-    bool option_mute_sound;
-    bool option_mute_music;
 
     bool hide_gui;
 
@@ -268,17 +225,17 @@ public:
     int editing_server;
 
     //Mutable text cursor.
-    //The time to spend on each step of fading animation, in milliseconds.
+    //The time to spend on each step of fading animation, in milliseconds
     int counter_cursor;
     bool cursor_fade_direction;
     int cursor_opacity;
 
-    //Pointer to the current mutable text Information object, if any.
+    //Pointer to the current mutable text Information object, if any
     Information* ptr_mutable_info;
 
     Engine_Interface();
 
-    //Reinitialize the game window when next possible.
+    //Reinitialize the game window when next possible
     void reload();
 
     void quit();
@@ -317,9 +274,7 @@ public:
     void load_engine_data(File_IO_Load* load);
     void load_font(File_IO_Load* load);
     void load_cursor(File_IO_Load* load);
-    void load_color(File_IO_Load* load);
     void load_color_theme(File_IO_Load* load);
-    void load_animation(File_IO_Load* load);
     void load_window(File_IO_Load* load);
     void load_information(File_IO_Load* load);
     void load_button(File_IO_Load* load);
@@ -331,9 +286,7 @@ public:
 
     Bitmap_Font* get_font(std::string name);
     Cursor* get_cursor(std::string name);
-    Color* get_color(std::string name);
     Color_Theme* get_color_theme(std::string name);
-    Animation* get_animation(std::string name);
     Window* get_window(std::string name);
     Game_Command* get_game_command(std::string name);
     Game_Option* get_game_option(std::string name);
@@ -342,7 +295,6 @@ public:
     ///Example_Game_Tag* get_example_game_tag(std::string name);
 
     Color_Theme* current_color_theme();
-    bool animation_exists(std::string animation_name);
 
     //Rebuild any window data if needed.
     void rebuild_window_data();
@@ -514,24 +466,6 @@ public:
     std::string get_engine_date();
 
     std::string get_checksum();
-
-    //Returns a string with a time and/or date stamp.
-    //If filename is true, the returned timestamp is in a format appropriate for a filename.
-    std::string get_timestamp(bool include_date=true,bool include_time=true,bool filename=false);
-
-    //Returns a string with the (absolute if possible) path to the current working directory.
-    std::string get_cwd();
-    //Returns a string with the path to the (absolute if possible) current save location.
-    std::string get_save_directory_absolute();
-
-    //Change any incorrect slashes to the correct type.
-    void correct_slashes(std::string* str_input);
-    //Returns a string with the path to the current save location.
-    std::string get_save_directory();
-    //Create the home directory.
-    void make_home_directory();
-    //Create the entire needed directory structure.
-    void make_directories();
 
     bool save_save_location();
     bool load_save_location();

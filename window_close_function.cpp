@@ -5,6 +5,8 @@
 #include "window.h"
 #include "world.h"
 
+#include <log.h>
+
 using namespace std;
 
 void Window::exec_close_function(){

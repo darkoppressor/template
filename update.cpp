@@ -4,15 +4,11 @@
 
 #include "update.h"
 #include "world.h"
-#include "render.h"
+
+#include <music_manager.h>
+#include <rtt_manager.h>
 
 using namespace std;
-
-void Update::tick(){
-    if(game.in_progress && !game.paused){
-        game.world.tick();
-    }
-}
 
 void Update::ai(){
     if(game.in_progress && !game.paused){
@@ -87,6 +83,12 @@ void Update::input(){
     game.handle_command_states_multiplayer();
 }
 
+void Update::tick(){
+    if(game.in_progress && !game.paused){
+        game.world.tick();
+    }
+}
+
 void Update::movement(){
     if(game.in_progress && !game.paused){
         game.world.movement();
@@ -99,11 +101,14 @@ void Update::events(){
     if(game.in_progress && !game.paused){
         game.world.events();
     }
+    else{
+        Sound_Manager::set_listener(game.camera.center_x(),game.camera.center_y(),game.camera_zoom);
+    }
 }
 
 void Update::animate(){
-    music.fadein_tracks();
-    music.fadeout_tracks();
+    Music_Manager::fadein_tracks();
+    Music_Manager::fadeout_tracks();
 
     engine_interface.animate();
 
@@ -127,9 +132,9 @@ void Update::render(int frame_rate,double ms_per_frame,int logic_frame_rate){
     SDL_RenderClear(main_window.renderer);
 
     if(game.in_progress){
-        /**rtt_manager.example.make_render_target();
-        ///Render something here.
-        rtt_manager.example.reset_render_target();*/
+        /**Rtt_Manager::set_render_target(main_window.renderer,"example");
+        ///Render something here
+        Rtt_Manager::reset_render_target(main_window.renderer);*/
 
         game.world.render_background();
 

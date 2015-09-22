@@ -4,7 +4,20 @@
 
 #include "engine_interface.h"
 #include "world.h"
-#include "render.h"
+#include "game_options.h"
+
+#include <engine_math.h>
+#include <collision.h>
+#include <strings.h>
+#include <log.h>
+#include <directories.h>
+#include <options.h>
+#include <data_reader.h>
+#include <sorting.h>
+#include <object_manager.h>
+#include <render.h>
+#include <engine_data.h>
+#include <sound_manager.h>
 
 #include <SDL_image.h>
 
@@ -65,11 +78,6 @@ Engine_Interface::Engine_Interface(){
 
     spaces_per_tab=0;
 
-    logical_screen_width=0;
-    logical_screen_height=0;
-
-    resolution_mode="";
-
     axis_scroll_rate=0;
 
     scrolling_buttons_offset=0;
@@ -79,8 +87,6 @@ Engine_Interface::Engine_Interface(){
 
     console_height=0;
     chat_height=0;
-
-    sound_falloff=0.0;
 
     window_border_thickness=0.0;
     gui_border_thickness=0.0;
@@ -93,36 +99,9 @@ Engine_Interface::Engine_Interface(){
     touch_controller_xy=false;
 
     game_title="";
-    home_directory="";
     developer="";
 
-    option_save_location="";
-
     option_version=get_version();
-
-    option_screen_width=0;
-    option_screen_height=0;
-    option_display_number=-1;
-    option_fullscreen=false;
-    option_fullscreen_mode="desktop";
-
-    option_vsync=false;
-    option_accelerometer_controller=false;
-    option_touch_controller_state=false;
-    option_touch_controller_opacity=0.0;
-    option_font_shadows=false;
-    option_screen_keyboard=false;
-	option_hw_cursor=false;
-	option_bind_cursor=false;
-
-    option_fps=false;
-    option_dev=false;
-    option_volume_global=1.0;
-    option_volume_sound=1.0;
-    option_volume_music=1.0;
-    option_mute_global=false;
-    option_mute_sound=false;
-    option_mute_music=false;
 
     hide_gui=false;
 
@@ -398,13 +377,13 @@ bool Engine_Interface::load_data(string tag){
                             load_cursor(&load);
                         }
                         else if(tag=="color"){
-                            load_color(&load);
+                            Object_Manager::load_color(&load);
                         }
                         else if(tag=="color_theme"){
                             load_color_theme(&load);
                         }
                         else if(tag=="animation"){
-                            load_animation(&load);
+                            Object_Manager::load_animation(&load);
                         }
                         else if(tag=="window"){
                             load_window(&load);
@@ -445,11 +424,11 @@ void Engine_Interface::unload_data(){
 
     clear_mutable_info();
 
+    Object_Manager::unload_data();
+
     fonts.clear();
     cursors.clear();
-    colors.clear();
     color_themes.clear();
-    animations.clear();
     windows.clear();
 
     window_z_order.clear();
@@ -580,7 +559,7 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_home_directory.length());
 
-            home_directory=line;
+            Directories::home_directory=line;
         }
         //Developer
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_developer)){
@@ -609,21 +588,21 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_logical_screen_width.length());
 
-            logical_screen_width=Strings::string_to_long(line);
+            Engine_Data::logical_screen_width=Strings::string_to_long(line);
         }
         //Logical screen height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_logical_screen_height)){
             //Clear the data name.
             line.erase(0,str_logical_screen_height.length());
 
-            logical_screen_height=Strings::string_to_long(line);
+            Engine_Data::logical_screen_height=Strings::string_to_long(line);
         }
         //Resolution mode
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_resolution_mode)){
             //Clear the data name.
             line.erase(0,str_resolution_mode.length());
 
-            resolution_mode=line;
+            Engine_Data::resolution_mode=line;
         }
         //Frame rate
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frame_rate)){
@@ -686,7 +665,7 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_sound_falloff.length());
 
-            sound_falloff=Strings::string_to_double(line);
+            Engine_Data::sound_falloff=Strings::string_to_double(line);
         }
         //Window border thickness
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_window_border_thickness)){
@@ -945,7 +924,7 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_save_location.length());
 
-            option_save_location=line;
+            Options::save_location=line;
         }
 
         //default_screen_width
@@ -953,28 +932,28 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_screen_width.length());
 
-            option_screen_width=Strings::string_to_long(line);
+            Option::screen_width=Strings::string_to_long(line);
         }
         //default_screen_height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_screen_height)){
             //Clear the data name.
             line.erase(0,str_default_screen_height.length());
 
-            option_screen_height=Strings::string_to_long(line);
+            Option::screen_height=Strings::string_to_long(line);
         }
         //default_fullscreen
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_fullscreen)){
             //Clear the data name.
             line.erase(0,str_default_fullscreen.length());
 
-            option_fullscreen=Strings::string_to_bool(line);
+            Option::fullscreen=Strings::string_to_bool(line);
         }
         //default_fullscreen_mode
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_fullscreen_mode)){
             //Clear the data name.
             line.erase(0,str_default_fullscreen_mode.length());
 
-            option_fullscreen_mode=line;
+            Option::fullscreen_mode=line;
         }
 
         //default_vsync
@@ -982,56 +961,56 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_vsync.length());
 
-            option_vsync=Strings::string_to_bool(line);
+            Option::vsync=Strings::string_to_bool(line);
         }
         //default_accelerometer_controller
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_accelerometer_controller)){
             //Clear the data name.
             line.erase(0,str_default_accelerometer_controller.length());
 
-            option_accelerometer_controller=Strings::string_to_bool(line);
+            Option::accelerometer_controller=Strings::string_to_bool(line);
         }
         //default_touch_controller_state
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller_state)){
             //Clear the data name.
             line.erase(0,str_default_touch_controller_state.length());
 
-            option_touch_controller_state=Strings::string_to_bool(line);
+            Option::touch_controller_state=Strings::string_to_bool(line);
         }
         //default_touch_controller_opacity
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller_opacity)){
             //Clear the data name.
             line.erase(0,str_default_touch_controller_opacity.length());
 
-            option_touch_controller_opacity=Strings::string_to_double(line);
+            Option::touch_controller_opacity=Strings::string_to_double(line);
         }
         //default_font_shadows
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_font_shadows)){
             //Clear the data name.
             line.erase(0,str_default_font_shadows.length());
 
-            option_font_shadows=Strings::string_to_bool(line);
+            Options::font_shadows=Strings::string_to_bool(line);
         }
         //default_screen_keyboard
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_screen_keyboard)){
             //Clear the data name.
             line.erase(0,str_default_screen_keyboard.length());
 
-            option_screen_keyboard=Strings::string_to_bool(line);
+            Options::screen_keyboard=Strings::string_to_bool(line);
         }
         //default_hw_cursor
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_hw_cursor)){
             //Clear the data name.
             line.erase(0,str_default_hw_cursor.length());
 
-            option_hw_cursor=Strings::string_to_bool(line);
+            Options::hw_cursor=Strings::string_to_bool(line);
         }
         //default_bind_cursor
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_bind_cursor)){
             //Clear the data name.
             line.erase(0,str_default_bind_cursor.length());
 
-            option_bind_cursor=Strings::string_to_bool(line);
+            Options::bind_cursor=Strings::string_to_bool(line);
         }
 
         //default_fps
@@ -1039,56 +1018,56 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_fps.length());
 
-            option_fps=Strings::string_to_bool(line);
+            Options::fps=Strings::string_to_bool(line);
         }
         //default_dev
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_dev)){
             //Clear the data name.
             line.erase(0,str_default_dev.length());
 
-            option_dev=Strings::string_to_bool(line);
+            Options::dev=Strings::string_to_bool(line);
         }
         //default_volume_global
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_volume_global)){
             //Clear the data name.
             line.erase(0,str_default_volume_global.length());
 
-            option_volume_global=Strings::string_to_double(line);
+            Options::volume_global=Strings::string_to_double(line);
         }
         //default_volume_sound
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_volume_sound)){
             //Clear the data name.
             line.erase(0,str_default_volume_sound.length());
 
-            option_volume_sound=Strings::string_to_double(line);
+            Options::volume_sound=Strings::string_to_double(line);
         }
         //default_volume_music
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_volume_music)){
             //Clear the data name.
             line.erase(0,str_default_volume_music.length());
 
-            option_volume_music=Strings::string_to_double(line);
+            Options::volume_music=Strings::string_to_double(line);
         }
         //default_mute_global
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_mute_global)){
             //Clear the data name.
             line.erase(0,str_default_mute_global.length());
 
-            option_mute_global=Strings::string_to_bool(line);
+            Options::mute_global=Strings::string_to_bool(line);
         }
         //default_mute_sound
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_mute_sound)){
             //Clear the data name.
             line.erase(0,str_default_mute_sound.length());
 
-            option_mute_sound=Strings::string_to_bool(line);
+            Options::mute_sound=Strings::string_to_bool(line);
         }
         //default_mute_music
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_mute_music)){
             //Clear the data name.
             line.erase(0,str_default_mute_music.length());
 
-            option_mute_music=Strings::string_to_bool(line);
+            Options::mute_music=Strings::string_to_bool(line);
         }
 
         //If the line ends the engine data.
@@ -1107,29 +1086,29 @@ void Engine_Interface::load_font(File_IO_Load* load){
         string& line=lines[i];
 
         if(Data_Reader::check_prefix(line,"name:")){
-            fonts[fonts.size()-1].name=line;
+            fonts.back().name=line;
         }
         else if(Data_Reader::check_prefix(line,"sprite:")){
-            fonts[fonts.size()-1].sprite.name=line;
+            fonts.back().sprite.name=line;
         }
         else if(Data_Reader::check_prefix(line,"spacing_x:")){
-            fonts[fonts.size()-1].spacing_x=Strings::string_to_long(line);
+            fonts.back().spacing_x=Strings::string_to_long(line);
         }
         else if(Data_Reader::check_prefix(line,"spacing_y:")){
-            fonts[fonts.size()-1].spacing_y=Strings::string_to_long(line);
+            fonts.back().spacing_y=Strings::string_to_long(line);
         }
         else if(Data_Reader::check_prefix(line,"gui_padding_x:")){
-            fonts[fonts.size()-1].gui_padding_x=Strings::string_to_long(line);
+            fonts.back().gui_padding_x=Strings::string_to_long(line);
         }
         else if(Data_Reader::check_prefix(line,"gui_padding_y:")){
-            fonts[fonts.size()-1].gui_padding_y=Strings::string_to_long(line);
+            fonts.back().gui_padding_y=Strings::string_to_long(line);
         }
         else if(Data_Reader::check_prefix(line,"shadow_distance:")){
-            fonts[fonts.size()-1].shadow_distance=Strings::string_to_long(line);
+            fonts.back().shadow_distance=Strings::string_to_long(line);
         }
     }
 
-    fonts[fonts.size()-1].build_font();
+    fonts.back().build_font();
 }
 
 void Engine_Interface::load_cursor(File_IO_Load* load){
@@ -1184,68 +1163,6 @@ void Engine_Interface::load_cursor(File_IO_Load* load){
 
         //If the line ends the cursor.
         else if(!multi_line_comment && boost::algorithm::starts_with(line,"</cursor>")){
-            return;
-        }
-    }
-}
-
-void Engine_Interface::load_color(File_IO_Load* load){
-    colors.push_back(Color());
-
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_rgb="rgb:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //Name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
-            colors[colors.size()-1].name=line;
-        }
-        //Rgb
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_rgb)){
-            //Clear the data name.
-            line.erase(0,str_rgb.length());
-
-            vector<string> rgb_values;
-            boost::algorithm::split(rgb_values,line,boost::algorithm::is_any_of(","));
-
-            if(rgb_values.size()==3){
-                colors[colors.size()-1].set_rgb(Strings::string_to_long(rgb_values[0]),Strings::string_to_long(rgb_values[1]),Strings::string_to_long(rgb_values[2]));
-            }
-        }
-
-        //If the line ends the color.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</color>")){
             return;
         }
     }
@@ -1455,91 +1372,6 @@ void Engine_Interface::load_color_theme(File_IO_Load* load){
 
         //If the line ends the color theme.
         else if(!multi_line_comment && boost::algorithm::starts_with(line,"</color_theme>")){
-            return;
-        }
-    }
-}
-
-void Engine_Interface::load_animation(File_IO_Load* load){
-    animations.push_back(Animation());
-
-    double frame_width=0.0;
-
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_frame_count="frame_count:";
-        string str_animation_speed="animation_speed:";
-        string str_frame_width="frame_width:";
-        string str_end_behavior="end_behavior:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //Name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
-            animations[animations.size()-1].name=line;
-        }
-        //Frame count
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frame_count)){
-            //Clear the data name.
-            line.erase(0,str_frame_count.length());
-
-            animations[animations.size()-1].frame_count=Strings::string_to_long(line);
-        }
-        //Animation speed
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_animation_speed)){
-            //Clear the data name.
-            line.erase(0,str_animation_speed.length());
-
-            animations[animations.size()-1].animation_speed=Strings::string_to_long(line);
-        }
-        //Frame width
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frame_width)){
-            //Clear the data name.
-            line.erase(0,str_frame_width.length());
-
-            frame_width=Strings::string_to_double(line);
-        }
-        //End behavior
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_end_behavior)){
-            //Clear the data name.
-            line.erase(0,str_end_behavior.length());
-
-            animations[animations.size()-1].end_behavior=line;
-        }
-
-        //If the line ends the animation.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</animation>")){
-            animations[animations.size()-1].setup(frame_width);
-
             return;
         }
     }
@@ -2260,7 +2092,7 @@ void Engine_Interface::load_game_option(File_IO_Load* load){
         //If the line ends the game option.
         else if(!multi_line_comment && boost::algorithm::starts_with(line,"</game_option>")){
             if(option_default.length()>0){
-                game_options[game_options.size()-1].set_value(option_default);
+                Game_Options::set_value(game_options[game_options.size()-1].name,option_default);
             }
 
             return;
@@ -2449,7 +2281,7 @@ void Engine_Interface::load_custom_sound(File_IO_Load* load){
 
         //If the line ends the custom sound.
         else if(!multi_line_comment && boost::algorithm::starts_with(line,"</custom_sound>")){
-            sound_system.add_sound(sound);
+            Sound_Manager::add_sound(sound);
 
             return;
         }
@@ -2577,7 +2409,7 @@ void Engine_Interface::load_custom_sound_data(File_IO_Load* load,Custom_Sound& s
 Bitmap_Font* Engine_Interface::get_font(std::string name){
     Bitmap_Font* ptr_font=0;
 
-    for(int i=0;i<fonts.size();i++){
+    for(size_t i=0;i<fonts.size();i++){
         if(fonts[i].name==name){
             ptr_font=&fonts[i];
 
@@ -2610,24 +2442,6 @@ Cursor* Engine_Interface::get_cursor(string name){
     return ptr_cursor;
 }
 
-Color* Engine_Interface::get_color(string name){
-    Color* ptr_color=0;
-
-    for(int i=0;i<colors.size();i++){
-        if(colors[i].name==name){
-            ptr_color=&colors[i];
-
-            break;
-        }
-    }
-
-    if(ptr_color==0){
-        Log::add_error("Error accessing color '"+name+"'");
-    }
-
-    return ptr_color;
-}
-
 Color_Theme* Engine_Interface::get_color_theme(string name){
     Color_Theme* ptr_color_theme=0;
 
@@ -2644,24 +2458,6 @@ Color_Theme* Engine_Interface::get_color_theme(string name){
     }
 
     return ptr_color_theme;
-}
-
-Animation* Engine_Interface::get_animation(string name){
-    Animation* ptr_animation=0;
-
-    for(int i=0;i<animations.size();i++){
-        if(animations[i].name==name){
-            ptr_animation=&animations[i];
-
-            break;
-        }
-    }
-
-    if(ptr_animation==0){
-        Log::add_error("Error accessing animation '"+name+"'");
-    }
-
-    return ptr_animation;
 }
 
 Window* Engine_Interface::get_window(string name){
@@ -2720,25 +2516,6 @@ Game_Option* Engine_Interface::get_game_option(string name){
 
 Color_Theme* Engine_Interface::current_color_theme(){
     return get_color_theme(color_theme);
-}
-
-bool Engine_Interface::animation_exists(std::string animation_name){
-    Animation* ptr_animation=0;
-
-    for(int i=0;i<animations.size();i++){
-        if(animations[i].name==animation_name){
-            ptr_animation=&animations[i];
-
-            break;
-        }
-    }
-
-    if(ptr_animation==0){
-        return false;
-    }
-    else{
-        return true;
-    }
 }
 
 void Engine_Interface::rebuild_window_data(){
@@ -3088,7 +2865,7 @@ GUI_Object Engine_Interface::get_gui_selected_object(){
             if(objects.size()>gui_selected_object){
                 if(!top_window->no_button_sort){
                     GUI_Object::set_sort_by_y(objects,true);
-                    quick_sort(objects);
+                    Sorting::quick_sort(objects);
 
                     //Build a list of all y values that have at least one duplicate
                     vector<int> y_duplicates_to_sort;
@@ -3144,7 +2921,7 @@ GUI_Object Engine_Interface::get_gui_selected_object(){
                         }
 
                         GUI_Object::set_sort_by_y(replacements,false);
-                        quick_sort(replacements);
+                        Sorting::quick_sort(replacements);
 
                         for(int j=0;j<replacements.size();j++){
                             objects[initial_object+j]=replacements[j];
@@ -3767,7 +3544,7 @@ int Engine_Interface::get_text_input_selected_chunk(){
         Collision_Rect box_a(0,0,1,1);
         Collision_Rect box_b(axis_x,axis_y,1,1);
 
-        double axis_angle=get_angle_to_rect(box_a,box_b,Collision_Rect(0.0,0.0,0.0,0.0));
+        double axis_angle=Collision::get_angle_to_rect(box_a,box_b,Collision_Rect(0.0,0.0,0.0,0.0));
 
         if(axis_angle>=74 && axis_angle<118){
             selected_chunk=0;
@@ -3916,7 +3693,7 @@ void Engine_Interface::prepare_for_input(){
         Collision_Rect box_a(mouse_x,mouse_y,cursor_width,cursor_height);
         Collision_Rect box_b(window_z_order[i]->x,window_z_order[i]->y,window_z_order[i]->w,window_z_order[i]->h);
 
-        if(collision_check_rect(box_a,box_b)){
+        if(Collision::check_rect(box_a,box_b)){
             window_under_mouse=window_z_order[i];
         }
     }
@@ -3925,7 +3702,7 @@ void Engine_Interface::prepare_for_input(){
         Collision_Rect box_a(mouse_x,mouse_y,cursor_width,cursor_height);
         Collision_Rect box_b(windows[closed_windows[i]].x,windows[closed_windows[i]].y,windows[closed_windows[i]].w,windows[closed_windows[i]].h);
 
-        if(collision_check_rect(box_a,box_b)){
+        if(Collision::check_rect(box_a,box_b)){
             window_under_mouse=&windows[closed_windows[i]];
         }
     }
@@ -4243,7 +4020,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                                 text_entry_small_selector.x=12;
                             }
 
-                            sound_system.play_sound("text_input_small_move");
+                            Sound_Manager::play_sound("text_input_small_move");
 
                             event_consumed=true;
                         }
@@ -4252,7 +4029,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                                 text_entry_small_selector.x=0;
                             }
 
-                            sound_system.play_sound("text_input_small_move");
+                            Sound_Manager::play_sound("text_input_small_move");
 
                             event_consumed=true;
                         }
@@ -4261,7 +4038,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                                 text_entry_small_selector.y=7;
                             }
 
-                            sound_system.play_sound("text_input_small_move");
+                            Sound_Manager::play_sound("text_input_small_move");
 
                             event_consumed=true;
                         }
@@ -4270,7 +4047,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                                 text_entry_small_selector.y=0;
                             }
 
-                            sound_system.play_sound("text_input_small_move");
+                            Sound_Manager::play_sound("text_input_small_move");
 
                             event_consumed=true;
                         }
@@ -4282,7 +4059,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                                 gui_nav_back_controller();
                             }
 
-                            sound_system.play_sound("text_input_small_select");
+                            Sound_Manager::play_sound("text_input_small_select");
 
                             event_consumed=true;
                         }
@@ -4290,7 +4067,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                             text_entry_small_selector.x=12;
                             text_entry_small_selector.y=7;
 
-                            sound_system.play_sound("text_input_small_move");
+                            Sound_Manager::play_sound("text_input_small_move");
 
                             event_consumed=true;
                         }
@@ -4317,7 +4094,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                                 handle_text_input(text_entry_char);
                             }
 
-                            sound_system.play_sound("text_input_small_select");
+                            Sound_Manager::play_sound("text_input_small_select");
 
                             event_consumed=true;
                         }
@@ -4821,7 +4598,7 @@ void Engine_Interface::render_gui_selector(){
                 offset+=2.0;
             }
 
-            render_rectangle_empty(object_pos.x-offset,object_pos.y-offset,object_pos.w+offset*2.0,object_pos.h+offset*2.0,1.0,current_color_theme()->gui_selector_1,thickness);
+            Render::render_rectangle_empty(main_window.renderer,object_pos.x-offset,object_pos.y-offset,object_pos.w+offset*2.0,object_pos.h+offset*2.0,1.0,current_color_theme()->gui_selector_1,thickness);
         }
 
         if(gui_selector_style=="corners"){
@@ -4831,10 +4608,10 @@ void Engine_Interface::render_gui_selector(){
                 corner_size+=2.0;
             }
 
-            render_rectangle(object_pos.x-corner_size/2.0+1,object_pos.y-corner_size/2.0+1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
-            render_rectangle(object_pos.x+object_pos.w-corner_size/2.0-1,object_pos.y-corner_size/2.0+1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
-            render_rectangle(object_pos.x-corner_size/2.0+1,object_pos.y+object_pos.h-corner_size/2.0-1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
-            render_rectangle(object_pos.x+object_pos.w-corner_size/2.0-1,object_pos.y+object_pos.h-corner_size/2.0-1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
+            Render::render_rectangle(main_window.renderer,object_pos.x-corner_size/2.0+1,object_pos.y-corner_size/2.0+1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
+            Render::render_rectangle(main_window.renderer,object_pos.x+object_pos.w-corner_size/2.0-1,object_pos.y-corner_size/2.0+1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
+            Render::render_rectangle(main_window.renderer,object_pos.x-corner_size/2.0+1,object_pos.y+object_pos.h-corner_size/2.0-1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
+            Render::render_rectangle(main_window.renderer,object_pos.x+object_pos.w-corner_size/2.0-1,object_pos.y+object_pos.h-corner_size/2.0-1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
         }
 
         if(gui_selector_style=="underline"){
@@ -4845,7 +4622,7 @@ void Engine_Interface::render_gui_selector(){
             }
 
             for(int i=0;i<thickness;i++){
-                render_line(object_pos.x,object_pos.y+object_pos.h+i,object_pos.x+object_pos.w-1,object_pos.y+object_pos.h+i,1.0,current_color_theme()->gui_selector_1);
+                Render::render_line(main_window.renderer,object_pos.x,object_pos.y+object_pos.h+i,object_pos.x+object_pos.w-1,object_pos.y+object_pos.h+i,1.0,current_color_theme()->gui_selector_1);
             }
         }
 
@@ -4857,15 +4634,15 @@ void Engine_Interface::render_gui_selector(){
             }
 
             for(int i=0;i<gui_selector_chasers.size();i++){
-                render_rectangle(gui_selector_chasers[i].x-chaser_size/2.0,gui_selector_chasers[i].y-chaser_size/2.0,chaser_size,chaser_size,1.0,current_color_theme()->gui_selector_2);
+                Render::render_rectangle(main_window.renderer,gui_selector_chasers[i].x-chaser_size/2.0,gui_selector_chasers[i].y-chaser_size/2.0,chaser_size,chaser_size,1.0,current_color_theme()->gui_selector_2);
             }
         }
     }
 }
 
 void Engine_Interface::render_small_text_inputter(){
-    render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_border);
-    render_rectangle(window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,
+    Render::render_rectangle(main_window.renderer,0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_border);
+    Render::render_rectangle(main_window.renderer,window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,
                      main_window.SCREEN_HEIGHT-window_border_thickness*2.0,0.75,current_color_theme()->window_background);
 
     if(mutable_info_selected()){
@@ -4916,7 +4693,7 @@ void Engine_Interface::render_small_text_inputter(){
         font->show(x_offset+(i-26)*font->get_letter_width(),offset_y,characters_symbols[i],current_color_theme()->window_font);
     }
 
-    text_selector.render(x_offset+text_entry_small_selector.x*font->get_letter_width()-(text_selector.get_width()-font->get_letter_width())/2.0,buttons_start_y+text_entry_small_selector.y*font->get_letter_height()-(text_selector.get_height()-font->get_letter_height())/2.0);
+    text_selector.render(main_window.renderer,x_offset+text_entry_small_selector.x*font->get_letter_width()-(text_selector.get_width()-font->get_letter_width())/2.0,buttons_start_y+text_entry_small_selector.y*font->get_letter_height()-(text_selector.get_height()-font->get_letter_height())/2.0);
 }
 
 void Engine_Interface::render_text_inputter(){
@@ -4966,12 +4743,12 @@ void Engine_Interface::render_text_inputter(){
 
     Bitmap_Font* font=get_font("standard");
 
-    render_rectangle(x_adjust,0,main_window.SCREEN_WIDTH/2,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_background);
-    render_rectangle_empty(x_adjust,0,main_window.SCREEN_WIDTH/2,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_border,2.0);
-    render_circle(outer_center_x+4,outer_center_y+4,outer_radius,1.0,"ui_black");
-    render_circle(outer_center_x,outer_center_y,outer_radius,1.0,current_color_theme()->window_border);
+    Render::render_rectangle(main_window.renderer,x_adjust,0,main_window.SCREEN_WIDTH/2,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_background);
+    Render::render_rectangle_empty(main_window.renderer,x_adjust,0,main_window.SCREEN_WIDTH/2,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_border,2.0);
+    Render::render_circle(main_window.renderer,outer_center_x+4,outer_center_y+4,outer_radius,1.0,"ui_black");
+    Render::render_circle(main_window.renderer,outer_center_x,outer_center_y,outer_radius,1.0,current_color_theme()->window_border);
 
-    render_circle(outer_center_x,outer_center_y,16.0,1.0,"ui_gray");
+    Render::render_circle(main_window.renderer,outer_center_x,outer_center_y,16.0,1.0,"ui_gray");
     font->show(outer_center_x-12.0,outer_center_y-8.0,"LS","ui_white");
 
     string text="";
@@ -5006,15 +4783,15 @@ void Engine_Interface::render_text_inputter(){
         double mid_radius=outer_radius*0.75;
         double inner_radius=50.0;
 
-        double inner_center_x=outer_center_x+mid_radius*cos(degrees_to_radians(angle));
-        double inner_center_y=outer_center_y+mid_radius*sin(degrees_to_radians(angle));
+        double inner_center_x=outer_center_x+mid_radius*cos(Math::degrees_to_radians(angle));
+        double inner_center_y=outer_center_y+mid_radius*sin(Math::degrees_to_radians(angle));
 
         string outer_circle_color=current_color_theme()->window_background;
         if(character_chunk==selected_chunk){
             outer_circle_color=current_color_theme()->window_title_bar;
         }
 
-        render_circle(inner_center_x,inner_center_y,inner_radius,1.0,outer_circle_color);
+        Render::render_circle(main_window.renderer,inner_center_x,inner_center_y,inner_radius,1.0,outer_circle_color);
 
         for(double letter_angle=-180.0;letter_angle<180.0;letter_angle+=90.0){
             double letter_circle_radius=inner_radius*0.75;
@@ -5034,15 +4811,15 @@ void Engine_Interface::render_text_inputter(){
                 circle_color="text_input_green";
             }
 
-            double letter_center_x=inner_center_x+letter_circle_radius*cos(degrees_to_radians(letter_angle));
-            double letter_center_y=inner_center_y+letter_circle_radius*sin(degrees_to_radians(letter_angle));
+            double letter_center_x=inner_center_x+letter_circle_radius*cos(Math::degrees_to_radians(letter_angle));
+            double letter_center_y=inner_center_y+letter_circle_radius*sin(Math::degrees_to_radians(letter_angle));
 
             string font_color=current_color_theme()->window_font;
 
             if(character_chunk==selected_chunk){
                 font_color="ui_white";
 
-                render_circle(letter_center_x,letter_center_y,letter_radius,1.0,circle_color);
+                Render::render_circle(main_window.renderer,letter_center_x,letter_center_y,letter_radius,1.0,circle_color);
             }
 
             if(character<characters->size()){
@@ -5062,8 +4839,8 @@ void Engine_Interface::render_text_editing(){
 
         string text=ptr_mutable_info->get_cursor_line();
 
-        render_rectangle(0.0,0.0,main_window.SCREEN_WIDTH,font->spacing_y+window_border_thickness*2.0,0.75,current_color_theme()->window_border);
-        render_rectangle(window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,
+        Render::render_rectangle(main_window.renderer,0.0,0.0,main_window.SCREEN_WIDTH,font->spacing_y+window_border_thickness*2.0,0.75,current_color_theme()->window_border);
+        Render::render_rectangle(main_window.renderer,window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,
                          font->spacing_y,0.75,current_color_theme()->window_background);
 
         font->show((main_window.SCREEN_WIDTH-(text.length()*font->spacing_x))/2.0,window_border_thickness,text,current_color_theme()->window_font);

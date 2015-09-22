@@ -4,7 +4,13 @@
 
 #include "engine_interface.h"
 #include "world.h"
-#include "render.h"
+
+#include <strings.h>
+#include <log.h>
+#include <data_reader.h>
+#include <image_data.h>
+#include <image_manager.h>
+#include <render.h>
 
 using namespace std;
 
@@ -39,7 +45,7 @@ void Engine_Interface::unload_data_game(){
 /**Example_Game_Tag* Engine_Interface::get_example_game_tag(string name){
     Example_Game_Tag* ptr_object=0;
 
-    for(int i=0;i<example_game_tags.size();i++){
+    for(size_t i=0;i<example_game_tags.size();i++){
         if(example_game_tags[i].name==name){
             ptr_object=&example_game_tags[i];
 
@@ -61,16 +67,16 @@ void Engine_Interface::handle_drag_and_drop(string file){
 void Engine_Interface::render_title_background(){
     Bitmap_Font* font=get_font("small");
 
-    render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,"ui_black");
+    Render::render_rectangle(main_window.renderer,0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,"ui_black");
 
     font->show(0,main_window.SCREEN_HEIGHT-font->spacing_y*2.0,"Version "+get_version()+"\nChecksum "+CHECKSUM,"ui_white");
 
-    Image_Data* logo=image.get_image("logo");
+    Image_Data* logo=Image_Manager::get_image("logo");
 
     double logo_scale_x=(double)main_window.SCREEN_WIDTH/(double)1280.0;
     double logo_scale_y=(double)main_window.SCREEN_HEIGHT/(double)720.0;
 
-    render_texture(main_window.SCREEN_WIDTH-logo->w*logo_scale_x,main_window.SCREEN_HEIGHT-logo->h*logo_scale_y,*logo,1.0,logo_scale_x,logo_scale_y);
+    Render::render_texture(main_window.renderer,main_window.SCREEN_WIDTH-logo->w*logo_scale_x,main_window.SCREEN_HEIGHT-logo->h*logo_scale_y,logo,1.0,logo_scale_x,logo_scale_y);
 }
 
 void Engine_Interface::render_pause(){
@@ -91,15 +97,14 @@ void Engine_Interface::render_loading_screen(double percentage,string load_messa
     SDL_RenderClear(main_window.renderer);
 
     ///If images are loaded
-    /**render_texture(0,0,image.loading_screen_main,0.25);
-    render_texture((main_window.SCREEN_WIDTH-image.logo_hubert.w)/2.0,30,image.logo_hubert);*/
+    ///Render::render_texture(main_window.renderer,0,0,Image_Manager::get_image("loading_screen"),0.25);
 
-    render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,"ui_black");
+    Render::render_rectangle(main_window.renderer,0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,"ui_black");
 
     double bar_width=240.0*percentage;
     double max_bar_width=240.0*1.0;
-    render_rectangle(main_window.SCREEN_WIDTH/2.0-120-2,main_window.SCREEN_HEIGHT-75-2,max_bar_width+4,30+4,1.0,"ui_3");
-    render_rectangle(main_window.SCREEN_WIDTH/2.0-120,main_window.SCREEN_HEIGHT-75,bar_width,30,1.0,"ui_1");
+    Render::render_rectangle(main_window.renderer,main_window.SCREEN_WIDTH/2.0-120-2,main_window.SCREEN_HEIGHT-75-2,max_bar_width+4,30+4,1.0,"ui_3");
+    Render::render_rectangle(main_window.renderer,main_window.SCREEN_WIDTH/2.0-120,main_window.SCREEN_HEIGHT-75,bar_width,30,1.0,"ui_1");
 
     string msg=Strings::num_to_string((int)(percentage*100.0))+"%";
 

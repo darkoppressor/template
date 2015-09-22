@@ -5,6 +5,9 @@
 #include "window.h"
 #include "world.h"
 
+#include <strings.h>
+#include <log.h>
+
 using namespace std;
 
 void Window::build_scrolling_buttons(){

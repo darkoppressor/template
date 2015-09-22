@@ -3,7 +3,8 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include "server.h"
-#include "strings.h"
+
+#include <strings.h>
 
 using namespace std;
 

@@ -5,15 +5,18 @@
 #include "engine_interface.h"
 #include "world.h"
 #include "version.h"
+#include "game_options.h"
 
 #include <engine_version.h>
+#include <strings.h>
+#include <log.h>
+#include <directories.h>
+#include <options.h>
+#include <sorting.h>
+#include <music_manager.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
-
-#ifdef GAME_OS_OSX
-    #include <CoreServices/CoreServices.h>
-#endif
 
 using namespace std;
 
@@ -62,7 +65,7 @@ string Engine_Interface::get_checksum(){
         }
     }
 
-    quick_sort(file_list);
+    Sorting::quick_sort(file_list);
 
     for(int i=0;i<file_list.size();i++){
         File_IO_Load load(file_list[i]);
@@ -85,208 +88,17 @@ string Engine_Interface::get_checksum(){
     return checksum;
 }
 
-string Engine_Interface::get_timestamp(bool include_date,bool include_time,bool filename){
-    string str_start="[";
-    string str_end="]";
-    string date_separator="-";
-    string time_separator=":";
-    string section_separator=" ";
-    if(filename){
-        str_start="";
-        str_end="";
-        date_separator="-";
-        time_separator=".";
-        section_separator="_";
-    }
-
-    string date_string="%Y"+date_separator+"%m"+date_separator+"%d";
-    string time_string="%H"+time_separator+"%M"+time_separator+"%S";
-
-    string time_stamp=str_start;
-    if(!include_date && include_time){
-        time_stamp+=time_string;
-    }
-    else if(include_date && !include_time){
-        time_stamp+=date_string;
-    }
-    else{
-        time_stamp+=date_string+section_separator+time_string;
-    }
-    time_stamp+=str_end;
-
-    char buff[BUFSIZ];
-    time_t now=time(NULL);
-    struct tm* tm_now=localtime(&now);
-    strftime(buff,sizeof buff,time_stamp.c_str(),tm_now);
-
-    return buff;
-}
-
-string Engine_Interface::get_cwd(){
-    string cwd="./";
-
-    char* base_path=SDL_GetBasePath();
-
-    if(base_path!=0){
-        cwd=SDL_strdup(base_path);
-
-        SDL_free(base_path);
-    }
-    else{
-        string msg="Error getting base path: ";
-        msg+=SDL_GetError();
-        Log::add_error(msg);
-    }
-
-    correct_slashes(&cwd);
-
-    return cwd;
-}
-
-string Engine_Interface::get_save_directory_absolute(){
-    string save_path=get_save_directory();
-
-    if(save_path=="./"){
-        save_path=CURRENT_WORKING_DIRECTORY;
-    }
-
-    return save_path;
-}
-
-void Engine_Interface::correct_slashes(string* str_input){
-    boost::algorithm::replace_all(*str_input,"\\","/");
-}
-
-string Engine_Interface::get_save_directory(){
-    string str_home="./";
-
-    if(option_save_location=="home"){
-        string game_name=home_directory;
-        #ifdef GAME_DEMO
-            game_name+="-demo";
-        #endif
-
-        ///This creates a string pref_path to the location SDL thinks data should be saved for this platform.
-        /**string pref_path="./";
-        char* base_path=SDL_GetPrefPath("cheese-and-bacon-games",game_name.c_str());
-        if(base_path!=0){
-            pref_path=SDL_strdup(base_path);
-
-            SDL_free(base_path);
-        }
-        else{
-            string msg="Error getting pref path: ";
-            msg+=SDL_GetError();
-            Log::add_error(msg);
-        }
-        correct_slashes(&pref_path);*/
-
-        #ifdef GAME_OS_WINDOWS
-            str_home=getenv("USERPROFILE");
-            str_home+="/My Documents/My Games/";
-            str_home+=game_name;
-            str_home+="/";
-        #endif
-
-        #ifdef GAME_OS_LINUX
-            str_home=getenv("HOME");
-            str_home+="/.";
-            str_home+=game_name;
-            str_home+="/";
-        #endif
-
-        #ifdef GAME_OS_OSX
-            FSRef fsref;
-            OSType folder_type=kApplicationSupportFolderType;
-            char path[PATH_MAX];
-            FSFindFolder(kUserDomain,folder_type,kCreateFolder,&fsref);
-            FSRefMakePath(&fsref,(uint8_t*)&path,PATH_MAX);
-
-            str_home=path;
-            str_home+="/";
-            str_home+=game_name;
-            str_home+="/";
-        #endif
-
-        #ifdef GAME_OS_ANDROID
-            bool using_external_storage=false;
-
-            if(File_IO::external_storage_available()){
-                const char* external_path=SDL_AndroidGetExternalStoragePath();
-
-                if(external_path!=0){
-                    str_home=external_path;
-                    str_home+="/";
-
-                    using_external_storage=true;
-                }
-                else{
-                    string msg="Error getting external storage path: ";
-                    msg+=SDL_GetError();
-                    Log::add_error(msg);
-                }
-            }
-
-            /**if(!using_external_storage){
-                const char* internal_path=SDL_AndroidGetInternalStoragePath();
-
-                if(internal_path!=0){
-                    str_home=internal_path;
-                    str_home+="/";
-                }
-                else{
-                    string msg="Error getting internal storage path: ";
-                    msg+=SDL_GetError();
-                    Log::add_error(msg);
-                }
-            }*/
-        #endif
-
-        correct_slashes(&str_home);
-    }
-
-    return str_home;
-}
-
-void Engine_Interface::make_home_directory(){
-    if(option_save_location=="home"){
-        #ifdef GAME_OS_WINDOWS
-            string str_my_games=getenv("USERPROFILE");
-            str_my_games+="/My Documents/My Games";
-
-            correct_slashes(&str_my_games);
-
-            File_IO::create_directory(str_my_games);
-        #endif
-
-        string str_home=get_save_directory();
-
-        //Remove the ending slash.
-        str_home.erase(str_home.length()-1,1);
-
-        correct_slashes(&str_home);
-
-        File_IO::create_directory(str_home);
-    }
-}
-
-void Engine_Interface::make_directories(){
-    make_home_directory();
-
-    File_IO::create_directory(get_save_directory()+"screenshots");
-}
-
 bool Engine_Interface::save_save_location(){
     stringstream save("");
 
     save<<"<save_location>\n";
 
-    save<<"\tsave_location:"<<option_save_location<<"\n";
+    save<<"\tsave_location:"<<Options::save_location<<"\n";
 
     save<<"</save_location>\n";
 
     if(File_IO::save_atomic("save_location.cfg",save.str())){
-        save_location_loaded=true;
+        Directories::save_location_loaded=true;
 
         return true;
     }
@@ -335,9 +147,9 @@ bool Engine_Interface::load_save_location(){
                 //Clear the data name.
                 line.erase(0,str_save_location.length());
 
-                option_save_location=line;
+                Options::save_location=line;
 
-                save_location_loaded=true;
+                Directories::save_location_loaded=true;
             }
 
             //If the line ends the save location data.
@@ -437,74 +249,74 @@ string Engine_Interface::get_option_value(string option){
     }
 
     else if(option=="cl_screen_width"){
-        return Strings::num_to_string(option_screen_width);
+        return Strings::num_to_string(Options::screen_width);
     }
     else if(option=="cl_screen_height"){
-        return Strings::num_to_string(option_screen_height);
+        return Strings::num_to_string(Options::screen_height);
     }
     else if(option=="cl_display_number"){
-        return Strings::num_to_string(option_display_number);
+        return Strings::num_to_string(Options::display_number);
     }
     else if(option=="cl_fullscreen_state"){
-        return Strings::bool_to_string(option_fullscreen);
+        return Strings::bool_to_string(Options::fullscreen);
     }
     else if(option=="cl_fullscreen_mode"){
-        return option_fullscreen_mode;
+        return Options::fullscreen_mode;
     }
 
     else if(option=="cl_vsync"){
-        return Strings::bool_to_string(option_vsync);
+        return Strings::bool_to_string(Options::vsync);
     }
     else if(option=="cl_accelerometer_controller"){
-        return Strings::bool_to_string(option_accelerometer_controller);
+        return Strings::bool_to_string(Options::accelerometer_controller);
     }
     else if(option=="cl_touch_controller_state"){
-        return Strings::bool_to_string(option_touch_controller_state);
+        return Strings::bool_to_string(Options::touch_controller_state);
     }
     else if(option=="cl_touch_controller_opacity"){
-        return Strings::num_to_string(option_touch_controller_opacity);
+        return Strings::num_to_string(Options::touch_controller_opacity);
     }
     else if(option=="cl_font_shadows"){
-        return Strings::bool_to_string(option_font_shadows);
+        return Strings::bool_to_string(Options::font_shadows);
     }
     else if(option=="cl_screen_keyboard"){
-        return Strings::bool_to_string(option_screen_keyboard);
+        return Strings::bool_to_string(Options::screen_keyboard);
     }
     else if(option=="cl_hw_cursor"){
-        return Strings::bool_to_string(option_hw_cursor);
+        return Strings::bool_to_string(Options::hw_cursor);
     }
     else if(option=="cl_bind_cursor"){
-        return Strings::bool_to_string(option_bind_cursor);
+        return Strings::bool_to_string(Options::bind_cursor);
     }
 
     else if(option=="cl_fps"){
-        return Strings::bool_to_string(option_fps);
+        return Strings::bool_to_string(Options::fps);
     }
     else if(option=="cl_dev"){
-        return Strings::bool_to_string(option_dev);
+        return Strings::bool_to_string(Options::dev);
     }
     else if(option=="cl_volume_global"){
-        return Strings::num_to_string(option_volume_global);
+        return Strings::num_to_string(Options::volume_global);
     }
     else if(option=="cl_volume_sound"){
-        return Strings::num_to_string(option_volume_sound);
+        return Strings::num_to_string(Options::volume_sound);
     }
     else if(option=="cl_volume_music"){
-        return Strings::num_to_string(option_volume_music);
+        return Strings::num_to_string(Options::volume_music);
     }
     else if(option=="cl_mute_global"){
-        return Strings::bool_to_string(option_mute_global);
+        return Strings::bool_to_string(Options::mute_global);
     }
     else if(option=="cl_mute_sound"){
-        return Strings::bool_to_string(option_mute_sound);
+        return Strings::bool_to_string(Options::mute_sound);
     }
     else if(option=="cl_mute_music"){
-        return Strings::bool_to_string(option_mute_music);
+        return Strings::bool_to_string(Options::mute_music);
     }
 
     for(int i=0;i<game_options.size();i++){
         if(option==game_options[i].name){
-            return game_options[i].get_value();
+            return Game_Options::get_value(game_options[i].name);
         }
     }
 
@@ -603,54 +415,54 @@ void Engine_Interface::change_option(string option,string new_value){
     }
 
     else if(option=="cl_screen_width"){
-        option_screen_width=Strings::string_to_long(new_value);
+        Options::screen_width=Strings::string_to_long(new_value);
     }
     else if(option=="cl_screen_height"){
-        option_screen_height=Strings::string_to_long(new_value);
+        Options::screen_height=Strings::string_to_long(new_value);
     }
     else if(option=="cl_display_number"){
-        option_display_number=Strings::string_to_long(new_value);
+        Options::display_number=Strings::string_to_long(new_value);
     }
     else if(option=="cl_fullscreen_state"){
-        option_fullscreen=Strings::string_to_bool(new_value);
+        Options::fullscreen=Strings::string_to_bool(new_value);
     }
     else if(option=="cl_fullscreen_mode"){
-        option_fullscreen_mode=new_value;
+        Options::fullscreen_mode=new_value;
     }
 
     else if(option=="cl_vsync"){
-        option_vsync=Strings::string_to_bool(new_value);
+        Options::vsync=Strings::string_to_bool(new_value);
     }
     else if(option=="cl_accelerometer_controller"){
-        option_accelerometer_controller=Strings::string_to_bool(new_value);
+        Options::accelerometer_controller=Strings::string_to_bool(new_value);
     }
     else if(option=="cl_touch_controller_state"){
-        option_touch_controller_state=Strings::string_to_bool(new_value);
+        Options::touch_controller_state=Strings::string_to_bool(new_value);
 
-        if(option_touch_controller_state && SDL_GetNumTouchDevices()>0){
+        if(Options::touch_controller_state && SDL_GetNumTouchDevices()>0){
             touch_controls=true;
         }
     }
     else if(option=="cl_touch_controller_opacity"){
-        option_touch_controller_opacity=Strings::string_to_double(new_value);
+        Options::touch_controller_opacity=Strings::string_to_double(new_value);
     }
     else if(option=="cl_font_shadows"){
-        option_font_shadows=Strings::string_to_bool(new_value);
+        Options::font_shadows=Strings::string_to_bool(new_value);
     }
     else if(option=="cl_screen_keyboard"){
-        option_screen_keyboard=Strings::string_to_bool(new_value);
+        Options::screen_keyboard=Strings::string_to_bool(new_value);
 
-        if(!option_screen_keyboard && SDL_IsScreenKeyboardShown(main_window.screen)){
+        if(!Options::screen_keyboard && SDL_IsScreenKeyboardShown(main_window.screen)){
             SDL_StopTextInput();
         }
     }
     else if(option=="cl_hw_cursor"){
-        option_hw_cursor=Strings::string_to_bool(new_value);
+        Options::hw_cursor=Strings::string_to_bool(new_value);
     }
     else if(option=="cl_bind_cursor"){
-        option_bind_cursor=Strings::string_to_bool(new_value);
+        Options::bind_cursor=Strings::string_to_bool(new_value);
 
-        if(option_bind_cursor){
+        if(Options::bind_cursor){
             SDL_SetWindowGrab(main_window.screen,SDL_TRUE);
         }
         else{
@@ -659,36 +471,36 @@ void Engine_Interface::change_option(string option,string new_value){
     }
 
     else if(option=="cl_fps"){
-        option_fps=Strings::string_to_bool(new_value);
+        Options::fps=Strings::string_to_bool(new_value);
     }
     else if(option=="cl_dev"){
-        option_dev=Strings::string_to_bool(new_value);
+        Options::dev=Strings::string_to_bool(new_value);
     }
     else if(option=="cl_volume_global"){
-        option_volume_global=Strings::string_to_double(new_value);
+        Options::volume_global=Strings::string_to_double(new_value);
 
-        music.set_track_volumes();
+        Music_Manager::set_track_volumes();
     }
     else if(option=="cl_volume_sound"){
-        option_volume_sound=Strings::string_to_double(new_value);
+        Options::volume_sound=Strings::string_to_double(new_value);
     }
     else if(option=="cl_volume_music"){
-        option_volume_music=Strings::string_to_double(new_value);
+        Options::volume_music=Strings::string_to_double(new_value);
 
-        music.set_track_volumes();
+        Music_Manager::set_track_volumes();
     }
     else if(option=="cl_mute_global"){
-        option_mute_global=Strings::string_to_bool(new_value);
+        Options::mute_global=Strings::string_to_bool(new_value);
 
-        music.set_track_volumes();
+        Music_Manager::set_track_volumes();
     }
     else if(option=="cl_mute_sound"){
-        option_mute_sound=Strings::string_to_bool(new_value);
+        Options::mute_sound=Strings::string_to_bool(new_value);
     }
     else if(option=="cl_mute_music"){
-        option_mute_music=Strings::string_to_bool(new_value);
+        Options::mute_music=Strings::string_to_bool(new_value);
 
-        music.set_track_volumes();
+        Music_Manager::set_track_volumes();
     }
 
     else{
@@ -696,7 +508,7 @@ void Engine_Interface::change_option(string option,string new_value){
 
         for(int i=0;i<game_options.size();i++){
             if(option==game_options[i].name){
-                game_options[i].set_value(new_value);
+                Game_Options::set_value(game_options[i].name,new_value);
 
                 game_option=true;
 
@@ -808,43 +620,43 @@ bool Engine_Interface::save_options(){
 
     save<<"\n";
 
-    save<<"\tscreen_width:"<<option_screen_width<<"\n";
-    save<<"\tscreen_height:"<<option_screen_height<<"\n";
-    save<<"\tdisplay_number:"<<option_display_number<<"\n";
-    save<<"\tfullscreen_state:"<<Strings::bool_to_string(option_fullscreen)<<"\n";
-    save<<"\tfullscreen_mode:"<<option_fullscreen_mode<<"\n";
+    save<<"\tscreen_width:"<<Options::screen_width<<"\n";
+    save<<"\tscreen_height:"<<Options::screen_height<<"\n";
+    save<<"\tdisplay_number:"<<Options::display_number<<"\n";
+    save<<"\tfullscreen_state:"<<Strings::bool_to_string(Options::fullscreen)<<"\n";
+    save<<"\tfullscreen_mode:"<<Options::fullscreen_mode<<"\n";
 
     save<<"\n";
 
-    save<<"\tvsync:"<<Strings::bool_to_string(option_vsync)<<"\n";
-    save<<"\taccelerometer_controller:"<<Strings::bool_to_string(option_accelerometer_controller)<<"\n";
-    save<<"\ttouch_controller_state:"<<Strings::bool_to_string(option_touch_controller_state)<<"\n";
-    save<<"\ttouch_controller_opacity:"<<Strings::num_to_string(option_touch_controller_opacity)<<"\n";
-    save<<"\tfont_shadows:"<<Strings::bool_to_string(option_font_shadows)<<"\n";
-    save<<"\tscreen_keyboard:"<<Strings::bool_to_string(option_screen_keyboard)<<"\n";
-    save<<"\thw_cursor:"<<Strings::bool_to_string(option_hw_cursor)<<"\n";
-    save<<"\tbind_cursor:"<<Strings::bool_to_string(option_bind_cursor)<<"\n";
+    save<<"\tvsync:"<<Strings::bool_to_string(Options::vsync)<<"\n";
+    save<<"\taccelerometer_controller:"<<Strings::bool_to_string(Options::accelerometer_controller)<<"\n";
+    save<<"\ttouch_controller_state:"<<Strings::bool_to_string(Options::touch_controller_state)<<"\n";
+    save<<"\ttouch_controller_opacity:"<<Strings::num_to_string(Options::touch_controller_opacity)<<"\n";
+    save<<"\tfont_shadows:"<<Strings::bool_to_string(Options::font_shadows)<<"\n";
+    save<<"\tscreen_keyboard:"<<Strings::bool_to_string(Options::screen_keyboard)<<"\n";
+    save<<"\thw_cursor:"<<Strings::bool_to_string(Options::hw_cursor)<<"\n";
+    save<<"\tbind_cursor:"<<Strings::bool_to_string(Options::bind_cursor)<<"\n";
 
     save<<"\n";
 
-    save<<"\tfps:"<<Strings::bool_to_string(option_fps)<<"\n";
-    save<<"\tdev:"<<Strings::bool_to_string(option_dev)<<"\n";
-    save<<"\tvolume_global:"<<option_volume_global<<"\n";
-    save<<"\tvolume_sound:"<<option_volume_sound<<"\n";
-    save<<"\tvolume_music:"<<option_volume_music<<"\n";
-    save<<"\tmute_global:"<<Strings::bool_to_string(option_mute_global)<<"\n";
-    save<<"\tmute_sound:"<<Strings::bool_to_string(option_mute_sound)<<"\n";
-    save<<"\tmute_music:"<<Strings::bool_to_string(option_mute_music)<<"\n";
+    save<<"\tfps:"<<Strings::bool_to_string(Options::fps)<<"\n";
+    save<<"\tdev:"<<Strings::bool_to_string(Options::dev)<<"\n";
+    save<<"\tvolume_global:"<<Options::volume_global<<"\n";
+    save<<"\tvolume_sound:"<<Options::volume_sound<<"\n";
+    save<<"\tvolume_music:"<<Options::volume_music<<"\n";
+    save<<"\tmute_global:"<<Strings::bool_to_string(Options::mute_global)<<"\n";
+    save<<"\tmute_sound:"<<Strings::bool_to_string(Options::mute_sound)<<"\n";
+    save<<"\tmute_music:"<<Strings::bool_to_string(Options::mute_music)<<"\n";
 
     save<<"\n";
 
     for(int i=0;i<game_options.size();i++){
-        save<<"\t"<<game_options[i].name<<":"<<game_options[i].get_value()<<"\n";
+        save<<"\t"<<game_options[i].name<<":"<<Game_Options::get_value(game_options[i].name)<<"\n";
     }
 
     save<<"</options>\n";
 
-    if(File_IO::save_atomic(get_save_directory()+"options.cfg",save.str(),true)){
+    if(File_IO::save_atomic(Directories::get_save_directory()+"options.cfg",save.str(),true)){
         return true;
     }
     else{
@@ -853,7 +665,7 @@ bool Engine_Interface::save_options(){
 }
 
 bool Engine_Interface::load_options(){
-    File_IO_Load load(get_save_directory()+"options.cfg");
+    File_IO_Load load(Directories::get_save_directory()+"options.cfg");
 
     if(load.is_opened()){
         bool multi_line_comment=false;
@@ -922,35 +734,35 @@ bool Engine_Interface::load_options(){
                 //Clear the data name.
                 line.erase(0,str_screen_width.length());
 
-                option_screen_width=Strings::string_to_long(line);
+                Options::screen_width=Strings::string_to_long(line);
             }
             //screen_height
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_screen_height)){
                 //Clear the data name.
                 line.erase(0,str_screen_height.length());
 
-                option_screen_height=Strings::string_to_long(line);
+                Options::screen_height=Strings::string_to_long(line);
             }
             //display_number
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_display_number)){
                 //Clear the data name.
                 line.erase(0,str_display_number.length());
 
-                option_display_number=Strings::string_to_long(line);
+                Options::display_number=Strings::string_to_long(line);
             }
             //fullscreen
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_fullscreen)){
                 //Clear the data name.
                 line.erase(0,str_fullscreen.length());
 
-                option_fullscreen=Strings::string_to_bool(line);
+                Options::fullscreen=Strings::string_to_bool(line);
             }
             //fullscreen_mode
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_fullscreen_mode)){
                 //Clear the data name.
                 line.erase(0,str_fullscreen_mode.length());
 
-                option_fullscreen_mode=line;
+                Options::fullscreen_mode=line;
             }
 
             //vsync
@@ -958,56 +770,56 @@ bool Engine_Interface::load_options(){
                 //Clear the data name.
                 line.erase(0,str_vsync.length());
 
-                option_vsync=Strings::string_to_bool(line);
+                Options::vsync=Strings::string_to_bool(line);
             }
             //accelerometer_controller
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_accelerometer_controller)){
                 //Clear the data name.
                 line.erase(0,str_accelerometer_controller.length());
 
-                option_accelerometer_controller=Strings::string_to_bool(line);
+                Options::accelerometer_controller=Strings::string_to_bool(line);
             }
             //touch_controller_state
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_state)){
                 //Clear the data name.
                 line.erase(0,str_touch_controller_state.length());
 
-                option_touch_controller_state=Strings::string_to_bool(line);
+                Options::touch_controller_state=Strings::string_to_bool(line);
             }
             //touch_controller_opacity
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_opacity)){
                 //Clear the data name.
                 line.erase(0,str_touch_controller_opacity.length());
 
-                option_touch_controller_opacity=Strings::string_to_double(line);
+                Options::touch_controller_opacity=Strings::string_to_double(line);
             }
             //font_shadows
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_font_shadows)){
                 //Clear the data name.
                 line.erase(0,str_font_shadows.length());
 
-                option_font_shadows=Strings::string_to_bool(line);
+                Options::font_shadows=Strings::string_to_bool(line);
             }
             //screen_keyboard
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_screen_keyboard)){
                 //Clear the data name.
                 line.erase(0,str_screen_keyboard.length());
 
-                option_screen_keyboard=Strings::string_to_bool(line);
+                Options::screen_keyboard=Strings::string_to_bool(line);
             }
             //hw_cursor
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_hw_cursor)){
                 //Clear the data name.
                 line.erase(0,str_hw_cursor.length());
 
-                option_hw_cursor=Strings::string_to_bool(line);
+                Options::hw_cursor=Strings::string_to_bool(line);
             }
             //bind_cursor
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_bind_cursor)){
                 //Clear the data name.
                 line.erase(0,str_bind_cursor.length());
 
-                option_bind_cursor=Strings::string_to_bool(line);
+                Options::bind_cursor=Strings::string_to_bool(line);
             }
 
             //fps
@@ -1015,56 +827,56 @@ bool Engine_Interface::load_options(){
                 //Clear the data name.
                 line.erase(0,str_fps.length());
 
-                option_fps=Strings::string_to_bool(line);
+                Options::fps=Strings::string_to_bool(line);
             }
             //dev
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_dev)){
                 //Clear the data name.
                 line.erase(0,str_dev.length());
 
-                option_dev=Strings::string_to_bool(line);
+                Options::dev=Strings::string_to_bool(line);
             }
             //volume_global
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_volume_global)){
                 //Clear the data name.
                 line.erase(0,str_volume_global.length());
 
-                option_volume_global=Strings::string_to_double(line);
+                Options::volume_global=Strings::string_to_double(line);
             }
             //volume_sound
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_volume_sound)){
                 //Clear the data name.
                 line.erase(0,str_volume_sound.length());
 
-                option_volume_sound=Strings::string_to_double(line);
+                Options::volume_sound=Strings::string_to_double(line);
             }
             //volume_music
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_volume_music)){
                 //Clear the data name.
                 line.erase(0,str_volume_music.length());
 
-                option_volume_music=Strings::string_to_double(line);
+                Options::volume_music=Strings::string_to_double(line);
             }
             //mute_global
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_mute_global)){
                 //Clear the data name.
                 line.erase(0,str_mute_global.length());
 
-                option_mute_global=Strings::string_to_bool(line);
+                Options::mute_global=Strings::string_to_bool(line);
             }
             //mute_sound
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_mute_sound)){
                 //Clear the data name.
                 line.erase(0,str_mute_sound.length());
 
-                option_mute_sound=Strings::string_to_bool(line);
+                Options::mute_sound=Strings::string_to_bool(line);
             }
             //mute_music
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_mute_music)){
                 //Clear the data name.
                 line.erase(0,str_mute_music.length());
 
-                option_mute_music=Strings::string_to_bool(line);
+                Options::mute_music=Strings::string_to_bool(line);
             }
 
             //If the line ends the options data.
@@ -1081,7 +893,7 @@ bool Engine_Interface::load_options(){
                         //Clear the data name.
                         line.erase(0,str_game_option.length());
 
-                        game_options[i].set_value(line);
+                        Game_Options::set_value(game_options[i].name,line);
                     }
                 }
             }
@@ -1125,7 +937,7 @@ bool Engine_Interface::save_game_commands(){
 
     save<<"</game_commands>\n";
 
-    if(File_IO::save_atomic(get_save_directory()+"game_commands.cfg",save.str(),true)){
+    if(File_IO::save_atomic(Directories::get_save_directory()+"game_commands.cfg",save.str(),true)){
         return true;
     }
     else{
@@ -1134,7 +946,7 @@ bool Engine_Interface::save_game_commands(){
 }
 
 bool Engine_Interface::load_game_commands(){
-    File_IO_Load load(get_save_directory()+"game_commands.cfg");
+    File_IO_Load load(Directories::get_save_directory()+"game_commands.cfg");
 
     if(load.is_opened()){
         bool multi_line_comment=false;
@@ -1240,7 +1052,7 @@ bool Engine_Interface::save_servers(){
 
     save<<"</servers>\n";
 
-    if(File_IO::save_atomic(get_save_directory()+"servers.txt",save.str(),true)){
+    if(File_IO::save_atomic(Directories::get_save_directory()+"servers.txt",save.str(),true)){
         return true;
     }
     else{
@@ -1249,7 +1061,7 @@ bool Engine_Interface::save_servers(){
 }
 
 bool Engine_Interface::load_servers(){
-    File_IO_Load load(get_save_directory()+"servers.txt");
+    File_IO_Load load(Directories::get_save_directory()+"servers.txt");
 
     if(load.is_opened()){
         bool multi_line_comment=false;

@@ -4,7 +4,9 @@
 
 #include "engine_interface.h"
 #include "world.h"
-#include "render.h"
+
+#include <strings.h>
+#include <render.h>
 
 using namespace std;
 
@@ -29,7 +31,7 @@ void Engine_Interface::render_dev_info(){
             }
         }
 
-        render_rectangle(2.0,y,Strings::longest_line(msg)*font->spacing_x,Strings::newline_count(msg)*font->spacing_y,0.75,"ui_black");
+        Render::render_rectangle(main_window.renderer,2.0,y,Strings::longest_line(msg)*font->spacing_x,Strings::newline_count(msg)*font->spacing_y,0.75,"ui_black");
         font->show(2.0,y,msg,"red");
     }
 }

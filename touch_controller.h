@@ -5,7 +5,7 @@
 #ifndef touch_controller_h
 #define touch_controller_h
 
-#include "collision.h"
+#include <collision.h>
 
 #include <vector>
 
