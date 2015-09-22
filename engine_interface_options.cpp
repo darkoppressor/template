@@ -7,16 +7,14 @@
 #include "version.h"
 #include "game_options.h"
 
-#include <engine_version.h>
 #include <strings.h>
 #include <log.h>
 #include <directories.h>
 #include <options.h>
-#include <sorting.h>
 #include <music_manager.h>
+#include <engine.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/crc.hpp>
 
 using namespace std;
 
@@ -40,52 +38,6 @@ string Engine_Interface::get_build_date(){
     string day=Version::get_day();
 
     return year+"-"+month+"-"+day;
-}
-
-string Engine_Interface::get_engine_version(){
-    return Engine_Version::get_engine_version();
-}
-
-string Engine_Interface::get_engine_date(){
-    return Engine_Version::get_engine_date();
-}
-
-string Engine_Interface::get_checksum(){
-    string checksum="";
-    string checksum_data="";
-
-    vector<string> file_list;
-
-    for(File_IO_Directory_Iterator it("data");it.evaluate();it.iterate()){
-        //If the file is not a directory.
-        if(it.is_regular_file()){
-            string file_path=it.get_full_path();
-
-            file_list.push_back(file_path);
-        }
-    }
-
-    Sorting::quick_sort(file_list);
-
-    for(int i=0;i<file_list.size();i++){
-        File_IO_Load load(file_list[i]);
-
-        if(load.is_opened()){
-            checksum_data+=load.get_data();
-        }
-        else{
-            Log::add_error("Error loading file for checksum calculation: '"+file_list[i]+"'");
-        }
-    }
-
-    if(checksum_data.length()>0){
-        boost::crc_32_type result;
-        result.process_bytes(checksum_data.data(),checksum_data.length());
-
-        checksum=Strings::num_to_string((uint32_t)result.checksum());
-    }
-
-    return checksum;
 }
 
 bool Engine_Interface::save_save_location(){
@@ -216,7 +168,7 @@ bool Engine_Interface::version_compatible(string name_to_check){
     int micro=0;
 
     vector<string> version_strings;
-    boost::algorithm::split(version_strings,option_version,boost::algorithm::is_any_of("."));
+    boost::algorithm::split(version_strings,Options::version,boost::algorithm::is_any_of("."));
 
     major=Strings::string_to_long(version_strings[0]);
     minor=Strings::string_to_long(version_strings[1]);
@@ -229,7 +181,7 @@ bool Engine_Interface::version_compatible(string name_to_check){
     version_series.push_back(Version_Series(0,0,0,0,0,1));
 
     if(which_version_series(&version_series,major,minor,micro)!=which_version_series(&version_series,current_major,current_minor,current_micro)){
-        string error_message="Version incompatibility! Save data was created with version "+option_version;
+        string error_message="Version incompatibility! Save data was created with version "+Options::version;
         error_message+=". Current version is "+get_version()+".";
 
         Log::add_error(error_message);
@@ -242,10 +194,10 @@ bool Engine_Interface::version_compatible(string name_to_check){
 
 string Engine_Interface::get_option_value(string option){
     if(option=="cl_logic_update_rate"){
-        return Strings::num_to_string(UPDATE_RATE);
+        return Strings::num_to_string(Engine::UPDATE_RATE);
     }
     else if(option=="cl_frame_rate_max"){
-        return Strings::num_to_string(UPDATE_RATE_RENDER);
+        return Strings::num_to_string(Engine::UPDATE_RATE_RENDER);
     }
 
     else if(option=="cl_screen_width"){
@@ -440,7 +392,7 @@ void Engine_Interface::change_option(string option,string new_value){
         Options::touch_controller_state=Strings::string_to_bool(new_value);
 
         if(Options::touch_controller_state && SDL_GetNumTouchDevices()>0){
-            touch_controls=true;
+            Controller_Manager::touch_controls=true;
         }
     }
     else if(option=="cl_touch_controller_opacity"){
@@ -616,7 +568,7 @@ bool Engine_Interface::save_options(){
 
     save<<"<options>\n";
 
-    save<<"\tversion:"<<option_version<<"\n";
+    save<<"\tversion:"<<Options::version<<"\n";
 
     save<<"\n";
 
@@ -727,7 +679,7 @@ bool Engine_Interface::load_options(){
                 //Clear the data name.
                 line.erase(0,str_version.length());
 
-                option_version=line;
+                Options::version=line;
             }
             //screen_width
             else if(!multi_line_comment && boost::algorithm::starts_with(line,str_screen_width)){

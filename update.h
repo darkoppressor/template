@@ -8,6 +8,8 @@
 class Update{
 public:
 
+    void check_mail();
+
     void ai();
 
     void input();

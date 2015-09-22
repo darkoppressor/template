@@ -58,7 +58,7 @@ Network::Network(){
     rate_bytes=0;
     rate_updates=0;
     rate_commands=0;
-    recall_update_rate=UPDATE_RATE;
+    recall_update_rate=Engine::UPDATE_RATE;
 }
 
 void Network::reset(){
@@ -470,7 +470,7 @@ int Network::get_client_index(Client_Data* client){
 vector<Client_Data*> Network::get_players(){
     vector<Client_Data*> players;
 
-    for(uint32_t i=0,player_count=0;i<clients.size() && player_count<game.option_max_players;i++){
+    for(uint32_t i=0,player_count=0;i<clients.size() && player_count<Options::max_players;i++){
         Client_Data* client=&clients[i];
 
         if(client->connected){
@@ -488,7 +488,7 @@ uint32_t Network::get_player_count(){
 }
 
 int Network::get_our_player_number(){
-    for(uint32_t i=0,player_count=0;i<clients.size() && player_count<game.option_max_players;i++){
+    for(uint32_t i=0,player_count=0;i<clients.size() && player_count<Options::max_players;i++){
         Client_Data* client=&clients[i];
 
         if(client->connected){

@@ -51,7 +51,7 @@ void Screen_Shake::change_direction(){
 }
 
 void Screen_Shake::add_shake(double get_magnitude,int get_length){
-    if(game.option_screen_shake){
+    if(Options::screen_shake){
         if(get_magnitude>magnitude){
             magnitude=get_magnitude;
         }
@@ -73,8 +73,8 @@ void Screen_Shake::movement(){
 
         Vector_Components vc=velocity.get_components();
 
-        double move_x=vc.a/UPDATE_RATE;
-        double move_y=vc.b/UPDATE_RATE;
+        double move_x=vc.a/Engine::UPDATE_RATE;
+        double move_y=vc.b/Engine::UPDATE_RATE;
 
         x+=move_x;
         y+=move_y;
@@ -120,7 +120,7 @@ void Screen_Shake::movement(){
             }
         }
 
-        length-=(int)ceil(1000.0/UPDATE_RATE);
+        length-=(int)ceil(1000.0/Engine::UPDATE_RATE);
 
         if(length<=0){
             reset();

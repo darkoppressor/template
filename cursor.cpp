@@ -7,6 +7,8 @@
 
 #include <pixels.h>
 #include <render.h>
+#include <options.h>
+#include <engine.h>
 
 using namespace std;
 
@@ -25,7 +27,7 @@ void Cursor::load_hw_cursor(){
         int height=sprite.get_height();
 
         uint32_t rmask,gmask,bmask,amask;
-        engine_interface.get_rgba_masks(&rmask,&gmask,&bmask,&amask);
+        Engine::get_rgba_masks(&rmask,&gmask,&bmask,&amask);
 
         surface_final=SDL_CreateRGBSurface(0,width,height,32,rmask,gmask,bmask,amask);
 
@@ -63,7 +65,7 @@ void Cursor::animate(){
 }
 
 void Cursor::render(int x,int y){
-    if(engine_interface.option_hw_cursor){
+    if(Options::hw_cursor){
         SDL_SetCursor(hw_cursor);
 
         SDL_ShowCursor(SDL_ENABLE);

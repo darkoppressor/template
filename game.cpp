@@ -13,16 +13,6 @@
 using namespace std;
 
 Game::Game(){
-    option_effect_limit=0;
-    option_camera_speed=0.0;
-    option_camera_zoom=0.0;
-    option_name="";
-    option_chat_timestamps=false;
-    option_max_players=0;
-    option_screen_shake=false;
-    option_rumble=false;
-    option_screensaver=false;
-
     display_scoreboard=false;
 
     in_progress=false;
@@ -45,8 +35,8 @@ void Game::reset(){
     camera_delta_x=0.0;
     camera_delta_y=0.0;
 
-    camera_speed=option_camera_speed;
-    camera_zoom=option_camera_zoom;
+    camera_speed=Options::camera_speed;
+    camera_zoom=Options::camera_zoom;
 
     current_music="";
 }
@@ -103,7 +93,7 @@ string Game::get_random_direction_cardinal_ordinal(){
 bool Game::effect_allowed(){
     uint32_t effects=/**world.effects_example.size()*/0;
 
-    if(effects<option_effect_limit){
+    if(effects<Options::effect_limit){
         return true;
     }
     else{
@@ -254,32 +244,32 @@ void Game::set_camera(){
     }
     else{
         if(cam_state=="left"){
-            camera.x-=camera_speed/UPDATE_RATE;
+            camera.x-=camera_speed/Engine::UPDATE_RATE;
         }
         else if(cam_state=="up"){
-            camera.y-=camera_speed/UPDATE_RATE;
+            camera.y-=camera_speed/Engine::UPDATE_RATE;
         }
         else if(cam_state=="right"){
-            camera.x+=camera_speed/UPDATE_RATE;
+            camera.x+=camera_speed/Engine::UPDATE_RATE;
         }
         else if(cam_state=="down"){
-            camera.y+=camera_speed/UPDATE_RATE;
+            camera.y+=camera_speed/Engine::UPDATE_RATE;
         }
         else if(cam_state=="left_up"){
-            camera.x-=camera_speed/UPDATE_RATE;
-            camera.y-=camera_speed/UPDATE_RATE;
+            camera.x-=camera_speed/Engine::UPDATE_RATE;
+            camera.y-=camera_speed/Engine::UPDATE_RATE;
         }
         else if(cam_state=="right_up"){
-            camera.x+=camera_speed/UPDATE_RATE;
-            camera.y-=camera_speed/UPDATE_RATE;
+            camera.x+=camera_speed/Engine::UPDATE_RATE;
+            camera.y-=camera_speed/Engine::UPDATE_RATE;
         }
         else if(cam_state=="right_down"){
-            camera.x+=camera_speed/UPDATE_RATE;
-            camera.y+=camera_speed/UPDATE_RATE;
+            camera.x+=camera_speed/Engine::UPDATE_RATE;
+            camera.y+=camera_speed/Engine::UPDATE_RATE;
         }
         else if(cam_state=="left_down"){
-            camera.x-=camera_speed/UPDATE_RATE;
-            camera.y+=camera_speed/UPDATE_RATE;
+            camera.x-=camera_speed/Engine::UPDATE_RATE;
+            camera.y+=camera_speed/Engine::UPDATE_RATE;
         }
     }
 

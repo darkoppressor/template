@@ -7,6 +7,7 @@
 
 #include <strings.h>
 #include <log.h>
+#include <engine.h>
 
 using namespace std;
 
@@ -41,7 +42,7 @@ bool Network::start_as_server(bool allow_clients){
             id=peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS);
             address=peer->GetSystemAddressFromGuid(id);
 
-            clients.push_back(Client_Data(id,address,game.option_name,true));
+            clients.push_back(Client_Data(id,address,Options::name,true));
             clients[0].connected=true;
             update_offline_ping_response();
 
@@ -100,7 +101,7 @@ void Network::update_offline_ping_response(){
 
         data+=engine_interface.get_version()+"@";
 
-        data+=engine_interface.game_title+"@";
+        data+=Engine_Data::game_title+"@";
 
         data+=name;
 
@@ -133,12 +134,12 @@ void Network::send_version(){
         RakNet::BitStream bitstream;
         bitstream.Write((RakNet::MessageID)ID_GAME_VERSION);
 
-        bitstream.WriteCompressed((RakNet::RakString)engine_interface.game_title.c_str());
+        bitstream.WriteCompressed((RakNet::RakString)Engine_Data::game_title.c_str());
 
         bitstream.WriteCompressed((RakNet::RakString)engine_interface.get_version().c_str());
 
         if(!ignore_checksum){
-            bitstream.WriteCompressed((RakNet::RakString)CHECKSUM.c_str());
+            bitstream.WriteCompressed((RakNet::RakString)Engine::CHECKSUM.c_str());
         }
         else{
             bitstream.WriteCompressed((RakNet::RakString)"");
@@ -206,7 +207,7 @@ void Network::send_initial_game_data(){
         RakNet::BitStream bitstream;
         bitstream.Write((RakNet::MessageID)ID_GAME_INITIAL_GAME_DATA);
 
-        bitstream.Write(UPDATE_RATE);
+        bitstream.Write(Engine::UPDATE_RATE);
 
         write_initial_game_data(&bitstream);
 
@@ -294,7 +295,7 @@ void Network::send_updates(){
                         client_rate_updates=rate_updates_max;
                     }
 
-                    if(clients[i].updates_this_second<client_rate_updates && ++clients[i].counter_update>=(uint32_t)ceil(UPDATE_RATE/(double)client_rate_updates)){
+                    if(clients[i].updates_this_second<client_rate_updates && ++clients[i].counter_update>=(uint32_t)ceil(Engine::UPDATE_RATE/(double)client_rate_updates)){
                         clients[i].counter_update=0;
 
                         send_update(&clients[i],client_rate_bytes);

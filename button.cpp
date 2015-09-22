@@ -9,6 +9,8 @@
 #include <strings.h>
 #include <render.h>
 #include <sound_manager.h>
+#include <engine_data.h>
+#include <controller_manager.h>
 
 using namespace std;
 
@@ -40,7 +42,7 @@ Button::Button(){
 
 void Button::set_default_font(){
     if(font.length()==0){
-        font=engine_interface.default_font;
+        font=Engine_Data::default_font;
     }
 }
 
@@ -85,8 +87,8 @@ void Button::set_dimensions(){
 void Button::set_dimensions_text(){
     Bitmap_Font* ptr_font=engine_interface.get_font(font);
 
-    w=engine_interface.gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
-    h=engine_interface.gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
+    w=Engine_Data::gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
+    h=Engine_Data::gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
 }
 
 void Button::center_in_window(int window_width,int window_height){
@@ -94,20 +96,20 @@ void Button::center_in_window(int window_width,int window_height){
         x=(window_width-w)/2;
     }
     else if(start_x==-2){
-        x=engine_interface.window_border_thickness;
+        x=Engine_Data::window_border_thickness;
     }
     else if(start_x==-3){
-        x=window_width-w-engine_interface.window_border_thickness;
+        x=window_width-w-Engine_Data::window_border_thickness;
     }
 
     if(start_y==-1){
         y=(window_height-h)/2;
     }
     else if(start_y==-2){
-        y=engine_interface.window_border_thickness;
+        y=Engine_Data::window_border_thickness;
     }
     else if(start_y==-3){
-        y=window_height-h-engine_interface.window_border_thickness*2;
+        y=window_height-h-Engine_Data::window_border_thickness*2;
     }
 }
 
@@ -144,7 +146,7 @@ string Button::get_state(){
 }
 
 bool Button::is_moused_over(int mouse_x,int mouse_y,int x_offset,int y_offset){
-    Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
+    Collision_Rect box_a(mouse_x,mouse_y,Engine_Data::cursor_width,Engine_Data::cursor_height);
     Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
 
     if(engine_interface.mouse_allowed() && engine_interface.gui_mode=="mouse" && Collision::check_rect(box_a,box_b)){
@@ -190,15 +192,15 @@ bool Button::mouse_button_up(Window* parent_window){
 
     if(clicked){
         if(((engine_interface.gui_mode=="mouse" || engine_interface.gui_mode=="keyboard") && (keystates[SDL_SCANCODE_RCTRL] || keystates[SDL_SCANCODE_LCTRL])) ||
-           (engine_interface.gui_mode=="controller" && engine_interface.controller_state(-1,SDL_CONTROLLER_BUTTON_LEFTSHOULDER))){
+           (engine_interface.gui_mode=="controller" && Controller_Manager::controller_state(-1,SDL_CONTROLLER_BUTTON_LEFTSHOULDER))){
             window_opened_on_top=fire_alt_event1(parent_window);
         }
         else if(((engine_interface.gui_mode=="mouse" || engine_interface.gui_mode=="keyboard") && (keystates[SDL_SCANCODE_RSHIFT] || keystates[SDL_SCANCODE_LSHIFT])) ||
-                (engine_interface.gui_mode=="controller" && engine_interface.controller_state(-1,SDL_CONTROLLER_BUTTON_RIGHTSHOULDER))){
+                (engine_interface.gui_mode=="controller" && Controller_Manager::controller_state(-1,SDL_CONTROLLER_BUTTON_RIGHTSHOULDER))){
             window_opened_on_top=fire_alt_event2(parent_window);
         }
         else if(((engine_interface.gui_mode=="mouse" || engine_interface.gui_mode=="keyboard") && keystates[SDL_SCANCODE_SLASH]) ||
-                (engine_interface.gui_mode=="controller" && engine_interface.controller_state(-1,SDL_CONTROLLER_BUTTON_X))){
+                (engine_interface.gui_mode=="controller" && Controller_Manager::controller_state(-1,SDL_CONTROLLER_BUTTON_X))){
             window_opened_on_top=fire_alt_event3(parent_window);
         }
         else{
@@ -289,12 +291,12 @@ void Button::render(int x_offset,int y_offset){
 
             //Render the background.
             if(engine_interface.current_color_theme()->button_background!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background);
+                Render::render_rectangle(main_window.renderer,x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background);
             }
 
             //Display the button's text.
             if(font_color_real!="<INVISIBLE>"){
-                ptr_font->show(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,text,font_color_real);
+                ptr_font->show(x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,text,font_color_real);
             }
         }
     }
@@ -312,12 +314,12 @@ void Button::render(int x_offset,int y_offset){
 
             //Render the background.
             if(engine_interface.current_color_theme()->button_background_moused!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_moused);
+                Render::render_rectangle(main_window.renderer,x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_moused);
             }
 
             //Display the button's text.
             if(font_color_real!="<INVISIBLE>"){
-                ptr_font->show(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,text,font_color_real);
+                ptr_font->show(x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,text,font_color_real);
             }
         }
     }
@@ -335,12 +337,12 @@ void Button::render(int x_offset,int y_offset){
 
             //Render the background.
             if(engine_interface.current_color_theme()->button_background_click!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_click);
+                Render::render_rectangle(main_window.renderer,x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_click);
             }
 
             //Display the button's text.
             if(font_color_real!="<INVISIBLE>"){
-                ptr_font->show(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,text,font_color_real);
+                ptr_font->show(x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,text,font_color_real);
             }
         }
     }

@@ -12,23 +12,11 @@
 
 using namespace std;
 
-string CHECKSUM="";
-
-double UPDATE_RATE=60.0;
-double SKIP_TICKS=1000.0/UPDATE_RATE;
-
-double UPDATE_RATE_RENDER=200.0;
-double SKIP_TICKS_RENDER=1000.0/UPDATE_RATE_RENDER;
-
 Game_Window main_window;
-
-SDL_Event event;
 
 Engine_Interface engine_interface;
 
 Update update;
-
-Android android;
 
 Network network;
 

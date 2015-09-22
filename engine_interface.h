@@ -13,9 +13,7 @@
 #include "toast.h"
 #include "window.h"
 #include "console.h"
-#include "touch_controller.h"
 #include "game_command.h"
-#include "game_option.h"
 #include "game_constants.h"
 
 ///#include "example_game_tag.h"
@@ -26,6 +24,7 @@
 #include <color_theme.h>
 #include <custom_sound.h>
 #include <sprite.h>
+#include <game_option.h>
 
 #include <string>
 
@@ -74,16 +73,6 @@ public:
     GUI_Selector_Chaser();
 };
 
-class Controller{
-public:
-
-    SDL_GameController* controller;
-    SDL_JoystickID instance_id;
-    SDL_Haptic* haptic;
-
-    Controller(SDL_GameController* get_controller);
-};
-
 class Engine_Interface{
 public:
 
@@ -105,71 +94,10 @@ public:
 
     Console chat;
 
-    Touch_Controller touch_controller;
-
     //The z order of all open windows.
     std::vector<Window*> window_z_order;
     //The window that the mouse is currently over.
     Window* window_under_mouse;
-
-    bool controller_text_entry_small;
-
-    //If true, always render the cursor.
-    //If false, only render the cursor when a window is open.
-    bool cursor_render_always;
-
-    //The current cursor.
-    std::string cursor;
-
-    //Cursor for when a button is moused over.
-    std::string cursor_mouse_over;
-
-    //The current color theme.
-    std::string color_theme;
-
-    //The font for toast notifications.
-    std::string toast_font;
-
-    //The default font for objects that do not have a font specified.
-    std::string default_font;
-
-    //Various lengths for toast notifications, in seconds.
-    int toast_length_short;
-    int toast_length_medium;
-    int toast_length_long;
-
-    //Tab is currently implemented as spaces
-    //I know this is gross, but I'm doing it anyway,
-    //because I do not want to implement proper tabs
-    int spaces_per_tab;
-
-    int axis_scroll_rate;
-
-    int scrolling_buttons_offset;
-
-    int cursor_width;
-    int cursor_height;
-
-    //These heights are in lines of text.
-    int console_height;
-    int chat_height;
-
-    double window_border_thickness;
-    double gui_border_thickness;
-
-    bool drag_and_drop;
-
-    double touch_finger_size;
-    bool touch_controller_shoulders;
-    bool touch_controller_guide;
-    bool touch_controller_xy;
-
-    std::string game_title;
-    std::string developer;
-
-    std::vector<std::string> starting_windows;
-
-    std::string option_version;
 
     bool hide_gui;
 
@@ -180,11 +108,6 @@ public:
 
     //If true, some button is moused over this frame.
     bool mouse_over;
-
-    //If true, we are using the on-screen touch controller.
-    bool touch_controls;
-
-    std::vector<SDL_Event> touch_controller_events;
 
     //Possible values:
     //mouse
@@ -199,15 +122,11 @@ public:
 
     std::vector<GUI_Selector_Chaser> gui_selector_chasers;
 
-    std::vector<Controller> controllers;
-
     std::vector<Game_Command> game_commands;
 
     std::vector<Game_Option> game_options;
 
     std::string gui_axis_nav_last_direction;
-
-    int controller_dead_zone;
 
     int counter_gui_scroll_axis;
 
@@ -341,7 +260,6 @@ public:
     void scroll_gui_object_down();
 
     void get_mouse_state(int* mouse_x,int* mouse_y);
-    void get_rgba_masks(uint32_t* rmask,uint32_t* gmask,uint32_t* bmask,uint32_t* amask);
 
     void update_window_caption(int render_rate,double ms_per_frame,int logic_frame_rate);
 
@@ -361,31 +279,7 @@ public:
 
     void make_toast(std::string message,std::string length="medium",int custom_length=-1);
 
-    //Play a rumble effect on the passed controller.
-    //Pass CONTROLLER_ID_ALL for controller_number to play the rumble on all controllers.
-    //Pass CONTROLLER_ID_TOUCH for controller_number to play the rumble on the touch controller.
-    //strength is a 0.0-1.0 float.
-    //length is in milliseconds.
-    void make_rumble(int controller_number,float strength,uint32_t length);
-
-    //Stop any/all rumble effects on the passed controller.
-    //Pass CONTROLLER_ID_ALL for controller_number to stop rumbling on all controllers.
-    //Pass CONTROLLER_ID_TOUCH for controller_number to stop rumbling on the touch controller.
-    void stop_rumble(int controller_number);
-
     void handle_text_input(std::string text);
-
-    //Returns true if the passed button is currently pressed on the passed controller number.
-    //Returns false if it is not.
-    //Pass CONTROLLER_ID_ALL for controller_number to check if any controller has the passed button pressed.
-    //Pass CONTROLLER_ID_TOUCH for controller_number to check if the touch controller has the passed button pressed.
-    bool controller_state(int controller_number,SDL_GameControllerButton button);
-
-    //Returns the axis state as a value from -32768 to 32767.
-    //Returns 0 on failure.
-    //Pass CONTROLLER_ID_ALL for controller_number to check for a non-zero axis value on any controller.
-    //Pass CONTROLLER_ID_TOUCH for controller_number to check for a non-zero axis value on the touch controller.
-    int controller_state(int controller_number,SDL_GameControllerAxis axis);
 
     //If the game command uses a key or button:
     //Returns 1 if the passed game command's corresponding input is currently pressed.
@@ -461,11 +355,6 @@ public:
 
     std::string get_version();
     std::string get_build_date();
-
-    std::string get_engine_version();
-    std::string get_engine_date();
-
-    std::string get_checksum();
 
     bool save_save_location();
     bool load_save_location();

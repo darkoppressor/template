@@ -8,6 +8,8 @@
 #include <strings.h>
 #include <log.h>
 #include <sound_manager.h>
+#include <engine_data.h>
+#include <engine.h>
 
 using namespace std;
 
@@ -207,7 +209,7 @@ void Network::receive_version(){
     bitstream.ReadCompressed(rstring);
     string checksum=rstring.C_String();
 
-    string our_game_title=engine_interface.game_title;
+    string our_game_title=Engine_Data::game_title;
     if(game_title!=our_game_title){
         Log::add_log("Game mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur game: "+our_game_title+"\nServer game: "+game_title);
 
@@ -223,8 +225,8 @@ void Network::receive_version(){
             engine_interface.make_notice("Version mismatch with server.");
         }
         else{
-            if(checksum.length()>0 && checksum!=CHECKSUM){
-                Log::add_log("Checksum mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur checksum: "+CHECKSUM+"\nServer checksum: "+checksum);
+            if(checksum.length()>0 && checksum!=Engine::CHECKSUM){
+                Log::add_log("Checksum mismatch: "+string(packet->systemAddress.ToString(true))+"\nOur checksum: "+Engine::CHECKSUM+"\nServer checksum: "+checksum);
 
                 engine_interface.button_events_manager.handle_button_event("stop_game");
                 engine_interface.make_notice("Checksum mismatch with server.");
@@ -249,7 +251,7 @@ void Network::send_client_data(bool first_send){
         bitstream.Write((RakNet::MessageID)ID_GAME_CLIENT_DATA);
 
         bitstream.WriteCompressed(first_send);
-        bitstream.WriteCompressed((RakNet::RakString)game.option_name.c_str());
+        bitstream.WriteCompressed((RakNet::RakString)Options::name.c_str());
         bitstream.WriteCompressed(rate_bytes);
         bitstream.WriteCompressed(rate_updates);
 
@@ -339,7 +341,7 @@ void Network::receive_update(){
 void Network::send_input(){
     if(status=="client"){
         if(game.in_progress){
-            if(commands_this_second<rate_commands && ++counter_commands>=(uint32_t)ceil(UPDATE_RATE/(double)rate_commands)){
+            if(commands_this_second<rate_commands && ++counter_commands>=(uint32_t)ceil(Engine::UPDATE_RATE/(double)rate_commands)){
                 counter_commands=0;
 
                 commands_this_second++;

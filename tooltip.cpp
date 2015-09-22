@@ -7,6 +7,7 @@
 
 #include <strings.h>
 #include <render.h>
+#include <engine_data.h>
 
 using namespace std;
 
@@ -84,8 +85,8 @@ void Tooltip::setup(string get_message,int mouse_x,int mouse_y){
 void Tooltip::set_dimensions(){
     Bitmap_Font* ptr_font=engine_interface.get_font(font);
 
-    w=engine_interface.gui_border_thickness*2.0+Strings::longest_line(message)*ptr_font->spacing_x+ptr_font->gui_padding_x;
-    h=engine_interface.gui_border_thickness*2.0+(Strings::newline_count(message)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
+    w=Engine_Data::gui_border_thickness*2.0+Strings::longest_line(message)*ptr_font->spacing_x+ptr_font->gui_padding_x;
+    h=Engine_Data::gui_border_thickness*2.0+(Strings::newline_count(message)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
 }
 
 void Tooltip::render(){
@@ -100,12 +101,12 @@ void Tooltip::render(){
 
         //Render the background.
         if(engine_interface.current_color_theme()->tooltip_background!="<INVISIBLE>"){
-            Render::render_rectangle(main_window.renderer,x+engine_interface.gui_border_thickness,y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->tooltip_background);
+            Render::render_rectangle(main_window.renderer,x+Engine_Data::gui_border_thickness,y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->tooltip_background);
         }
 
         //Display the message text.
         if(engine_interface.current_color_theme()->tooltip_font!="<INVISIBLE>"){
-            ptr_font->show(x+engine_interface.gui_border_thickness,y+engine_interface.gui_border_thickness,message,engine_interface.current_color_theme()->tooltip_font);
+            ptr_font->show(x+Engine_Data::gui_border_thickness,y+Engine_Data::gui_border_thickness,message,engine_interface.current_color_theme()->tooltip_font);
         }
     }
 }

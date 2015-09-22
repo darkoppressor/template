@@ -7,33 +7,34 @@
 
 #include <strings.h>
 #include <log.h>
+#include <options.h>
 
 using namespace std;
 
 string Game_Options::get_value(string name){
     if(name=="cl_effect_limit"){
-        return Strings::num_to_string(game.option_effect_limit);
+        return Strings::num_to_string(Options::effect_limit);
     }
     else if(name=="cl_screen_shake"){
-        return Strings::bool_to_string(game.option_screen_shake);
+        return Strings::bool_to_string(Options::screen_shake);
     }
     else if(name=="cl_rumble"){
-        return Strings::bool_to_string(game.option_rumble);
+        return Strings::bool_to_string(Options::rumble);
     }
     else if(name=="cl_screensaver"){
-        return Strings::bool_to_string(game.option_screensaver);
+        return Strings::bool_to_string(Options::screensaver);
     }
     else if(name=="cl_camera_speed"){
-        return Strings::num_to_string(game.option_camera_speed);
+        return Strings::num_to_string(Options::camera_speed);
     }
     else if(name=="cl_camera_zoom"){
-        return Strings::num_to_string(game.option_camera_zoom);
+        return Strings::num_to_string(Options::camera_zoom);
     }
     else if(name=="cl_name"){
-        return game.option_name;
+        return Options::name;
     }
     else if(name=="cl_chat_timestamps"){
-        return Strings::bool_to_string(game.option_chat_timestamps);
+        return Strings::bool_to_string(Options::chat_timestamps);
     }
     else if(name=="cl_network_rate_bytes"){
         return Strings::num_to_string(network.rate_bytes);
@@ -45,7 +46,7 @@ string Game_Options::get_value(string name){
         return Strings::num_to_string(network.rate_commands);
     }
     else if(name=="sv_max_players"){
-        return Strings::num_to_string(game.option_max_players);
+        return Strings::num_to_string(Options::max_players);
     }
     else if(name=="sv_network_max_clients"){
         return Strings::num_to_string(network.max_clients);
@@ -86,39 +87,39 @@ string Game_Options::get_value(string name){
 
 void Game_Options::set_value(string name,string new_value){
     if(name=="cl_effect_limit"){
-        game.option_effect_limit=Strings::string_to_unsigned_long(new_value);
+        Options::effect_limit=Strings::string_to_unsigned_long(new_value);
     }
     else if(name=="cl_screen_shake"){
-        game.option_screen_shake=Strings::string_to_bool(new_value);
+        Options::screen_shake=Strings::string_to_bool(new_value);
     }
     else if(name=="cl_rumble"){
-        game.option_rumble=Strings::string_to_bool(new_value);
+        Options::rumble=Strings::string_to_bool(new_value);
 
-        if(!game.option_rumble){
-            engine_interface.stop_rumble(CONTROLLER_ID_ALL);
+        if(!Options::rumble){
+            Controller_Manager::stop_rumble(Controller_Manager::CONTROLLER_ID_ALL);
         }
     }
     else if(name=="cl_screensaver"){
-        game.option_screensaver=Strings::string_to_bool(new_value);
+        Options::screensaver=Strings::string_to_bool(new_value);
 
         main_window.set_sdl_hints();
     }
     else if(name=="cl_camera_speed"){
-        game.option_camera_speed=Strings::string_to_double(new_value);
+        Options::camera_speed=Strings::string_to_double(new_value);
     }
     else if(name=="cl_camera_zoom"){
-        game.option_camera_zoom=Strings::string_to_double(new_value);
+        Options::camera_zoom=Strings::string_to_double(new_value);
     }
     else if(name=="cl_name"){
-        string old_name=game.option_name;
+        string old_name=Options::name;
 
-        game.option_name=new_value;
+        Options::name=new_value;
 
-        network.send_name_change(old_name,game.option_name,true);
+        network.send_name_change(old_name,Options::name,true);
         network.send_client_data();
     }
     else if(name=="cl_chat_timestamps"){
-        game.option_chat_timestamps=Strings::string_to_bool(new_value);
+        Options::chat_timestamps=Strings::string_to_bool(new_value);
     }
     else if(name=="cl_network_rate_bytes"){
         network.rate_bytes=Strings::string_to_unsigned_long(new_value);
@@ -134,7 +135,7 @@ void Game_Options::set_value(string name,string new_value){
         network.rate_commands=Strings::string_to_unsigned_long(new_value);
     }
     else if(name=="sv_max_players"){
-        game.option_max_players=Strings::string_to_unsigned_long(new_value);
+        Options::max_players=Strings::string_to_unsigned_long(new_value);
     }
     else if(name=="sv_network_max_clients"){
         network.max_clients=Strings::string_to_unsigned_long(new_value);

@@ -7,6 +7,7 @@
 
 #include <strings.h>
 #include <render.h>
+#include <options.h>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ void Engine_Interface::render_dev_info(){
         Bitmap_Font* font=get_font("small");
 
 		double y=2.0;
-        if(option_fps){
+        if(Options::fps){
             y+=font->spacing_y;
 
             if(network.status!="off"){

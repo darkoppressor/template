@@ -34,14 +34,14 @@
 					<Add option="-Wl,--stack=67108864" />
 					<Add option="-lws2_32" />
 					<Add option="-lwinmm" />
-					<Add library="C:/Development/c++/cheese-engine/libCheese-Engine-Windows-x86_64.a" />
-					<Add library="C:/Development/c++/SDL2_image/x86_64/lib/libSDL2_image.dll.a" />
-					<Add library="C:/Development/c++/SDL2_mixer/x86_64/lib/libSDL2_mixer.dll.a" />
-					<Add library="C:/Development/c++/SDL2/x86_64/lib/libSDL2main.a" />
-					<Add library="C:/Development/c++/SDL2/x86_64/lib/libSDL2.dll.a" />
-					<Add library="C:/Development/c++/raknet/raknet/Lib/DLL/Lib/x86_64/libRakNet.a" />
-					<Add library="C:/Development/c++/boost/stage/lib/x86_64/libboost_system-mt.a" />
-					<Add library="C:/Development/c++/boost/stage/lib/x86_64/libboost_filesystem-mt.a" />
+					<Add library="C:\Development\c++\cheese-engine\libCheese-Engine-Windows-x86_64.a" />
+					<Add library="C:\Development\c++\SDL2_image\x86_64\lib\libSDL2_image.dll.a" />
+					<Add library="C:\Development\c++\SDL2_mixer\x86_64\lib\libSDL2_mixer.dll.a" />
+					<Add library="C:\Development\c++\SDL2\x86_64\lib\libSDL2main.a" />
+					<Add library="C:\Development\c++\SDL2\x86_64\lib\libSDL2.dll.a" />
+					<Add library="C:\Development\c++\raknet\raknet\Lib\DLL\Lib\x86_64\libRakNet.a" />
+					<Add library="C:\Development\c++\boost\stage\lib\x86_64\libboost_system-mt.a" />
+					<Add library="C:\Development\c++\boost\stage\lib\x86_64\libboost_filesystem-mt.a" />
 				</Linker>
 			</Target>
 			<Target title="Debug-Windows-x86_64">
@@ -72,14 +72,14 @@
 					<Add option="-Wl,--stack=67108864" />
 					<Add option="-lws2_32" />
 					<Add option="-lwinmm" />
-					<Add library="C:/Development/c++/cheese-engine/libCheese-Engine-Windows-Debug-x86_64.a" />
-					<Add library="C:/Development/c++/SDL2_image/x86_64/lib/libSDL2_image.dll.a" />
-					<Add library="C:/Development/c++/SDL2_mixer/x86_64/lib/libSDL2_mixer.dll.a" />
-					<Add library="C:/Development/c++/SDL2/x86_64/lib/libSDL2main.a" />
-					<Add library="C:/Development/c++/SDL2/x86_64/lib/libSDL2.dll.a" />
-					<Add library="C:/Development/c++/raknet/raknet/Lib/DLL/Lib/x86_64/libRakNet.a" />
-					<Add library="C:/Development/c++/boost/stage/lib/x86_64/libboost_system-mt.a" />
-					<Add library="C:/Development/c++/boost/stage/lib/x86_64/libboost_filesystem-mt.a" />
+					<Add library="C:\Development\c++\cheese-engine\libCheese-Engine-Windows-Debug-x86_64.a" />
+					<Add library="C:\Development\c++\SDL2_image\x86_64\lib\libSDL2_image.dll.a" />
+					<Add library="C:\Development\c++\SDL2_mixer\x86_64\lib\libSDL2_mixer.dll.a" />
+					<Add library="C:\Development\c++\SDL2\x86_64\lib\libSDL2main.a" />
+					<Add library="C:\Development\c++\SDL2\x86_64\lib\libSDL2.dll.a" />
+					<Add library="C:\Development\c++\raknet\raknet\Lib\DLL\Lib\x86_64\libRakNet.a" />
+					<Add library="C:\Development\c++\boost\stage\lib\x86_64\libboost_system-mt.a" />
+					<Add library="C:\Development\c++\boost\stage\lib\x86_64\libboost_filesystem-mt.a" />
 				</Linker>
 			</Target>
 			<Target title="Release-Linux-x86_64">
@@ -108,22 +108,22 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-m64" />
-					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-Linux-x86_64.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/SDL2_image/.libs/libSDL2_image.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/libpng/.libs/libpng.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/zlib/libz.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/SDL2_mixer/build/.libs/libSDL2_mixer.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/libvorbis/lib/.libs/libvorbisfile.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/libvorbis/lib/.libs/libvorbis.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/libogg/src/.libs/libogg.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/SDL2/build/.libs/libSDL2.a" />
-					<Add library="/usr/lib/x86_64-linux-gnu/libGL.so" />
-					<Add library="/usr/lib/x86_64-linux-gnu/libGLU.so" />
-					<Add library="/usr/lib/x86_64-linux-gnu/libpthread.so" />
-					<Add library="/usr/lib/x86_64-linux-gnu/libdl.so" />
-					<Add library="/home/tails/build-server/linux-x86_64/boost/stage/lib/libboost_system.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/boost/stage/lib/libboost_filesystem.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/raknet/raknet/Lib/LibStatic/Lib/libRakNetLibStatic.a" />
+					<Add library="\home\tails\build-server\cheese-engine\libCheese-Engine-Linux-x86_64.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\SDL2_image\.libs\libSDL2_image.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\libpng\.libs\libpng.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\zlib\libz.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\SDL2_mixer\build\.libs\libSDL2_mixer.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\libogg\src\.libs\libogg.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\SDL2\build\.libs\libSDL2.a" />
+					<Add library="\usr\lib\x86_64-linux-gnu\libGL.so" />
+					<Add library="\usr\lib\x86_64-linux-gnu\libGLU.so" />
+					<Add library="\usr\lib\x86_64-linux-gnu\libpthread.so" />
+					<Add library="\usr\lib\x86_64-linux-gnu\libdl.so" />
+					<Add library="\home\tails\build-server\linux-x86_64\boost\stage\lib\libboost_system.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\boost\stage\lib\libboost_filesystem.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\raknet\raknet\Lib\LibStatic\Lib\libRakNetLibStatic.a" />
 				</Linker>
 			</Target>
 			<Target title="Debug-Linux-x86_64">
@@ -150,22 +150,22 @@
 				</Compiler>
 				<Linker>
 					<Add option="-m64" />
-					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-Linux-Debug-x86_64.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/SDL2_image/.libs/libSDL2_image.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/libpng/.libs/libpng.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/zlib/libz.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/SDL2_mixer/build/.libs/libSDL2_mixer.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/libvorbis/lib/.libs/libvorbisfile.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/libvorbis/lib/.libs/libvorbis.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/libogg/src/.libs/libogg.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/SDL2/build/.libs/libSDL2.a" />
-					<Add library="/usr/lib/x86_64-linux-gnu/libGL.so" />
-					<Add library="/usr/lib/x86_64-linux-gnu/libGLU.so" />
-					<Add library="/usr/lib/x86_64-linux-gnu/libpthread.so" />
-					<Add library="/usr/lib/x86_64-linux-gnu/libdl.so" />
-					<Add library="/home/tails/build-server/linux-x86_64/boost/stage/lib/libboost_system.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/boost/stage/lib/libboost_filesystem.a" />
-					<Add library="/home/tails/build-server/linux-x86_64/raknet/raknet/Lib/LibStatic/Lib/libRakNetLibStatic.a" />
+					<Add library="\home\tails\build-server\cheese-engine\libCheese-Engine-Linux-Debug-x86_64.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\SDL2_image\.libs\libSDL2_image.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\libpng\.libs\libpng.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\zlib\libz.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\SDL2_mixer\build\.libs\libSDL2_mixer.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\libogg\src\.libs\libogg.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\SDL2\build\.libs\libSDL2.a" />
+					<Add library="\usr\lib\x86_64-linux-gnu\libGL.so" />
+					<Add library="\usr\lib\x86_64-linux-gnu\libGLU.so" />
+					<Add library="\usr\lib\x86_64-linux-gnu\libpthread.so" />
+					<Add library="\usr\lib\x86_64-linux-gnu\libdl.so" />
+					<Add library="\home\tails\build-server\linux-x86_64\boost\stage\lib\libboost_system.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\boost\stage\lib\libboost_filesystem.a" />
+					<Add library="\home\tails\build-server\linux-x86_64\raknet\raknet\Lib\LibStatic\Lib\libRakNetLibStatic.a" />
 				</Linker>
 			</Target>
 			<Target title="Release-Linux-x86">
@@ -193,22 +193,22 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-m32" />
-					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-Linux-x86.a" />
-					<Add library="/home/tails/build-server/linux-x86/SDL2_image/.libs/libSDL2_image.a" />
-					<Add library="/home/tails/build-server/linux-x86/libpng/.libs/libpng.a" />
-					<Add library="/home/tails/build-server/linux-x86/zlib/libz.a" />
-					<Add library="/home/tails/build-server/linux-x86/SDL2_mixer/build/.libs/libSDL2_mixer.a" />
-					<Add library="/home/tails/build-server/linux-x86/libvorbis/lib/.libs/libvorbisfile.a" />
-					<Add library="/home/tails/build-server/linux-x86/libvorbis/lib/.libs/libvorbis.a" />
-					<Add library="/home/tails/build-server/linux-x86/libogg/src/.libs/libogg.a" />
-					<Add library="/home/tails/build-server/linux-x86/SDL2/build/.libs/libSDL2.a" />
-					<Add library="/usr/lib/i386-linux-gnu/mesa/libGL.so.1.2.0" />
-					<Add library="/usr/lib/i386-linux-gnu/libGLU.so.1.3.1" />
-					<Add library="/usr/lib32/libpthread.so" />
-					<Add library="/usr/lib32/libdl.so" />
-					<Add library="/home/tails/build-server/linux-x86/boost/stage/lib/libboost_system.a" />
-					<Add library="/home/tails/build-server/linux-x86/boost/stage/lib/libboost_filesystem.a" />
-					<Add library="/home/tails/build-server/linux-x86/raknet/raknet/Lib/LibStatic/Lib/libRakNetLibStatic.a" />
+					<Add library="\home\tails\build-server\cheese-engine\libCheese-Engine-Linux-x86.a" />
+					<Add library="\home\tails\build-server\linux-x86\SDL2_image\.libs\libSDL2_image.a" />
+					<Add library="\home\tails\build-server\linux-x86\libpng\.libs\libpng.a" />
+					<Add library="\home\tails\build-server\linux-x86\zlib\libz.a" />
+					<Add library="\home\tails\build-server\linux-x86\SDL2_mixer\build\.libs\libSDL2_mixer.a" />
+					<Add library="\home\tails\build-server\linux-x86\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\tails\build-server\linux-x86\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\tails\build-server\linux-x86\libogg\src\.libs\libogg.a" />
+					<Add library="\home\tails\build-server\linux-x86\SDL2\build\.libs\libSDL2.a" />
+					<Add library="\usr\lib\i386-linux-gnu\mesa\libGL.so.1.2.0" />
+					<Add library="\usr\lib\i386-linux-gnu\libGLU.so.1.3.1" />
+					<Add library="\usr\lib32\libpthread.so" />
+					<Add library="\usr\lib32\libdl.so" />
+					<Add library="\home\tails\build-server\linux-x86\boost\stage\lib\libboost_system.a" />
+					<Add library="\home\tails\build-server\linux-x86\boost\stage\lib\libboost_filesystem.a" />
+					<Add library="\home\tails\build-server\linux-x86\raknet\raknet\Lib\LibStatic\Lib\libRakNetLibStatic.a" />
 				</Linker>
 			</Target>
 			<Target title="Cross-Compile-Windows-x86_64">
@@ -237,29 +237,29 @@
 					<Add option="-m64" />
 					<Add option="-Wl,--stack=67108864" />
 					<Add option="-static-libgcc" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/libmingw32.a" />
-					<Add library="/usr/lib/gcc/x86_64-w64-mingw32/4.8/libstdc++.a" />
-					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-Windows-x86_64.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/SDL2_image/.libs/libSDL2_image.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/libpng/.libs/libpng.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/zlib/libz.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/SDL2_mixer/build/.libs/libSDL2_mixer.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/libvorbis/lib/.libs/libvorbisfile.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/libvorbis/lib/.libs/libvorbis.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/libogg/src/.libs/libogg.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/SDL2/build/.libs/libSDL2.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/SDL2/build/libSDL2main.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/boost/stage/lib/libboost_system.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/boost/stage/lib/libboost_filesystem.a" />
-					<Add library="/home/tails/build-server/windows-x86_64/raknet/raknet/Lib/DLL/Lib/libRakNet.a" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/libws2_32.a" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/libwinmm.a" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/libwinpthread.a" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/libole32.a" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/libimm32.a" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/libgdi32.a" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/liboleaut32.a" />
-					<Add library="/usr/x86_64-w64-mingw32/lib/libversion.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\libmingw32.a" />
+					<Add library="\usr\lib\gcc\x86_64-w64-mingw32\4.8\libstdc++.a" />
+					<Add library="\home\tails\build-server\cheese-engine\libCheese-Engine-Windows-x86_64.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\SDL2_image\.libs\libSDL2_image.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\libpng\.libs\libpng.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\zlib\libz.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\SDL2_mixer\build\.libs\libSDL2_mixer.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\libogg\src\.libs\libogg.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\SDL2\build\.libs\libSDL2.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\SDL2\build\libSDL2main.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\boost\stage\lib\libboost_system.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\boost\stage\lib\libboost_filesystem.a" />
+					<Add library="\home\tails\build-server\windows-x86_64\raknet\raknet\Lib\DLL\Lib\libRakNet.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\libws2_32.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\libwinmm.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\libwinpthread.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\libole32.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\libimm32.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\libgdi32.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\liboleaut32.a" />
+					<Add library="\usr\x86_64-w64-mingw32\lib\libversion.a" />
 				</Linker>
 			</Target>
 			<Target title="Release-Windows-x86">
@@ -288,29 +288,29 @@
 					<Add option="-m32" />
 					<Add option="-Wl,--stack=67108864" />
 					<Add option="-static-libgcc" />
-					<Add library="/usr/i686-w64-mingw32/lib/libmingw32.a" />
-					<Add library="/usr/lib/gcc/i686-w64-mingw32/4.8/libstdc++.a" />
-					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-Windows-x86.a" />
-					<Add library="/home/tails/build-server/windows-x86/SDL2_image/.libs/libSDL2_image.a" />
-					<Add library="/home/tails/build-server/windows-x86/libpng/.libs/libpng.a" />
-					<Add library="/home/tails/build-server/windows-x86/zlib/libz.a" />
-					<Add library="/home/tails/build-server/windows-x86/SDL2_mixer/build/.libs/libSDL2_mixer.a" />
-					<Add library="/home/tails/build-server/windows-x86/libvorbis/lib/.libs/libvorbisfile.a" />
-					<Add library="/home/tails/build-server/windows-x86/libvorbis/lib/.libs/libvorbis.a" />
-					<Add library="/home/tails/build-server/windows-x86/libogg/src/.libs/libogg.a" />
-					<Add library="/home/tails/build-server/windows-x86/SDL2/build/.libs/libSDL2.a" />
-					<Add library="/home/tails/build-server/windows-x86/SDL2/build/libSDL2main.a" />
-					<Add library="/home/tails/build-server/windows-x86/boost/stage/lib/libboost_system.a" />
-					<Add library="/home/tails/build-server/windows-x86/boost/stage/lib/libboost_filesystem.a" />
-					<Add library="/home/tails/build-server/windows-x86/raknet/raknet/Lib/DLL/Lib/libRakNet.a" />
-					<Add library="/usr/i686-w64-mingw32/lib/libws2_32.a" />
-					<Add library="/usr/i686-w64-mingw32/lib/libwinmm.a" />
-					<Add library="/usr/i686-w64-mingw32/lib/libwinpthread.a" />
-					<Add library="/usr/i686-w64-mingw32/lib/libole32.a" />
-					<Add library="/usr/i686-w64-mingw32/lib/libimm32.a" />
-					<Add library="/usr/i686-w64-mingw32/lib/libgdi32.a" />
-					<Add library="/usr/i686-w64-mingw32/lib/liboleaut32.a" />
-					<Add library="/usr/i686-w64-mingw32/lib/libversion.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\libmingw32.a" />
+					<Add library="\usr\lib\gcc\i686-w64-mingw32\4.8\libstdc++.a" />
+					<Add library="\home\tails\build-server\cheese-engine\libCheese-Engine-Windows-x86.a" />
+					<Add library="\home\tails\build-server\windows-x86\SDL2_image\.libs\libSDL2_image.a" />
+					<Add library="\home\tails\build-server\windows-x86\libpng\.libs\libpng.a" />
+					<Add library="\home\tails\build-server\windows-x86\zlib\libz.a" />
+					<Add library="\home\tails\build-server\windows-x86\SDL2_mixer\build\.libs\libSDL2_mixer.a" />
+					<Add library="\home\tails\build-server\windows-x86\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\tails\build-server\windows-x86\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\tails\build-server\windows-x86\libogg\src\.libs\libogg.a" />
+					<Add library="\home\tails\build-server\windows-x86\SDL2\build\.libs\libSDL2.a" />
+					<Add library="\home\tails\build-server\windows-x86\SDL2\build\libSDL2main.a" />
+					<Add library="\home\tails\build-server\windows-x86\boost\stage\lib\libboost_system.a" />
+					<Add library="\home\tails\build-server\windows-x86\boost\stage\lib\libboost_filesystem.a" />
+					<Add library="\home\tails\build-server\windows-x86\raknet\raknet\Lib\DLL\Lib\libRakNet.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\libws2_32.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\libwinmm.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\libwinpthread.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\libole32.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\libimm32.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\libgdi32.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\liboleaut32.a" />
+					<Add library="\usr\i686-w64-mingw32\lib\libversion.a" />
 				</Linker>
 			</Target>
 			<Target title="Release-OSX-x86_64">
@@ -351,19 +351,19 @@
 					<Add option="-framework AudioUnit" />
 					<Add option="-framework AudioToolbox" />
 					<Add option="-framework OpenGL" />
-					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-OSX-x86_64.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/SDL2_image/.libs/libSDL2_image.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/libpng/.libs/libpng.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/zlib/libz.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/SDL2_mixer/build/.libs/libSDL2_mixer.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/libvorbis/lib/.libs/libvorbis.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/libvorbis/lib/.libs/libvorbisfile.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/libogg/src/.libs/libogg.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/SDL2/build/.libs/libSDL2.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/boost/stage/lib/libboost_system.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/boost/stage/lib/libboost_filesystem.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/raknet/raknet/Lib/LibStatic/Lib/libRakNetLibStatic.a" />
-					<Add library="/home/tails/build-server/osx-x86_64/osxcross/target/SDK/MacOSX.sdk/usr/lib/libiconv.dylib" />
+					<Add library="\home\tails\build-server\cheese-engine\libCheese-Engine-OSX-x86_64.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\SDL2_image\.libs\libSDL2_image.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\libpng\.libs\libpng.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\zlib\libz.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\SDL2_mixer\build\.libs\libSDL2_mixer.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\libogg\src\.libs\libogg.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\SDL2\build\.libs\libSDL2.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\boost\stage\lib\libboost_system.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\boost\stage\lib\libboost_filesystem.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\raknet\raknet\Lib\LibStatic\Lib\libRakNetLibStatic.a" />
+					<Add library="\home\tails\build-server\osx-x86_64\osxcross\target\SDK\MacOSX.sdk\usr\lib\libiconv.dylib" />
 					<Add directory="/home/tails/build-server/osx-x86_64/osxcross/target/SDK/MacOSX.sdk/usr/lib/" />
 				</Linker>
 			</Target>
@@ -371,8 +371,6 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="android.cpp" />
-		<Unit filename="android.h" />
 		<Unit filename="button.cpp" />
 		<Unit filename="button.h" />
 		<Unit filename="button_events.cpp" />
@@ -400,6 +398,8 @@
 		<Unit filename="game_constants.cpp" />
 		<Unit filename="game_constants.h" />
 		<Unit filename="game_input.cpp" />
+		<Unit filename="game_mailman.cpp" />
+		<Unit filename="game_mailman.h" />
 		<Unit filename="game_options.cpp" />
 		<Unit filename="game_options.h" />
 		<Unit filename="game_window.cpp" />
@@ -422,14 +422,10 @@
 		<Unit filename="server.h" />
 		<Unit filename="special_info.cpp" />
 		<Unit filename="special_info.h" />
-		<Unit filename="sprite.cpp" />
-		<Unit filename="sprite.h" />
 		<Unit filename="toast.cpp" />
 		<Unit filename="toast.h" />
 		<Unit filename="tooltip.cpp" />
 		<Unit filename="tooltip.h" />
-		<Unit filename="touch_controller.cpp" />
-		<Unit filename="touch_controller.h" />
 		<Unit filename="update.cpp" />
 		<Unit filename="update.h" />
 		<Unit filename="version.cpp" />

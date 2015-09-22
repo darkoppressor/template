@@ -10,6 +10,7 @@
 #include <log.h>
 #include <symbols.h>
 #include <render.h>
+#include <engine_data.h>
 
 using namespace std;
 
@@ -38,7 +39,7 @@ Information::Information(){
 
 void Information::set_default_font(){
     if(font.length()==0){
-        font=engine_interface.default_font;
+        font=Engine_Data::default_font;
     }
 }
 
@@ -48,8 +49,8 @@ void Information::set_dimensions(){
     Bitmap_Font* ptr_font=engine_interface.get_font(font);
 
     if(scrolling || (scroll_width>0 && scroll_height>0)){
-        w=engine_interface.gui_border_thickness*2.0+ptr_font->spacing_x*(scroll_width+1);
-        h=engine_interface.gui_border_thickness*2.0+ptr_font->spacing_y*scroll_height;
+        w=Engine_Data::gui_border_thickness*2.0+ptr_font->spacing_x*(scroll_width+1);
+        h=Engine_Data::gui_border_thickness*2.0+ptr_font->spacing_y*scroll_height;
     }
     else if(sprite.name.length()>0){
         w=sprite.get_width();
@@ -57,12 +58,12 @@ void Information::set_dimensions(){
     }
     else if(text.length()>0 || text_mutable){
         if(text_mutable){
-            w=engine_interface.gui_border_thickness*2.0+ptr_font->spacing_x*(max_text_length+1);
-            h=engine_interface.gui_border_thickness*2.0+ptr_font->get_letter_height();
+            w=Engine_Data::gui_border_thickness*2.0+ptr_font->spacing_x*(max_text_length+1);
+            h=Engine_Data::gui_border_thickness*2.0+ptr_font->get_letter_height();
         }
         else{
-            w=engine_interface.gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
-            h=engine_interface.gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
+            w=Engine_Data::gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
+            h=Engine_Data::gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
         }
     }
 }
@@ -72,20 +73,20 @@ void Information::center_in_window(int window_width,int window_height){
         x=(window_width-w)/2;
     }
     else if(start_x==-2){
-        x=engine_interface.window_border_thickness;
+        x=Engine_Data::window_border_thickness;
     }
     else if(start_x==-3){
-        x=window_width-w-engine_interface.window_border_thickness;
+        x=window_width-w-Engine_Data::window_border_thickness;
     }
 
     if(start_y==-1){
         y=(window_height-h)/2;
     }
     else if(start_y==-2){
-        y=engine_interface.window_border_thickness;
+        y=Engine_Data::window_border_thickness;
     }
     else if(start_y==-3){
-        y=window_height-h-engine_interface.window_border_thickness;
+        y=window_height-h-Engine_Data::window_border_thickness;
     }
 }
 
@@ -408,7 +409,7 @@ void Information::scroll_to_cursor(){
 
 void Information::handle_input_states(int mouse_x,int mouse_y,int x_offset,int y_offset){
     if(tooltip_text.length()>0){
-        Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
+        Collision_Rect box_a(mouse_x,mouse_y,Engine_Data::cursor_width,Engine_Data::cursor_height);
         Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
 
         if(engine_interface.mouse_allowed() && engine_interface.gui_mode=="mouse" && Collision::check_rect(box_a,box_b)){
@@ -421,12 +422,12 @@ void Information::handle_input_states(int mouse_x,int mouse_y,int x_offset,int y
 }
 
 bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y_offset){
-    Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
+    Collision_Rect box_a(mouse_x,mouse_y,Engine_Data::cursor_width,Engine_Data::cursor_height);
     Collision_Rect box_b(x_offset+x,y_offset+y,w,h);
 
-    switch(event.type){
+    switch(Engine::event.type){
         case SDL_MOUSEBUTTONDOWN:
-            if(event.button.button==SDL_BUTTON_LEFT){
+            if(Engine::event.button.button==SDL_BUTTON_LEFT){
                 if(text_mutable){
                     if(Collision::check_rect(box_a,box_b)){
                         if(scrolling && text.length()>0){
@@ -464,7 +465,7 @@ bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y
             break;
 
         case SDL_MOUSEWHEEL:
-            if(event.wheel.y<0){
+            if(Engine::event.wheel.y<0){
                 if(scrolling){
                     if(Collision::check_rect(box_a,box_b)){
                         scroll_down(y_offset);
@@ -473,7 +474,7 @@ bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y
                     }
                 }
             }
-            else if(event.wheel.y>0){
+            else if(Engine::event.wheel.y>0){
                 if(scrolling){
                     if(Collision::check_rect(box_a,box_b)){
                         scroll_up(y_offset);
@@ -521,7 +522,7 @@ void Information::render(int x_offset,int y_offset){
 
         //Render the background.
         if(engine_interface.current_color_theme()->information_background!="<INVISIBLE>"){
-            Render::render_rectangle(main_window.renderer,x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness,w-engine_interface.gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,background_opacity,engine_interface.current_color_theme()->information_background);
+            Render::render_rectangle(main_window.renderer,x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,background_opacity,engine_interface.current_color_theme()->information_background);
         }
     }
 
@@ -553,7 +554,7 @@ void Information::render(int x_offset,int y_offset){
         }
 
         if(font_color_real!="<INVISIBLE>"){
-            ptr_font->show(x_offset+x+engine_interface.gui_border_thickness,y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y,text,font_color_real,1.0,1.0,1.0,0.0,allowed_area,text_character_colors);
+            ptr_font->show(x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness+scrolling_adjust_y,text,font_color_real,1.0,1.0,1.0,0.0,allowed_area,text_character_colors);
 
             if(text_mutable && engine_interface.mutable_info_this(this)){
                 check_cursor_position();
@@ -575,8 +576,8 @@ void Information::render(int x_offset,int y_offset){
                     }
                 }
 
-                ptr_font->show(x_offset+x+engine_interface.gui_border_thickness+(ptr_font->spacing_x*cursor_x),
-                               y_offset+y+engine_interface.gui_border_thickness+scrolling_adjust_y+(ptr_font->spacing_y*cursor_y),
+                ptr_font->show(x_offset+x+Engine_Data::gui_border_thickness+(ptr_font->spacing_x*cursor_x),
+                               y_offset+y+Engine_Data::gui_border_thickness+scrolling_adjust_y+(ptr_font->spacing_y*cursor_y),
                                Symbols::cursor(),font_color_real,engine_interface.cursor_opacity*0.1,1.0,1.0,0.0,allowed_area);
             }
         }

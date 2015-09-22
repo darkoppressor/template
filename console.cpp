@@ -53,10 +53,10 @@ void Console::setup(bool get_chat){
     info_display.scrolling=true;
     info_display.scroll_width=main_window.SCREEN_WIDTH/engine_interface.get_font(info_display.font)->spacing_x-1;
     if(!chat){
-        info_display.scroll_height=engine_interface.console_height;
+        info_display.scroll_height=Engine_Data::console_height;
     }
     else{
-        info_display.scroll_height=engine_interface.chat_height;
+        info_display.scroll_height=Engine_Data::chat_height;
     }
     info_display.x=-1;
     info_display.start_x=info_display.x;
@@ -152,7 +152,7 @@ void Console::toggle_on(){
 }
 
 void Console::add_text(string text){
-    if(chat && game.option_chat_timestamps){
+    if(chat && Options::chat_timestamps){
         text=Log::get_timestamp(false)+" "+text;
     }
 
@@ -215,7 +215,7 @@ void Console::send_chat(){
 
             reset_current_recalled_command_string();
 
-            string msg=game.option_name;
+            string msg=Options::name;
             msg+=": ";
             msg+=info_input.text;
 
@@ -242,7 +242,7 @@ void Console::move(){
     if(!chat){
         if(move_speed>0){
             if(on && y<0){
-                y+=(int)ceil((double)move_speed/UPDATE_RATE);
+                y+=(int)ceil((double)move_speed/Engine::UPDATE_RATE);
 
                 if(y>0){
                     y=0;
@@ -252,7 +252,7 @@ void Console::move(){
                 info_input.y=y+info_display.h;
             }
             else if(!on && y>-(info_display.h+info_input.h)){
-                y-=(int)ceil((double)move_speed/UPDATE_RATE);
+                y-=(int)ceil((double)move_speed/Engine::UPDATE_RATE);
 
                 if(y<-(info_display.h+info_input.h)){
                     y=-(info_display.h+info_input.h);
@@ -280,7 +280,7 @@ void Console::move(){
     else{
         if(move_speed>0){
             if(on && y>main_window.SCREEN_HEIGHT-info_display.h-info_input.h){
-                y-=(int)ceil((double)move_speed/UPDATE_RATE);
+                y-=(int)ceil((double)move_speed/Engine::UPDATE_RATE);
 
                 if(y<main_window.SCREEN_HEIGHT-info_display.h-info_input.h){
                     y=main_window.SCREEN_HEIGHT-info_display.h-info_input.h;
@@ -290,7 +290,7 @@ void Console::move(){
                 info_input.y=y+info_display.h;
             }
             else if(!on && y<main_window.SCREEN_HEIGHT){
-                y+=(int)ceil((double)move_speed/UPDATE_RATE);
+                y+=(int)ceil((double)move_speed/Engine::UPDATE_RATE);
 
                 if(y>main_window.SCREEN_HEIGHT){
                     y=main_window.SCREEN_HEIGHT;
@@ -440,22 +440,22 @@ bool Console::handle_input_events(){
             last_tab_complete_command="";
         }
 
-        switch(event.type){
+        switch(Engine::event.type){
             case SDL_CONTROLLERBUTTONDOWN:
-                if(on && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_UP){
+                if(on && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_UP){
                     recall_up();
                 }
-                else if(on && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_DOWN){
+                else if(on && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_DOWN){
                     recall_down();
                 }
-                else if(on && event.cbutton.button==SDL_CONTROLLER_BUTTON_A){
+                else if(on && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_A){
                     tab_complete();
                 }
                 break;
 
             case SDL_KEYDOWN:
-                if(event.key.repeat==0){
-                    if((event.key.keysym.scancode==SDL_SCANCODE_GRAVE && !keystates[SDL_SCANCODE_LSHIFT] && !keystates[SDL_SCANCODE_RSHIFT]) || event.key.keysym.scancode==SDL_SCANCODE_AC_SEARCH){
+                if(Engine::event.key.repeat==0){
+                    if((Engine::event.key.keysym.scancode==SDL_SCANCODE_GRAVE && !keystates[SDL_SCANCODE_LSHIFT] && !keystates[SDL_SCANCODE_RSHIFT]) || Engine::event.key.keysym.scancode==SDL_SCANCODE_AC_SEARCH){
                         if(engine_interface.gui_mode=="controller"){
                             engine_interface.set_gui_mode("mouse");
                         }
@@ -464,13 +464,13 @@ bool Console::handle_input_events(){
 
                         event_consumed=true;
                     }
-                    else if(on && event.key.keysym.scancode==SDL_SCANCODE_UP){
+                    else if(on && Engine::event.key.keysym.scancode==SDL_SCANCODE_UP){
                         recall_up();
                     }
-                    else if(on && event.key.keysym.scancode==SDL_SCANCODE_DOWN){
+                    else if(on && Engine::event.key.keysym.scancode==SDL_SCANCODE_DOWN){
                         recall_down();
                     }
-                    else if(on && event.key.keysym.scancode==SDL_SCANCODE_TAB){
+                    else if(on && Engine::event.key.keysym.scancode==SDL_SCANCODE_TAB){
                         tab_complete();
                     }
                 }
@@ -478,14 +478,14 @@ bool Console::handle_input_events(){
         }
     }
     else{
-        switch(event.type){
+        switch(Engine::event.type){
             case SDL_CONTROLLERBUTTONDOWN:
-                if(!event_consumed && on && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_UP){
+                if(!event_consumed && on && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_UP){
                     recall_up();
 
                     event_consumed=true;
                 }
-                if(!event_consumed && on && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_DOWN){
+                if(!event_consumed && on && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_DOWN){
                     recall_down();
 
                     event_consumed=true;
@@ -493,13 +493,13 @@ bool Console::handle_input_events(){
                 break;
 
             case SDL_KEYDOWN:
-                if(event.key.repeat==0){
-                    if(!event_consumed && on && event.key.keysym.scancode==SDL_SCANCODE_UP){
+                if(Engine::event.key.repeat==0){
+                    if(!event_consumed && on && Engine::event.key.keysym.scancode==SDL_SCANCODE_UP){
                         recall_up();
 
                         event_consumed=true;
                     }
-                    if(!event_consumed && on && event.key.keysym.scancode==SDL_SCANCODE_DOWN){
+                    if(!event_consumed && on && Engine::event.key.keysym.scancode==SDL_SCANCODE_DOWN){
                         recall_down();
 
                         event_consumed=true;

@@ -9,6 +9,7 @@
 #include <log.h>
 #include <directories.h>
 #include <timer.h>
+#include <engine.h>
 
 #ifdef GAME_OS_OSX
     #include <CoreFoundation/CoreFoundation.h>
@@ -63,7 +64,7 @@ void game_loop(){
 
         number_of_updates=0;
 
-        //We consume SKIP_TICKS sized chunks of time, which ultimately translates to updating the logic UPDATE_LIMIT times a second.
+        //We consume Engine::SKIP_TICKS sized chunks of time, which ultimately translates to updating the logic Engine::UPDATE_LIMIT times a second.
         //We also check to see if we've updated logic max_frameskip times without rendering, at which point we render.
         while((double)SDL_GetTicks()>next_game_tick && number_of_updates<max_frameskip){
             if(timer_logic_frame_rate.get_ticks()>=1000){
@@ -79,14 +80,16 @@ void game_loop(){
             number_of_updates++;
 
             //Clamp the time step to something reasonable.
-            if(abs((double)SDL_GetTicks()-next_game_tick)>SKIP_TICKS*2.0){
-                next_game_tick=(double)SDL_GetTicks()-SKIP_TICKS*2.0;
+            if(abs((double)SDL_GetTicks()-next_game_tick)>Engine::SKIP_TICKS*2.0){
+                next_game_tick=(double)SDL_GetTicks()-Engine::SKIP_TICKS*2.0;
             }
 
-            //Consume another SKIP_TICKS sized chunk of time.
-            next_game_tick+=SKIP_TICKS;
+            //Consume another Engine::SKIP_TICKS sized chunk of time.
+            next_game_tick+=Engine::SKIP_TICKS;
 
             //Now we update the game logic:
+
+            update.check_mail();
 
             if(engine_interface.need_to_reinit){
                 engine_interface.need_to_reinit=false;
@@ -120,11 +123,11 @@ void game_loop(){
         if((double)SDL_GetTicks()>next_render_tick){
             frame_count++;
 
-            if(abs((double)SDL_GetTicks()-next_render_tick)>SKIP_TICKS_RENDER*2.0){
-                next_render_tick=(double)SDL_GetTicks()-SKIP_TICKS_RENDER*2.0;
+            if(abs((double)SDL_GetTicks()-next_render_tick)>Engine::SKIP_TICKS_RENDER*2.0){
+                next_render_tick=(double)SDL_GetTicks()-Engine::SKIP_TICKS_RENDER*2.0;
             }
 
-            next_render_tick+=SKIP_TICKS_RENDER;
+            next_render_tick+=Engine::SKIP_TICKS_RENDER;
 
             update.render(frame_rate,ms_per_frame,logic_frame_rate);
         }
@@ -183,13 +186,13 @@ int main(int argc,char* args[]){
     }
     engine_interface.render_loading_screen((double)++things_loaded/(double)things_to_load,"Initializing");
 
-    for(int i=0;i<engine_interface.starting_windows.size();i++){
-        engine_interface.get_window(engine_interface.starting_windows[i])->toggle_on(true,true);
+    for(int i=0;i<Engine_Data::starting_windows.size();i++){
+        engine_interface.get_window(Engine_Data::starting_windows[i])->toggle_on(true,true);
     }
 
     SDL_SetEventFilter(handle_app_events,NULL);
 
-	if(engine_interface.drag_and_drop){
+	if(Engine_Data::drag_and_drop){
         SDL_EventState(SDL_DROPFILE,SDL_ENABLE);
     }
 

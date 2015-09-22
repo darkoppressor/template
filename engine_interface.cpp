@@ -18,6 +18,10 @@
 #include <render.h>
 #include <engine_data.h>
 #include <sound_manager.h>
+#include <controller_manager.h>
+#include <engine.h>
+
+#include <cmath>
 
 #include <SDL_image.h>
 
@@ -53,63 +57,14 @@ GUI_Selector_Chaser::GUI_Selector_Chaser(){
     y=-1.0;
 }
 
-Controller::Controller(SDL_GameController* get_controller){
-    controller=get_controller;
-    instance_id=-1;
-    haptic=0;
-}
-
 Engine_Interface::Engine_Interface(){
     window_under_mouse=0;
-
-    controller_text_entry_small=false;
-
-    cursor_render_always=false;
-
-    cursor="";
-    cursor_mouse_over="";
-    color_theme="";
-    toast_font="";
-    default_font="";
-
-    toast_length_short=0;
-    toast_length_medium=0;
-    toast_length_long=0;
-
-    spaces_per_tab=0;
-
-    axis_scroll_rate=0;
-
-    scrolling_buttons_offset=0;
-
-    cursor_width=0;
-    cursor_height=0;
-
-    console_height=0;
-    chat_height=0;
-
-    window_border_thickness=0.0;
-    gui_border_thickness=0.0;
-
-    drag_and_drop=false;
-
-    touch_finger_size=0.0;
-    touch_controller_shoulders=false;
-    touch_controller_guide=false;
-    touch_controller_xy=false;
-
-    game_title="";
-    developer="";
-
-    option_version=get_version();
 
     hide_gui=false;
 
     need_to_reinit=false;
 
     mouse_over=false;
-
-    touch_controls=false;
 
     gui_mode="mouse";
     gui_selected_object=-1;
@@ -119,8 +74,6 @@ Engine_Interface::Engine_Interface(){
     }
 
     gui_axis_nav_last_direction="none";
-
-    controller_dead_zone=0;
 
     counter_gui_scroll_axis=0;
 
@@ -146,14 +99,7 @@ void Engine_Interface::quit(){
 
     main_window.cleanup_video();
 
-    for(int i=0;i<controllers.size();i++){
-        if(controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(controllers[i].haptic))){
-            SDL_HapticClose(controllers[i].haptic);
-        }
-
-        SDL_GameControllerClose(controllers[i].controller);
-    }
-    controllers.clear();
+    Controller_Manager::remove_controllers();
 
     IMG_Quit();
 
@@ -173,7 +119,7 @@ void Engine_Interface::build_text_input_characters(){
         characters_lower.push_back(string(1,i));
     }
 
-    if(!controller_text_entry_small){
+    if(!Engine_Data::controller_text_entry_small){
         characters_lower.push_back(",");
         characters_lower.push_back(".");
         characters_lower.push_back(":");
@@ -195,7 +141,7 @@ void Engine_Interface::build_text_input_characters(){
         characters_upper.push_back(string(1,i));
     }
 
-    if(!controller_text_entry_small){
+    if(!Engine_Data::controller_text_entry_small){
         characters_upper.push_back("?");
         characters_upper.push_back("!");
         characters_upper.push_back(";");
@@ -224,7 +170,7 @@ void Engine_Interface::build_text_input_characters(){
     characters_numbers.push_back("9");
     characters_numbers.push_back("0");
 
-    if(!controller_text_entry_small){
+    if(!Engine_Data::controller_text_entry_small){
         characters_numbers.push_back("*");
         characters_numbers.push_back("+");
         characters_numbers.push_back(string(1,(unsigned char)156));
@@ -284,13 +230,13 @@ void Engine_Interface::build_text_input_characters(){
 }
 
 void Engine_Interface::set_logic_update_rate(double frame_rate){
-    UPDATE_RATE=frame_rate;
-    SKIP_TICKS=1000.0/UPDATE_RATE;
+    Engine::UPDATE_RATE=frame_rate;
+    Engine::SKIP_TICKS=1000.0/Engine::UPDATE_RATE;
 }
 
 void Engine_Interface::set_render_update_rate(double frame_rate){
-    UPDATE_RATE_RENDER=frame_rate;
-    SKIP_TICKS_RENDER=1000.0/UPDATE_RATE_RENDER;
+    Engine::UPDATE_RATE_RENDER=frame_rate;
+    Engine::SKIP_TICKS_RENDER=1000.0/Engine::UPDATE_RATE_RENDER;
 }
 
 bool Engine_Interface::load_data_engine(){
@@ -552,7 +498,7 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_name.length());
 
-            game_title=line;
+            Engine_Data::game_title=line;
         }
         //Home directory
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_home_directory)){
@@ -566,19 +512,19 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_developer.length());
 
-            developer=line;
+            Engine_Data::developer=line;
         }
         //Starting windows
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_starting_windows)){
             //Clear the data name.
             line.erase(0,str_starting_windows.length());
 
-            starting_windows.clear();
-            boost::algorithm::split(starting_windows,line,boost::algorithm::is_any_of(","));
+            Engine_Data::starting_windows.clear();
+            boost::algorithm::split(Engine_Data::starting_windows,line,boost::algorithm::is_any_of(","));
 
-            for(int i=0;i<starting_windows.size();i++){
-                if(starting_windows[i].length()==0){
-                    starting_windows.erase(starting_windows.begin()+i);
+            for(int i=0;i<Engine_Data::starting_windows.size();i++){
+                if(Engine_Data::starting_windows[i].length()==0){
+                    Engine_Data::starting_windows.erase(Engine_Data::starting_windows.begin()+i);
                     i--;
                 }
             }
@@ -623,42 +569,42 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_axis_scroll_rate.length());
 
-            axis_scroll_rate=Strings::string_to_long(line);
+            Engine_Data::axis_scroll_rate=Strings::string_to_long(line);
         }
         //Scrolling buttons offset
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_scrolling_buttons_offset)){
             //Clear the data name.
             line.erase(0,str_scrolling_buttons_offset.length());
 
-            scrolling_buttons_offset=Strings::string_to_long(line);
+            Engine_Data::scrolling_buttons_offset=Strings::string_to_long(line);
         }
         //Cursor width
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor_width)){
             //Clear the data name.
             line.erase(0,str_cursor_width.length());
 
-            cursor_width=Strings::string_to_long(line);
+            Engine_Data::cursor_width=Strings::string_to_long(line);
         }
         //Cursor height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor_height)){
             //Clear the data name.
             line.erase(0,str_cursor_height.length());
 
-            cursor_height=Strings::string_to_long(line);
+            Engine_Data::cursor_height=Strings::string_to_long(line);
         }
         //Console height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_height)){
             //Clear the data name.
             line.erase(0,str_console_height.length());
 
-            console_height=Strings::string_to_long(line);
+            Engine_Data::console_height=Strings::string_to_long(line);
         }
         //Chat height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_chat_height)){
             //Clear the data name.
             line.erase(0,str_chat_height.length());
 
-            chat_height=Strings::string_to_long(line);
+            Engine_Data::chat_height=Strings::string_to_long(line);
         }
         //Sound falloff
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sound_falloff)){
@@ -672,49 +618,49 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_window_border_thickness.length());
 
-            window_border_thickness=Strings::string_to_double(line);
+            Engine_Data::window_border_thickness=Strings::string_to_double(line);
         }
         //GUI border thickness
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_border_thickness)){
             //Clear the data name.
             line.erase(0,str_gui_border_thickness.length());
 
-            gui_border_thickness=Strings::string_to_double(line);
+            Engine_Data::gui_border_thickness=Strings::string_to_double(line);
         }
         //Drag and drop
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_drag_and_drop)){
             //Clear the data name.
             line.erase(0,str_drag_and_drop.length());
 
-            drag_and_drop=Strings::string_to_bool(line);
+            Engine_Data::drag_and_drop=Strings::string_to_bool(line);
         }
         //Touch finger size
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_finger_size)){
             //Clear the data name.
             line.erase(0,str_touch_finger_size.length());
 
-            touch_finger_size=Strings::string_to_double(line);
+            Engine_Data::touch_finger_size=Strings::string_to_double(line);
         }
         //Touch controller shoulders
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_shoulders)){
             //Clear the data name.
             line.erase(0,str_touch_controller_shoulders.length());
 
-            touch_controller_shoulders=Strings::string_to_bool(line);
+            Engine_Data::touch_controller_shoulders=Strings::string_to_bool(line);
         }
         //Touch controller guide
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_guide)){
             //Clear the data name.
             line.erase(0,str_touch_controller_guide.length());
 
-            touch_controller_guide=Strings::string_to_bool(line);
+            Engine_Data::touch_controller_guide=Strings::string_to_bool(line);
         }
         //Touch controller xy
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_touch_controller_xy)){
             //Clear the data name.
             line.erase(0,str_touch_controller_xy.length());
 
-            touch_controller_xy=Strings::string_to_bool(line);
+            Engine_Data::touch_controller_xy=Strings::string_to_bool(line);
         }
         //Tooltip font
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tooltip_font)){
@@ -728,42 +674,42 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_toast_font.length());
 
-            toast_font=line;
+            Engine_Data::toast_font=line;
         }
         //Default font
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_font)){
             //Clear the data name.
             line.erase(0,str_default_font.length());
 
-            default_font=line;
+            Engine_Data::default_font=line;
         }
         //Toast length short
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_toast_length_short)){
             //Clear the data name.
             line.erase(0,str_toast_length_short.length());
 
-            toast_length_short=Strings::string_to_long(line);
+            Engine_Data::toast_length_short=Strings::string_to_long(line);
         }
         //Toast length medium
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_toast_length_medium)){
             //Clear the data name.
             line.erase(0,str_toast_length_medium.length());
 
-            toast_length_medium=Strings::string_to_long(line);
+            Engine_Data::toast_length_medium=Strings::string_to_long(line);
         }
         //Toast length long
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_toast_length_long)){
             //Clear the data name.
             line.erase(0,str_toast_length_long.length());
 
-            toast_length_long=Strings::string_to_long(line);
+            Engine_Data::toast_length_long=Strings::string_to_long(line);
         }
         //Spaces per tab
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_spaces_per_tab)){
             //Clear the data name.
             line.erase(0,str_spaces_per_tab.length());
 
-            spaces_per_tab=Strings::string_to_long(line);
+            Engine_Data::spaces_per_tab=Strings::string_to_long(line);
         }
         //Console move speed
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_console_move_speed)){
@@ -882,42 +828,42 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_controller_dead_zone.length());
 
-            controller_dead_zone=Strings::string_to_long(line);
+            Engine_Data::controller_dead_zone=Strings::string_to_long(line);
         }
         //Color theme
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_color_theme)){
             //Clear the data name.
             line.erase(0,str_color_theme.length());
 
-            color_theme=line;
+            Engine_Data::color_theme=line;
         }
         //Controller text entry small
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_controller_text_entry_small)){
             //Clear the data name.
             line.erase(0,str_controller_text_entry_small.length());
 
-            controller_text_entry_small=Strings::string_to_bool(line);
+            Engine_Data::controller_text_entry_small=Strings::string_to_bool(line);
         }
         //Cursor render always
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor_render_always)){
             //Clear the data name.
             line.erase(0,str_cursor_render_always.length());
 
-            cursor_render_always=Strings::string_to_bool(line);
+            Engine_Data::cursor_render_always=Strings::string_to_bool(line);
         }
         //Cursor
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor)){
             //Clear the data name.
             line.erase(0,str_cursor.length());
 
-            cursor=line;
+            Engine_Data::cursor=line;
         }
         //Cursor Mouse Over
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_cursor_mouse_over)){
             //Clear the data name.
             line.erase(0,str_cursor_mouse_over.length());
 
-            cursor_mouse_over=line;
+            Engine_Data::cursor_mouse_over=line;
         }
         //default_save_location
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_save_location)){
@@ -2515,7 +2461,7 @@ Game_Option* Engine_Interface::get_game_option(string name){
 }
 
 Color_Theme* Engine_Interface::current_color_theme(){
-    return get_color_theme(color_theme);
+    return get_color_theme(Engine_Data::color_theme);
 }
 
 void Engine_Interface::rebuild_window_data(){
@@ -2654,11 +2600,7 @@ bool Engine_Interface::poll_event(SDL_Event* event_storage){
     if(SDL_PollEvent(event_storage)){
         return true;
     }
-    else if(touch_controller_events.size()>0){
-        *event_storage=touch_controller_events[0];
-
-        touch_controller_events.erase(touch_controller_events.begin());
-
+    else if(Controller_Manager::poll_event(event_storage)){
         return true;
     }
     else{
@@ -2667,7 +2609,7 @@ bool Engine_Interface::poll_event(SDL_Event* event_storage){
 }
 
 bool Engine_Interface::mouse_allowed(){
-    if(!touch_controls){
+    if(!Controller_Manager::touch_controls){
         return true;
     }
     else{
@@ -2832,16 +2774,16 @@ GUI_Object Engine_Interface::get_gui_selected_object(){
                     int real_y=top_window->buttons[i].y;
 
                     //If this button is non-scrolling and above the scrolling button area, add it normally.
-                    if(!top_window->is_button_scrolling(i) && top_window->buttons[i].y<scrolling_buttons_offset){
+                    if(!top_window->is_button_scrolling(i) && top_window->buttons[i].y<Engine_Data::scrolling_buttons_offset){
                     }
                     //If this button is scrolling, place it at the top of the scrolling button area, offset by its position in the scrolling buttons list.
                     else if(top_window->is_button_scrolling(i)){
-                        real_y=scrolling_buttons_offset+top_window->get_scrolling_button_position(i);
+                        real_y=Engine_Data::scrolling_buttons_offset+top_window->get_scrolling_button_position(i);
                     }
                     //If this button is non-scrolling and below the scrolling button area, offset it by the bottommost scrolling button's height.
                     else{
                         if(top_window->get_scrolling_button_count()>0){
-                            real_y+=scrolling_buttons_offset+top_window->get_scrolling_button_count()-1;
+                            real_y+=Engine_Data::scrolling_buttons_offset+top_window->get_scrolling_button_count()-1;
                         }
                     }
 
@@ -2854,8 +2796,8 @@ GUI_Object Engine_Interface::get_gui_selected_object(){
                     int real_y=top_window->informations[i].y;
 
                     //If there are scrolling buttons and this info is below the scrolling button area, offset it by the bottommost scrolling button's height.
-                    if(top_window->get_scrolling_button_count()>0 && top_window->informations[i].y>=scrolling_buttons_offset){
-                        real_y+=scrolling_buttons_offset+top_window->get_scrolling_button_count()-1;
+                    if(top_window->get_scrolling_button_count()>0 && top_window->informations[i].y>=Engine_Data::scrolling_buttons_offset){
+                        real_y+=Engine_Data::scrolling_buttons_offset+top_window->get_scrolling_button_count()-1;
                     }
 
                     objects.push_back(GUI_Object("information",i,top_window->informations[i].x,real_y));
@@ -3102,35 +3044,20 @@ void Engine_Interface::get_mouse_state(int* mouse_x,int* mouse_y){
     *mouse_y=(int)ceil(((float)*mouse_y-offset_y)/scale_y);
 }
 
-void Engine_Interface::get_rgba_masks(uint32_t* rmask,uint32_t* gmask,uint32_t* bmask,uint32_t* amask){
-    if(SDL_BYTEORDER==SDL_BIG_ENDIAN){
-        *rmask=0xff000000;
-        *gmask=0x00ff0000;
-        *bmask=0x0000ff00;
-        *amask=0x000000ff;
-    }
-    else{
-        *rmask=0x000000ff;
-        *gmask=0x0000ff00;
-        *bmask=0x00ff0000;
-        *amask=0xff000000;
-    }
-}
-
 void Engine_Interface::update_window_caption(int render_rate,double ms_per_frame,int logic_frame_rate){
     string msg="";
 
     //Set the window caption.
-    if(option_dev){
-        msg=game_title+" (DEV Mode)";
+    if(Options::dev){
+        msg=Engine_Data::game_title+" (DEV Mode)";
     }
     else{
-        msg=game_title;
+        msg=Engine_Data::game_title;
     }
 
     msg+=get_game_window_caption();
 
-    if(option_fps){
+    if(Options::fps){
         msg+="  FPS: "+Strings::num_to_string(render_rate);
 
         msg+="  LUPS: "+Strings::num_to_string(logic_frame_rate);
@@ -3150,7 +3077,7 @@ void Engine_Interface::set_mutable_info(Information* ptr_info){
         if(allow_screen_keyboard()){
             SDL_StartTextInput();
         }
-        else if(controller_text_entry_small && gui_mode=="controller"){
+        else if(Engine_Data::controller_text_entry_small && gui_mode=="controller"){
             text_entry_small_selector.x=0;
             text_entry_small_selector.y=0;
         }
@@ -3213,61 +3140,26 @@ void Engine_Interface::make_toast(string message,string length,int custom_length
         }
         else{
             if(length=="short"){
-                real_length=toast_length_short;
+                real_length=Engine_Data::toast_length_short;
             }
             else if(length=="medium"){
-                real_length=toast_length_medium;
+                real_length=Engine_Data::toast_length_medium;
             }
             else if(length=="long"){
-                real_length=toast_length_long;
+                real_length=Engine_Data::toast_length_long;
             }
             else{
-                real_length=toast_length_medium;
+                real_length=Engine_Data::toast_length_medium;
             }
         }
 
         //Real length was in terms of seconds. Now we translate it to frames.
-        real_length=(int)ceil((double)real_length*UPDATE_RATE);
+        real_length=(int)ceil((double)real_length*Engine::UPDATE_RATE);
         if(real_length<1){
             real_length=1;
         }
 
         toasts.push_back(Toast(message,1.0/(double)real_length));
-    }
-}
-
-void Engine_Interface::make_rumble(int controller_number,float strength,uint32_t length){
-    if(game.option_rumble){
-        if(controller_number==CONTROLLER_ID_ALL || controller_number==CONTROLLER_ID_TOUCH){
-            //Play the rumble on the device with the touch controller, if possible.
-            android.vibrate(length);
-        }
-
-        if(controller_number!=CONTROLLER_ID_TOUCH){
-            for(int i=0;i<controllers.size();i++){
-                if(SDL_GameControllerGetAttached(controllers[i].controller) && controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(controllers[i].haptic))){
-                    if(controller_number==CONTROLLER_ID_ALL || controller_number==i){
-                        SDL_HapticRumblePlay(controllers[i].haptic,strength,length);
-                    }
-                }
-            }
-        }
-    }
-}
-
-void Engine_Interface::stop_rumble(int controller_number){
-    if(controller_number==CONTROLLER_ID_ALL || controller_number==CONTROLLER_ID_TOUCH){
-        android.vibrate_stop();
-    }
-
-    if(controller_number!=CONTROLLER_ID_TOUCH){
-        for(int i=0;i<controllers.size();i++){
-            if(SDL_GameControllerGetAttached(controllers[i].controller) && controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(controllers[i].haptic))){
-                if(controller_number==CONTROLLER_ID_ALL || controller_number==i){
-                    SDL_HapticRumbleStop(controllers[i].haptic);
-                }
-            }
-        }
     }
 }
 
@@ -3301,7 +3193,7 @@ void Engine_Interface::handle_text_input(string text){
         //I realize this is not ideal (or even correct),
         //but I think it's good enough, and implementing real tabs would be a headache
         string tab="";
-        for(int i=0;i<spaces_per_tab;i++){
+        for(int i=0;i<Engine_Data::spaces_per_tab;i++){
             tab+=" ";
         }
         boost::algorithm::replace_all(text,"\t",tab);
@@ -3317,47 +3209,6 @@ void Engine_Interface::handle_text_input(string text){
     }
 }
 
-bool Engine_Interface::controller_state(int controller_number,SDL_GameControllerButton button){
-    if(controller_number==CONTROLLER_ID_ALL || controller_number==CONTROLLER_ID_TOUCH){
-        if(touch_controls && touch_controller.check_button_state(button)){
-            return true;
-        }
-    }
-
-    for(int i=0;i<controllers.size();i++){
-        if(SDL_GameControllerGetAttached(controllers[i].controller)){
-            if(controller_number==CONTROLLER_ID_ALL || controller_number==i){
-                if(SDL_GameControllerGetButton(controllers[i].controller,button)){
-                    return true;
-                }
-            }
-        }
-    }
-
-    return false;
-}
-
-int Engine_Interface::controller_state(int controller_number,SDL_GameControllerAxis axis){
-    if(controller_number==CONTROLLER_ID_ALL || controller_number==CONTROLLER_ID_TOUCH){
-        ///Check the touch controller for the passed axis state.
-        ///... but the touch controller doesn't currently have any axes.
-    }
-
-    for(int i=0;i<controllers.size();i++){
-        if(SDL_GameControllerGetAttached(controllers[i].controller)){
-            if(controller_number==CONTROLLER_ID_ALL || controller_number==i){
-                int state=SDL_GameControllerGetAxis(controllers[i].controller,axis);
-
-                if(state!=0){
-                    return state;
-                }
-            }
-        }
-    }
-
-    return 0;
-}
-
 int Engine_Interface::game_command_state(string name){
     for(int i=0;i<game_commands.size();i++){
         if(game_commands[i].name==name){
@@ -3366,11 +3217,11 @@ int Engine_Interface::game_command_state(string name){
             if(game_commands[i].key_valid() && keystates[game_commands[i].key]){
                 return true;
             }
-            else if(game_commands[i].button_valid() && controller_state(-1,game_commands[i].button)){
+            else if(game_commands[i].button_valid() && Controller_Manager::controller_state(-1,game_commands[i].button)){
                 return true;
             }
             else if(game_commands[i].axis_valid()){
-                int state=controller_state(-1,game_commands[i].axis);
+                int state=Controller_Manager::controller_state(-1,game_commands[i].axis);
 
                 if(state!=0){
                     return state;
@@ -3531,12 +3382,12 @@ bool Engine_Interface::is_chat_selected(){
 int Engine_Interface::get_text_input_selected_chunk(){
     int selected_chunk=-1;
 
-    int axis_x=controller_state(-1,SDL_CONTROLLER_AXIS_LEFTX);
-    if(axis_x>-controller_dead_zone && axis_x<controller_dead_zone){
+    int axis_x=Controller_Manager::controller_state(-1,SDL_CONTROLLER_AXIS_LEFTX);
+    if(axis_x>-Engine_Data::controller_dead_zone && axis_x<Engine_Data::controller_dead_zone){
         axis_x=0;
     }
-    int axis_y=controller_state(-1,SDL_CONTROLLER_AXIS_LEFTY);
-    if(axis_y>-controller_dead_zone && axis_y<controller_dead_zone){
+    int axis_y=Controller_Manager::controller_state(-1,SDL_CONTROLLER_AXIS_LEFTY);
+    if(axis_y>-Engine_Data::controller_dead_zone && axis_y<Engine_Data::controller_dead_zone){
         axis_y=0;
     }
 
@@ -3577,10 +3428,10 @@ int Engine_Interface::get_text_input_selected_chunk(){
 
 vector<string>* Engine_Interface::get_text_input_character_set(){
     vector<string>* characters=&characters_lower;
-    if(controller_state(-1,SDL_CONTROLLER_AXIS_TRIGGERLEFT)>controller_dead_zone){
+    if(Controller_Manager::controller_state(-1,SDL_CONTROLLER_AXIS_TRIGGERLEFT)>Engine_Data::controller_dead_zone){
         characters=&characters_upper;
     }
-    else if(controller_state(-1,SDL_CONTROLLER_AXIS_TRIGGERRIGHT)>controller_dead_zone){
+    else if(Controller_Manager::controller_state(-1,SDL_CONTROLLER_AXIS_TRIGGERRIGHT)>Engine_Data::controller_dead_zone){
         characters=&characters_numbers;
     }
 
@@ -3606,7 +3457,7 @@ void Engine_Interface::input_newline(){
 }
 
 bool Engine_Interface::allow_screen_keyboard(){
-    if(option_screen_keyboard && SDL_HasScreenKeyboardSupport()){
+    if(Options::screen_keyboard && SDL_HasScreenKeyboardSupport()){
         return true;
     }
     else{
@@ -3690,7 +3541,7 @@ void Engine_Interface::prepare_for_input(){
     get_mouse_state(&mouse_x,&mouse_y);
 
     for(int i=0;i<window_z_order.size() && window_under_mouse==0;i++){
-        Collision_Rect box_a(mouse_x,mouse_y,cursor_width,cursor_height);
+        Collision_Rect box_a(mouse_x,mouse_y,Engine_Data::cursor_width,Engine_Data::cursor_height);
         Collision_Rect box_b(window_z_order[i]->x,window_z_order[i]->y,window_z_order[i]->w,window_z_order[i]->h);
 
         if(Collision::check_rect(box_a,box_b)){
@@ -3699,7 +3550,7 @@ void Engine_Interface::prepare_for_input(){
     }
 
     for(int i=0;i<closed_windows.size() && window_under_mouse==0;i++){
-        Collision_Rect box_a(mouse_x,mouse_y,cursor_width,cursor_height);
+        Collision_Rect box_a(mouse_x,mouse_y,Engine_Data::cursor_width,Engine_Data::cursor_height);
         Collision_Rect box_b(windows[closed_windows[i]].x,windows[closed_windows[i]].y,windows[closed_windows[i]].w,windows[closed_windows[i]].h);
 
         if(Collision::check_rect(box_a,box_b)){
@@ -3711,11 +3562,11 @@ void Engine_Interface::prepare_for_input(){
 bool Engine_Interface::handle_input_events_drag_and_drop(){
     bool event_consumed=false;
 
-    switch(event.type){
+    switch(Engine::event.type){
     case SDL_DROPFILE:
         if(!event_consumed){
-            string file=event.drop.file;
-            SDL_free(event.drop.file);
+            string file=Engine::event.drop.file;
+            SDL_free(Engine::event.drop.file);
 
             handle_drag_and_drop(file);
 
@@ -3730,24 +3581,10 @@ bool Engine_Interface::handle_input_events_drag_and_drop(){
 bool Engine_Interface::handle_input_events_touch(){
     bool event_consumed=false;
 
-    switch(event.type){
+    switch(Engine::event.type){
     case SDL_FINGERDOWN:
         if(!event_consumed){
-            vector<SDL_GameControllerButton> touch_buttons=touch_controller.check_for_button_press(event.tfinger.x,event.tfinger.y);
-
-            for(int i=0;i<touch_buttons.size();i++){
-                SDL_Event touch_controller_event;
-                touch_controller_event.type=SDL_CONTROLLERBUTTONDOWN;
-                touch_controller_event.common.type=touch_controller_event.type;
-                touch_controller_event.common.timestamp=SDL_GetTicks();
-                touch_controller_event.cbutton.type=touch_controller_event.type;
-                touch_controller_event.cbutton.timestamp=touch_controller_event.common.timestamp;
-                touch_controller_event.cbutton.which=CONTROLLER_ID_TOUCH;
-                touch_controller_event.cbutton.button=touch_buttons[i];
-                touch_controller_event.cbutton.state=SDL_PRESSED;
-
-                touch_controller_events.push_back(touch_controller_event);
-            }
+            Controller_Manager::finger_down(Engine::event,main_window.renderer);
 
             event_consumed=true;
         }
@@ -3779,35 +3616,35 @@ bool Engine_Interface::handle_input_events_command_set(){
             }
         }
 
-        switch(event.type){
+        switch(Engine::event.type){
             case SDL_CONTROLLERBUTTONDOWN:
-                if(!event_consumed && (event.cbutton.button==SDL_CONTROLLER_BUTTON_START || allow_keys_and_buttons)){
-                    if(event.cbutton.button!=SDL_CONTROLLER_BUTTON_START){
+                if(!event_consumed && (Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_START || allow_keys_and_buttons)){
+                    if(Engine::event.cbutton.button!=SDL_CONTROLLER_BUTTON_START){
                         if(configure_command<game_commands.size()){
-                            game_commands[configure_command].button=(SDL_GameControllerButton)event.cbutton.button;
+                            game_commands[configure_command].button=(SDL_GameControllerButton)Engine::event.cbutton.button;
                         }
 
                         save_game_commands();
                     }
 
-                    engine_interface.get_window("configure_command")->toggle_on(true,false);
+                    get_window("configure_command")->toggle_on(true,false);
 
                     event_consumed=true;
                 }
                 break;
 
             case SDL_KEYDOWN:
-                if(!event_consumed && event.key.repeat==0 &&
-                   (event.key.keysym.scancode==SDL_SCANCODE_ESCAPE || event.key.keysym.scancode==SDL_SCANCODE_AC_BACK || allow_keys_and_buttons)){
-                    if(event.key.keysym.scancode!=SDL_SCANCODE_ESCAPE && event.key.keysym.scancode!=SDL_SCANCODE_AC_BACK && event.key.keysym.scancode!=SDL_SCANCODE_MENU){
+                if(!event_consumed && Engine::event.key.repeat==0 &&
+                   (Engine::event.key.keysym.scancode==SDL_SCANCODE_ESCAPE || Engine::event.key.keysym.scancode==SDL_SCANCODE_AC_BACK || allow_keys_and_buttons)){
+                    if(Engine::event.key.keysym.scancode!=SDL_SCANCODE_ESCAPE && Engine::event.key.keysym.scancode!=SDL_SCANCODE_AC_BACK && Engine::event.key.keysym.scancode!=SDL_SCANCODE_MENU){
                         if(configure_command<game_commands.size()){
-                            game_commands[configure_command].key=event.key.keysym.scancode;
+                            game_commands[configure_command].key=Engine::event.key.keysym.scancode;
                         }
 
                         save_game_commands();
                     }
 
-                    engine_interface.get_window("configure_command")->toggle_on(true,false);
+                    get_window("configure_command")->toggle_on(true,false);
 
                     event_consumed=true;
                 }
@@ -3816,11 +3653,11 @@ bool Engine_Interface::handle_input_events_command_set(){
             case SDL_CONTROLLERAXISMOTION:
                 if(!event_consumed && allow_axes){
                     if(configure_command<game_commands.size()){
-                        game_commands[configure_command].axis=(SDL_GameControllerAxis)event.caxis.axis;
+                        game_commands[configure_command].axis=(SDL_GameControllerAxis)Engine::event.caxis.axis;
                     }
 
                     save_game_commands();
-                    engine_interface.get_window("configure_command")->toggle_on(true,false);
+                    get_window("configure_command")->toggle_on(true,false);
 
                     event_consumed=true;
                 }
@@ -3836,77 +3673,27 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
     const uint8_t* keystates=SDL_GetKeyboardState(NULL);
 
-    switch(event.type){
+    switch(Engine::event.type){
         case SDL_CONTROLLERDEVICEADDED:
             if(!event_consumed){
-                if(SDL_IsGameController(event.cdevice.which)){
-                    controllers.push_back(Controller(SDL_GameControllerOpen(event.cdevice.which)));
+                Controller_Manager::add_controller(Engine::event);
 
-                    Controller* controller_object=&controllers[controllers.size()-1];
-                    SDL_GameController* controller=controller_object->controller;
-
-                    if(controller!=0){
-                        controller_object->instance_id=SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
-
-                        if(SDL_JoystickIsHaptic(SDL_GameControllerGetJoystick(controller))){
-                            controller_object->haptic=SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(controller));
-
-                            if(controller_object->haptic!=0){
-                                if(SDL_HapticRumbleSupported(controller_object->haptic)){
-                                    if(SDL_HapticRumbleInit(controller_object->haptic)!=0){
-                                        string msg="Error initializing rumble for haptic on controller "+Strings::num_to_string(event.cdevice.which)+": ";
-                                        msg+=SDL_GetError();
-                                        Log::add_error(msg);
-
-                                        SDL_HapticClose(controller_object->haptic);
-                                        controller_object->haptic=0;
-                                    }
-                                }
-                            }
-                            else{
-                                string msg="Error opening haptic for controller "+Strings::num_to_string(event.cdevice.which)+": ";
-                                msg+=SDL_GetError();
-                                Log::add_error(msg);
-                            }
-                        }
-                    }
-                    else{
-                        string msg="Error opening controller "+Strings::num_to_string(event.cdevice.which)+": ";
-                        msg+=SDL_GetError();
-                        Log::add_error(msg);
-
-                        controllers.pop_back();
-                    }
-                }
-                else{
-                    string joystick_name=SDL_JoystickNameForIndex(event.cdevice.which);
-                    Log::add_error("Joystick \""+joystick_name+"\" detected, but not supported by the game controller interface.");
-                }
+                event_consumed=true;
             }
             break;
 
         case SDL_CONTROLLERDEVICEREMOVED:
             if(!event_consumed){
-                for(int i=0;i<controllers.size();i++){
-                    if(event.cdevice.which==controllers[i].instance_id){
-                        if(controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(controllers[i].haptic))){
-                            SDL_HapticClose(controllers[i].haptic);
-                        }
+                Controller_Manager::remove_controller(Engine::event);
 
-                        SDL_GameControllerClose(controllers[i].controller);
-
-                        controllers.erase(controllers.begin()+i);
-
-                        break;
-                    }
-                }
+                event_consumed=true;
             }
             break;
 
         case SDL_TEXTINPUT:
             if(mutable_info_selected()){
                 if(!event_consumed){
-                    string text=event.text.text;
+                    string text=Engine::event.text.text;
 
                     handle_text_input(text);
 
@@ -3919,7 +3706,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
             if(!event_ignore_command_set){
                 //GUI nav controller axis up
                 if(!event_consumed && is_any_window_open() && !console.on && !mutable_info_selected() && gui_axis_nav_last_direction!="up" &&
-                   event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTY && event.caxis.value<-controller_dead_zone){
+                   Engine::event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTY && Engine::event.caxis.value<-Engine_Data::controller_dead_zone){
                     gui_axis_nav_last_direction="up";
 
                     gui_nav_up("controller");
@@ -3928,7 +3715,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                 }
                 //GUI nav controller axis down
                 if(!event_consumed && is_any_window_open() && !console.on && !mutable_info_selected() && gui_axis_nav_last_direction!="down" &&
-                   event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTY && event.caxis.value>controller_dead_zone){
+                   Engine::event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTY && Engine::event.caxis.value>Engine_Data::controller_dead_zone){
                     gui_axis_nav_last_direction="down";
 
                     gui_nav_down("controller");
@@ -3937,7 +3724,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                 }
                 //GUI nav controller axis left
                 if(!event_consumed && mutable_info_selected() && gui_axis_nav_last_direction!="left" &&
-                   event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTX && event.caxis.value<-controller_dead_zone){
+                   Engine::event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTX && Engine::event.caxis.value<-Engine_Data::controller_dead_zone){
                     gui_axis_nav_last_direction="left";
 
                     gui_nav_left();
@@ -3946,7 +3733,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                 }
                 //GUI nav controller axis right
                 if(!event_consumed && mutable_info_selected() && gui_axis_nav_last_direction!="right" &&
-                   event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTX && event.caxis.value>controller_dead_zone){
+                   Engine::event.caxis.axis==SDL_CONTROLLER_AXIS_LEFTX && Engine::event.caxis.value>Engine_Data::controller_dead_zone){
                     gui_axis_nav_last_direction="right";
 
                     gui_nav_right();
@@ -3959,52 +3746,52 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
         case SDL_CONTROLLERBUTTONDOWN:
             if(!event_ignore_command_set){
                 if(mutable_info_selected() && !allow_screen_keyboard()){
-                    if(!controller_text_entry_small){
+                    if(!Engine_Data::controller_text_entry_small){
                         if(!event_consumed && ptr_mutable_info->allows_input("newline") && ptr_mutable_info->text.length()<ptr_mutable_info->max_text_length &&
-                           event.cbutton.button==SDL_CONTROLLER_BUTTON_LEFTSTICK){
+                           Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_LEFTSTICK){
                             input_newline();
 
                             event_consumed=true;
                         }
 
-                        if(!event_consumed && is_console_selected() && event.cbutton.button==SDL_CONTROLLER_BUTTON_LEFTSTICK){
+                        if(!event_consumed && is_console_selected() && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_LEFTSTICK){
                             console.do_command();
 
                             event_consumed=true;
                         }
-                        else if(!event_consumed && is_chat_selected() && event.cbutton.button==SDL_CONTROLLER_BUTTON_LEFTSTICK){
+                        else if(!event_consumed && is_chat_selected() && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_LEFTSTICK){
                             chat.send_chat();
 
                             event_consumed=true;
                         }
 
-                        if(!event_consumed && ptr_mutable_info->allows_input("backspace") && event.cbutton.button==SDL_CONTROLLER_BUTTON_LEFTSHOULDER && ptr_mutable_info->text.length()>0){
+                        if(!event_consumed && ptr_mutable_info->allows_input("backspace") && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_LEFTSHOULDER && ptr_mutable_info->text.length()>0){
                             input_backspace();
 
                             event_consumed=true;
                         }
-                        if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_RIGHTSHOULDER){
+                        if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_RIGHTSHOULDER){
                             handle_text_input(" ");
 
                             event_consumed=true;
                         }
-                        if(!event_consumed && (event.cbutton.button==SDL_CONTROLLER_BUTTON_A || event.cbutton.button==SDL_CONTROLLER_BUTTON_B ||
-                                               event.cbutton.button==SDL_CONTROLLER_BUTTON_X || event.cbutton.button==SDL_CONTROLLER_BUTTON_Y)){
+                        if(!event_consumed && (Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_A || Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_B ||
+                                               Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_X || Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_Y)){
                             vector<string>* characters=get_text_input_character_set();
                             int selected_chunk=get_text_input_selected_chunk();
 
                             if(selected_chunk>=0 && selected_chunk<8){
                                 int character_offset=0;
-                                if(event.cbutton.button==SDL_CONTROLLER_BUTTON_X){
+                                if(Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_X){
                                     character_offset=0;
                                 }
-                                else if(event.cbutton.button==SDL_CONTROLLER_BUTTON_Y){
+                                else if(Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_Y){
                                     character_offset=1;
                                 }
-                                else if(event.cbutton.button==SDL_CONTROLLER_BUTTON_B){
+                                else if(Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_B){
                                     character_offset=2;
                                 }
-                                else if(event.cbutton.button==SDL_CONTROLLER_BUTTON_A){
+                                else if(Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_A){
                                     character_offset=3;
                                 }
 
@@ -4015,7 +3802,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                         }
                     }
                     else{
-                        if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_LEFT){
+                        if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_LEFT){
                             if(--text_entry_small_selector.x<0){
                                 text_entry_small_selector.x=12;
                             }
@@ -4024,7 +3811,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                             event_consumed=true;
                         }
-                        if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_RIGHT){
+                        if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_RIGHT){
                             if(++text_entry_small_selector.x>=13){
                                 text_entry_small_selector.x=0;
                             }
@@ -4033,7 +3820,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                             event_consumed=true;
                         }
-                        if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_UP){
+                        if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_UP){
                             if(--text_entry_small_selector.y<0){
                                 text_entry_small_selector.y=7;
                             }
@@ -4042,7 +3829,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                             event_consumed=true;
                         }
-                        if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_DOWN){
+                        if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_DOWN){
                             if(++text_entry_small_selector.y>=8){
                                 text_entry_small_selector.y=0;
                             }
@@ -4051,7 +3838,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                             event_consumed=true;
                         }
-                        if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_B){
+                        if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_B){
                             if(ptr_mutable_info->allows_input("backspace") && ptr_mutable_info->text.length()>0){
                                 input_backspace();
                             }
@@ -4063,7 +3850,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                             event_consumed=true;
                         }
-                        if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_START){
+                        if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_START){
                             text_entry_small_selector.x=12;
                             text_entry_small_selector.y=7;
 
@@ -4071,7 +3858,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
                             event_consumed=true;
                         }
-                        if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_A){
+                        if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_A){
                             string text_entry_char=get_text_entry_small_character();
 
                             if((int)text_entry_char[0]==1){
@@ -4102,43 +3889,43 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                 }
 
                 //GUI nav controller back
-                if(!event_consumed && (mutable_info_selected() || is_any_window_open()) && event.cbutton.button==SDL_CONTROLLER_BUTTON_B){
+                if(!event_consumed && (mutable_info_selected() || is_any_window_open()) && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_B){
                     gui_nav_back_controller();
 
                     event_consumed=true;
                 }
                 //GUI nav controller toggle menu
-                if(!event_consumed && event.cbutton.button==SDL_CONTROLLER_BUTTON_START){
+                if(!event_consumed && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_START){
                     gui_nav_toggle_menu_controller();
 
                     event_consumed=true;
                 }
                 //GUI nav controller confirm
-                if(!event_consumed && !mutable_info_selected() && is_any_window_open() && event.cbutton.button==SDL_CONTROLLER_BUTTON_A){
+                if(!event_consumed && !mutable_info_selected() && is_any_window_open() && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_A){
                     gui_nav_confirm("controller");
 
                     event_consumed=true;
                 }
                 //GUI nav controller up
-                if(!event_consumed && is_any_window_open() && !console.on && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_UP){
+                if(!event_consumed && is_any_window_open() && !console.on && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_UP){
                     gui_nav_up("controller");
 
                     event_consumed=true;
                 }
                 //GUI nav controller down
-                if(!event_consumed && is_any_window_open() && !console.on && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_DOWN){
+                if(!event_consumed && is_any_window_open() && !console.on && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_DOWN){
                     gui_nav_down("controller");
 
                     event_consumed=true;
                 }
                 //GUI nav controller left
-                if(!event_consumed && mutable_info_selected() && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_LEFT){
+                if(!event_consumed && mutable_info_selected() && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_LEFT){
                     gui_nav_left();
 
                     event_consumed=true;
                 }
                 //GUI nav controller right
-                if(!event_consumed && mutable_info_selected() && event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_RIGHT){
+                if(!event_consumed && mutable_info_selected() && Engine::event.cbutton.button==SDL_CONTROLLER_BUTTON_DPAD_RIGHT){
                     gui_nav_right();
 
                     event_consumed=true;
@@ -4150,128 +3937,128 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
             if(!event_ignore_command_set){
                 if(mutable_info_selected()){
                     if(!event_consumed && ptr_mutable_info->allows_input("newline") && ptr_mutable_info->text.length()<ptr_mutable_info->max_text_length &&
-                       (event.key.keysym.scancode==SDL_SCANCODE_RETURN || event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
+                       (Engine::event.key.keysym.scancode==SDL_SCANCODE_RETURN || Engine::event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
                         input_newline();
 
                         event_consumed=true;
                     }
 
-                    if(!event_consumed && event.key.repeat==0 && is_console_selected() && (event.key.keysym.scancode==SDL_SCANCODE_RETURN || event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
+                    if(!event_consumed && Engine::event.key.repeat==0 && is_console_selected() && (Engine::event.key.keysym.scancode==SDL_SCANCODE_RETURN || Engine::event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
                         console.do_command();
 
                         event_consumed=true;
                     }
-                    else if(!event_consumed && event.key.repeat==0 && is_chat_selected() && (event.key.keysym.scancode==SDL_SCANCODE_RETURN || event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
+                    else if(!event_consumed && Engine::event.key.repeat==0 && is_chat_selected() && (Engine::event.key.keysym.scancode==SDL_SCANCODE_RETURN || Engine::event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
                         chat.send_chat();
 
                         event_consumed=true;
                     }
 
-                    if(!event_consumed && ptr_mutable_info->allows_input("backspace") && event.key.keysym.scancode==SDL_SCANCODE_BACKSPACE && ptr_mutable_info->text.length()>0){
+                    if(!event_consumed && ptr_mutable_info->allows_input("backspace") && Engine::event.key.keysym.scancode==SDL_SCANCODE_BACKSPACE && ptr_mutable_info->text.length()>0){
                         input_backspace();
 
                         event_consumed=true;
                     }
 
-                    if(!event_consumed && ptr_mutable_info->allows_input("backspace") && event.key.keysym.scancode==SDL_SCANCODE_DELETE && ptr_mutable_info->text.length()>0){
+                    if(!event_consumed && ptr_mutable_info->allows_input("backspace") && Engine::event.key.keysym.scancode==SDL_SCANCODE_DELETE && ptr_mutable_info->text.length()>0){
                         input_delete();
 
                         event_consumed=true;
                     }
 
-                    if(!event_consumed && !is_console_selected() && ptr_mutable_info->allows_input("space") && event.key.keysym.scancode==SDL_SCANCODE_TAB){
+                    if(!event_consumed && !is_console_selected() && ptr_mutable_info->allows_input("space") && Engine::event.key.keysym.scancode==SDL_SCANCODE_TAB){
                         handle_text_input("\t");
 
                         event_consumed=true;
                     }
                 }
 
-                if(event.key.repeat==0){
+                if(Engine::event.key.repeat==0){
                     //Screenshot
-                    if(!event_consumed && event.key.keysym.scancode==SDL_SCANCODE_F5){
+                    if(!event_consumed && Engine::event.key.keysym.scancode==SDL_SCANCODE_F5){
                         main_window.screenshot();
 
                         event_consumed=true;
                     }
 
                     //Toggle fullscreen
-                    if(!event_consumed && (keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && (event.key.keysym.scancode==SDL_SCANCODE_RETURN || event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
-                        change_option("cl_fullscreen_state",Strings::bool_to_string(!option_fullscreen));
+                    if(!event_consumed && (keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && (Engine::event.key.keysym.scancode==SDL_SCANCODE_RETURN || Engine::event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
+                        change_option("cl_fullscreen_state",Strings::bool_to_string(!Options::fullscreen));
                         reload();
 
                         event_consumed=true;
                     }
 
                     //Quit game
-                    if(!event_consumed && (keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && event.key.keysym.scancode==SDL_SCANCODE_F4){
+                    if(!event_consumed && (keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && Engine::event.key.keysym.scancode==SDL_SCANCODE_F4){
                         quit();
 
                         event_consumed=true;
                     }
 
                     //Toggle GUI display
-                    if(!event_consumed && (keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && event.key.keysym.scancode==SDL_SCANCODE_Z){
+                    if(!event_consumed && (keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && Engine::event.key.keysym.scancode==SDL_SCANCODE_Z){
                         hide_gui=!hide_gui;
 
                         event_consumed=true;
                     }
 
                     //GUI nav Android back
-                    if(!event_consumed && event.key.keysym.scancode==SDL_SCANCODE_AC_BACK){
+                    if(!event_consumed && Engine::event.key.keysym.scancode==SDL_SCANCODE_AC_BACK){
                         gui_nav_back_android();
 
                         event_consumed=true;
                     }
                     //GUI nav Android toggle menu
-                    if(!event_consumed && event.key.keysym.scancode==SDL_SCANCODE_MENU){
+                    if(!event_consumed && Engine::event.key.keysym.scancode==SDL_SCANCODE_MENU){
                         gui_nav_toggle_menu_android();
 
                         event_consumed=true;
                     }
                     //GUI nav keyboard back
-                    if(!event_consumed && event.key.keysym.scancode==SDL_SCANCODE_ESCAPE){
+                    if(!event_consumed && Engine::event.key.keysym.scancode==SDL_SCANCODE_ESCAPE){
                         gui_nav_back_keyboard_and_mouse();
 
                         event_consumed=true;
                     }
                     //GUI nav keyboard confirm
-                    if(!event_consumed && !mutable_info_selected() && is_any_window_open() && (event.key.keysym.scancode==SDL_SCANCODE_RETURN || event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
+                    if(!event_consumed && !mutable_info_selected() && is_any_window_open() && (Engine::event.key.keysym.scancode==SDL_SCANCODE_RETURN || Engine::event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
                         gui_nav_confirm("keyboard");
 
                         event_consumed=true;
                     }
                     //GUI nav keyboard up
-                    if(!event_consumed && is_any_window_open() && !console.on && event.key.keysym.scancode==SDL_SCANCODE_UP){
+                    if(!event_consumed && is_any_window_open() && !console.on && Engine::event.key.keysym.scancode==SDL_SCANCODE_UP){
                         gui_nav_up("keyboard");
 
                         event_consumed=true;
                     }
                     //GUI nav keyboard down
-                    if(!event_consumed && is_any_window_open() && !console.on && event.key.keysym.scancode==SDL_SCANCODE_DOWN){
+                    if(!event_consumed && is_any_window_open() && !console.on && Engine::event.key.keysym.scancode==SDL_SCANCODE_DOWN){
                         gui_nav_down("keyboard");
 
                         event_consumed=true;
                     }
                     //GUI nav keyboard left
-                    if(!event_consumed && mutable_info_selected() && event.key.keysym.scancode==SDL_SCANCODE_LEFT){
+                    if(!event_consumed && mutable_info_selected() && Engine::event.key.keysym.scancode==SDL_SCANCODE_LEFT){
                         gui_nav_left();
 
                         event_consumed=true;
                     }
                     //GUI nav keyboard right
-                    if(!event_consumed && mutable_info_selected() && event.key.keysym.scancode==SDL_SCANCODE_RIGHT){
+                    if(!event_consumed && mutable_info_selected() && Engine::event.key.keysym.scancode==SDL_SCANCODE_RIGHT){
                         gui_nav_right();
 
                         event_consumed=true;
                     }
                     //GUI nav keyboard scroll up
-                    if(!event_consumed && (is_any_window_open() || console.on || chat.on) && event.key.keysym.scancode==SDL_SCANCODE_PAGEUP){
+                    if(!event_consumed && (is_any_window_open() || console.on || chat.on) && Engine::event.key.keysym.scancode==SDL_SCANCODE_PAGEUP){
                         gui_scroll_up("keyboard");
 
                         event_consumed=true;
                     }
                     //GUI nav keyboard scroll down
-                    if(!event_consumed && (is_any_window_open() || console.on || chat.on) && event.key.keysym.scancode==SDL_SCANCODE_PAGEDOWN){
+                    if(!event_consumed && (is_any_window_open() || console.on || chat.on) && Engine::event.key.keysym.scancode==SDL_SCANCODE_PAGEDOWN){
                         gui_scroll_down("keyboard");
 
                         event_consumed=true;
@@ -4279,7 +4066,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                 }
 
                 //Paste
-                if(!event_consumed && (keystates[SDL_SCANCODE_LCTRL] || keystates[SDL_SCANCODE_RCTRL]) && event.key.keysym.scancode==SDL_SCANCODE_V){
+                if(!event_consumed && (keystates[SDL_SCANCODE_LCTRL] || keystates[SDL_SCANCODE_RCTRL]) && Engine::event.key.keysym.scancode==SDL_SCANCODE_V){
 					if(SDL_HasClipboardText() && mutable_info_selected()){
                         char* text=SDL_GetClipboardText();
                         string str_text=text;
@@ -4311,7 +4098,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
 
         case SDL_WINDOWEVENT:
             if(!event_consumed){
-                if(event.window.event==SDL_WINDOWEVENT_MOVED){
+                if(Engine::event.window.event==SDL_WINDOWEVENT_MOVED){
                     main_window.update_display_number();
 
                     event_consumed=true;
@@ -4356,21 +4143,21 @@ void Engine_Interface::handle_input_states(){
         chat.handle_input_states();
     }
 
-    int axis_left_x=controller_state(-1,SDL_CONTROLLER_AXIS_LEFTX);
-    int axis_left_y=controller_state(-1,SDL_CONTROLLER_AXIS_LEFTY);
-    if(axis_left_x>=-controller_dead_zone && axis_left_x<=controller_dead_zone && axis_left_y>=-controller_dead_zone && axis_left_y<=controller_dead_zone){
+    int axis_left_x=Controller_Manager::controller_state(-1,SDL_CONTROLLER_AXIS_LEFTX);
+    int axis_left_y=Controller_Manager::controller_state(-1,SDL_CONTROLLER_AXIS_LEFTY);
+    if(axis_left_x>=-Engine_Data::controller_dead_zone && axis_left_x<=Engine_Data::controller_dead_zone && axis_left_y>=-Engine_Data::controller_dead_zone && axis_left_y<=Engine_Data::controller_dead_zone){
         gui_axis_nav_last_direction="none";
     }
 
     if(is_any_window_open() || console.on || chat.on){
-        int axis_right_y=controller_state(-1,SDL_CONTROLLER_AXIS_RIGHTY);
-        if(counter_gui_scroll_axis==0 && axis_right_y<-controller_dead_zone){
-            counter_gui_scroll_axis=axis_scroll_rate;
+        int axis_right_y=Controller_Manager::controller_state(-1,SDL_CONTROLLER_AXIS_RIGHTY);
+        if(counter_gui_scroll_axis==0 && axis_right_y<-Engine_Data::controller_dead_zone){
+            counter_gui_scroll_axis=Engine_Data::axis_scroll_rate;
 
             gui_scroll_up("controller");
         }
-        else if(counter_gui_scroll_axis==0 && axis_right_y>controller_dead_zone){
-            counter_gui_scroll_axis=axis_scroll_rate;
+        else if(counter_gui_scroll_axis==0 && axis_right_y>Engine_Data::controller_dead_zone){
+            counter_gui_scroll_axis=Engine_Data::axis_scroll_rate;
 
             gui_scroll_down("controller");
         }
@@ -4415,31 +4202,7 @@ string Engine_Interface::get_system_info(){
     string str_power_seconds=Strings::time_string(power_seconds)+" remaining";
     string str_power_percentage=Strings::num_to_string(power_percentage)+"%";
 
-    if(engine_interface.controllers.size()>0){
-        msg+="Controllers ("+Strings::num_to_string(engine_interface.controllers.size())+"):\n\n";
-
-        for(int i=0;i<engine_interface.controllers.size();i++){
-            if(SDL_GameControllerGetAttached(engine_interface.controllers[i].controller)){
-                bool haptic=false;
-                if(engine_interface.controllers[i].haptic!=0 && SDL_HapticOpened(SDL_HapticIndex(engine_interface.controllers[i].haptic))){
-                    haptic=true;
-                }
-
-                msg+=Strings::num_to_string(i)+".\n";
-                msg+="Controller Name: ";
-                msg+=SDL_GameControllerName(engine_interface.controllers[i].controller);
-                msg+="\n";
-                msg+="Joystick Name: ";
-                msg+=SDL_JoystickName(SDL_GameControllerGetJoystick(engine_interface.controllers[i].controller));
-                msg+="\n";
-                msg+="Instance ID: ";
-                msg+=Strings::num_to_string(engine_interface.controllers[i].instance_id);
-                msg+="\n";
-                msg+="Has Rumble: "+Strings::bool_to_string(haptic);
-                msg+="\n\n";
-            }
-        }
-    }
+    Controller_Manager::get_controller_info(msg);
 
     msg+="Resolution (Logical): "+Strings::num_to_string(logical_width)+" x "+Strings::num_to_string(logical_height)+"\n";
     msg+="Logical Viewport: "+Strings::num_to_string(rect.x)+","+Strings::num_to_string(rect.y)+","+Strings::num_to_string(rect.w)+","+Strings::num_to_string(rect.h)+"\n";
@@ -4447,7 +4210,7 @@ string Engine_Interface::get_system_info(){
     msg+="Resolution (Actual): "+Strings::num_to_string(actual_width)+" x "+Strings::num_to_string(actual_height)+"\n";
     msg+="Renderer: "+renderer_name+"\n";
     msg+="Max Texture Size: "+Strings::num_to_string(info.max_texture_width)+" x "+Strings::num_to_string(info.max_texture_height)+"\n";
-    msg+="Current Gui Mode: "+Strings::first_letter_capital(engine_interface.gui_mode)+"\n";
+    msg+="Current Gui Mode: "+Strings::first_letter_capital(gui_mode)+"\n";
 
     msg+="Mouse Position (Logical): "+Strings::num_to_string(mouse_x)+","+Strings::num_to_string(mouse_y)+"\n";
     msg+="Mouse Position (Actual): "+Strings::num_to_string(mouse_real_x)+","+Strings::num_to_string(mouse_real_y)+"\n";
@@ -4512,7 +4275,7 @@ void Engine_Interface::animate(){
     text_selector.animate();
 
     //Update the text cursor.
-    if(++counter_cursor>=(int)ceil((48.0/1000.0)*UPDATE_RATE)){
+    if(++counter_cursor>=(int)ceil((48.0/1000.0)*Engine::UPDATE_RATE)){
         counter_cursor=0;
 
         if(cursor_opacity==10){
@@ -4536,7 +4299,7 @@ void Engine_Interface::animate_gui_selector_chasers(){
 
     if(object_pos.x!=-1){
         double distance_to_cover=object_pos.w*2+object_pos.h*2;
-        double move_speed=distance_to_cover/(5760.0/UPDATE_RATE);
+        double move_speed=distance_to_cover/(5760.0/Engine::UPDATE_RATE);
 
         for(int i=0;i<gui_selector_chasers.size();i++){
             if(gui_selector_chasers[i].x>(double)object_pos.x && gui_selector_chasers[i].x<(double)object_pos.x+(double)object_pos.w && gui_selector_chasers[i].y==(double)object_pos.y){
@@ -4590,8 +4353,8 @@ void Engine_Interface::render_gui_selector(){
 
     if(object_pos.x!=-1){
         if(gui_selector_style=="standard" || gui_selector_style=="corners" || gui_selector_style=="chasers"){
-            double thickness=gui_border_thickness;
-            double offset=gui_border_thickness;
+            double thickness=Engine_Data::gui_border_thickness;
+            double offset=Engine_Data::gui_border_thickness;
 
             if(mutable_info_selected() && !is_console_selected() && !is_chat_selected()){
                 thickness+=2.0;
@@ -4602,7 +4365,7 @@ void Engine_Interface::render_gui_selector(){
         }
 
         if(gui_selector_style=="corners"){
-            double corner_size=gui_border_thickness+4.0;
+            double corner_size=Engine_Data::gui_border_thickness+4.0;
 
             if(mutable_info_selected() && !is_console_selected() && !is_chat_selected()){
                 corner_size+=2.0;
@@ -4615,7 +4378,7 @@ void Engine_Interface::render_gui_selector(){
         }
 
         if(gui_selector_style=="underline"){
-            double thickness=gui_border_thickness+1.0;
+            double thickness=Engine_Data::gui_border_thickness+1.0;
 
             if(mutable_info_selected() && !is_console_selected() && !is_chat_selected()){
                 thickness+=3.0;
@@ -4627,7 +4390,7 @@ void Engine_Interface::render_gui_selector(){
         }
 
         if(gui_selector_style=="chasers"){
-            double chaser_size=gui_border_thickness+4.0;
+            double chaser_size=Engine_Data::gui_border_thickness+4.0;
 
             if(mutable_info_selected() && !is_console_selected() && !is_chat_selected()){
                 chaser_size+=2.0;
@@ -4642,20 +4405,20 @@ void Engine_Interface::render_gui_selector(){
 
 void Engine_Interface::render_small_text_inputter(){
     Render::render_rectangle(main_window.renderer,0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_border);
-    Render::render_rectangle(main_window.renderer,window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,
-                     main_window.SCREEN_HEIGHT-window_border_thickness*2.0,0.75,current_color_theme()->window_background);
+    Render::render_rectangle(main_window.renderer,Engine_Data::window_border_thickness,Engine_Data::window_border_thickness,main_window.SCREEN_WIDTH-Engine_Data::window_border_thickness*2.0,
+                     main_window.SCREEN_HEIGHT-Engine_Data::window_border_thickness*2.0,0.75,current_color_theme()->window_background);
 
     if(mutable_info_selected()){
         Bitmap_Font* font=get_font("small");
 
-        font->show(window_border_thickness+2.0,window_border_thickness+2.0,ptr_mutable_info->get_cursor_line(),current_color_theme()->window_font);
+        font->show(Engine_Data::window_border_thickness+2.0,Engine_Data::window_border_thickness+2.0,ptr_mutable_info->get_cursor_line(),current_color_theme()->window_font);
     }
 
     Bitmap_Font* font=get_font("standard");
 
-    double buttons_start_y=window_border_thickness+2.0+font->spacing_y*2.0;
+    double buttons_start_y=Engine_Data::window_border_thickness+2.0+font->spacing_y*2.0;
 
-    double x_offset=((double)main_window.SCREEN_WIDTH-font->get_letter_width()*13.0)/2.0+window_border_thickness;
+    double x_offset=((double)main_window.SCREEN_WIDTH-font->get_letter_width()*13.0)/2.0+Engine_Data::window_border_thickness;
     double offset_y=buttons_start_y;
 
     for(int i=0;i<13;i++){
@@ -4839,11 +4602,11 @@ void Engine_Interface::render_text_editing(){
 
         string text=ptr_mutable_info->get_cursor_line();
 
-        Render::render_rectangle(main_window.renderer,0.0,0.0,main_window.SCREEN_WIDTH,font->spacing_y+window_border_thickness*2.0,0.75,current_color_theme()->window_border);
-        Render::render_rectangle(main_window.renderer,window_border_thickness,window_border_thickness,main_window.SCREEN_WIDTH-window_border_thickness*2.0,
+        Render::render_rectangle(main_window.renderer,0.0,0.0,main_window.SCREEN_WIDTH,font->spacing_y+Engine_Data::window_border_thickness*2.0,0.75,current_color_theme()->window_border);
+        Render::render_rectangle(main_window.renderer,Engine_Data::window_border_thickness,Engine_Data::window_border_thickness,main_window.SCREEN_WIDTH-Engine_Data::window_border_thickness*2.0,
                          font->spacing_y,0.75,current_color_theme()->window_background);
 
-        font->show((main_window.SCREEN_WIDTH-(text.length()*font->spacing_x))/2.0,window_border_thickness,text,current_color_theme()->window_font);
+        font->show((main_window.SCREEN_WIDTH-(text.length()*font->spacing_x))/2.0,Engine_Data::window_border_thickness,text,current_color_theme()->window_font);
     }
 }
 
@@ -4880,7 +4643,7 @@ void Engine_Interface::render(int render_rate,double ms_per_frame,int logic_fram
         }
 
         if(mutable_info_selected() && gui_mode=="controller" && !allow_screen_keyboard()){
-            if(!controller_text_entry_small){
+            if(!Engine_Data::controller_text_entry_small){
                 render_text_inputter();
             }
             else{
@@ -4892,38 +4655,36 @@ void Engine_Interface::render(int render_rate,double ms_per_frame,int logic_fram
             render_text_editing();
         }
 
-        if(touch_controls){
-            touch_controller.render();
-        }
+        Controller_Manager::render_touch_controller(main_window.renderer,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT);
 
-        if(option_dev){
+        if(Options::dev){
             render_dev_info();
         }
 
-        if(option_fps){
+        if(Options::fps){
             render_fps(render_rate,ms_per_frame,logic_frame_rate);
         }
 
-        if(gui_mode=="mouse" && (cursor_render_always || is_any_window_open() || console.on)){
+        if(gui_mode=="mouse" && (Engine_Data::cursor_render_always || is_any_window_open() || console.on)){
             int mouse_x=0;
             int mouse_y=0;
             get_mouse_state(&mouse_x,&mouse_y);
 
             if(!mouse_over){
-                get_cursor(cursor)->render(mouse_x,mouse_y);
+                get_cursor(Engine_Data::cursor)->render(mouse_x,mouse_y);
             }
             else{
-                get_cursor(cursor_mouse_over)->render(mouse_x,mouse_y);
+                get_cursor(Engine_Data::cursor_mouse_over)->render(mouse_x,mouse_y);
             }
         }
         else{
-            if(option_hw_cursor){
+            if(Options::hw_cursor){
                 SDL_ShowCursor(SDL_DISABLE);
             }
         }
     }
     else{
-        if(option_hw_cursor){
+        if(Options::hw_cursor){
             SDL_ShowCursor(SDL_DISABLE);
         }
     }

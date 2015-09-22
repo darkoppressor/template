@@ -5,6 +5,8 @@
 #include "game.h"
 #include "world.h"
 
+#include <options.h>
+
 using namespace std;
 
 void Game::prepare_for_input(){
@@ -113,7 +115,7 @@ bool Game::handle_game_command(string command_name){
     const uint8_t* keystates=SDL_GetKeyboardState(NULL);
 
     ///DEV COMMANDS
-    if(engine_interface.option_dev && keystates[SDL_SCANCODE_F1]){
+    if(Options::dev && keystates[SDL_SCANCODE_F1]){
         //Example dev command
         /**if(command_name=="some_dev_command"){
             ///Dev command here.
@@ -147,8 +149,8 @@ bool Game::handle_input_events_gui(){
 
     if(in_progress){
         for(int i=0;i<engine_interface.game_commands.size() && !event_consumed;i++){
-            if((event.type==SDL_CONTROLLERBUTTONDOWN && engine_interface.game_commands[i].button==event.cbutton.button) ||
-               (event.type==SDL_KEYDOWN && event.key.repeat==0 && engine_interface.game_commands[i].key==event.key.keysym.scancode)){
+            if((Engine::event.type==SDL_CONTROLLERBUTTONDOWN && engine_interface.game_commands[i].button==Engine::event.cbutton.button) ||
+               (Engine::event.type==SDL_KEYDOWN && Engine::event.key.repeat==0 && engine_interface.game_commands[i].key==Engine::event.key.keysym.scancode)){
                 event_consumed=handle_game_command_gui(engine_interface.game_commands[i].name);
             }
         }
@@ -162,8 +164,8 @@ bool Game::handle_input_events(){
 
     if(in_progress){
         for(int i=0;i<engine_interface.game_commands.size() && !event_consumed;i++){
-            if((event.type==SDL_CONTROLLERBUTTONDOWN && engine_interface.game_commands[i].button==event.cbutton.button) ||
-               (event.type==SDL_KEYDOWN && event.key.repeat==0 && engine_interface.game_commands[i].key==event.key.keysym.scancode)){
+            if((Engine::event.type==SDL_CONTROLLERBUTTONDOWN && engine_interface.game_commands[i].button==Engine::event.cbutton.button) ||
+               (Engine::event.type==SDL_KEYDOWN && Engine::event.key.repeat==0 && engine_interface.game_commands[i].key==Engine::event.key.keysym.scancode)){
                 event_consumed=handle_game_command(engine_interface.game_commands[i].name);
             }
         }

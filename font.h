@@ -16,7 +16,7 @@
 class Bitmap_Font{
 private:
 
-    static const SDL_Rect FONT_DEFAULT_ALLOWED_AREA;
+    const SDL_Rect FONT_DEFAULT_ALLOWED_AREA={-1,-1,0,0};
 
     //The individual characters in the texture
     Collision_Rect chars[256];

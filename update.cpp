@@ -7,8 +7,22 @@
 
 #include <music_manager.h>
 #include <rtt_manager.h>
+#include <controller_manager.h>
 
 using namespace std;
+
+void Update::check_mail(){
+    while(Game_Mailman::has_mail()){
+        string letter=Game_Mailman::get_letter();
+
+        if(letter=="save_options"){
+            engine_interface.save_options();
+        }
+        else{
+            Log::add_error("Game_Mailman received unknown letter: '"+letter+"'");
+        }
+    }
+}
 
 void Update::ai(){
     if(game.in_progress && !game.paused){
@@ -23,10 +37,10 @@ void Update::input(){
 
     bool event_ignore_command_set=false;
 
-    while(engine_interface.poll_event(&event)){
+    while(engine_interface.poll_event(&Engine::event)){
         bool event_consumed=false;
 
-        if(event.type==SDL_QUIT){
+        if(Engine::event.type==SDL_QUIT){
             engine_interface.quit();
 
             event_consumed=true;
@@ -36,7 +50,7 @@ void Update::input(){
             event_consumed=engine_interface.handle_input_events_drag_and_drop();
         }
 
-        if(!event_consumed && engine_interface.touch_controls){
+        if(!event_consumed && Controller_Manager::touch_controls){
             event_consumed=engine_interface.handle_input_events_touch();
         }
 

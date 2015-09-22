@@ -142,7 +142,7 @@ void Network::receive_server_browser_info(){
         //If this is a normal server that is accepting clients
         //and this server is not us
         //and the server is running the game we are playing
-        if(connection_slots_total>1 && packet->guid!=id && connection_game_title==engine_interface.game_title){
+        if(connection_slots_total>1 && packet->guid!=id && connection_game_title==Engine_Data::game_title){
             add_lan_server(connection_name,connection_address,connection_port,connection_password_required,connection_slots_filled,connection_slots_total,connection_version,connection_ping);
 
             //If this server is on the saved server list, update it

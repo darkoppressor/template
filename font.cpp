@@ -9,8 +9,6 @@
 
 using namespace std;
 
-const SDL_Rect Bitmap_Font::FONT_DEFAULT_ALLOWED_AREA={-1,-1,0,0};
-
 Bitmap_Font::Bitmap_Font(){
     name="";
 

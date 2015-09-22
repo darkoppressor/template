@@ -10,6 +10,7 @@
 #include <strings.h>
 #include <log.h>
 #include <render.h>
+#include <engine_data.h>
 
 using namespace std;
 
@@ -155,7 +156,7 @@ void Window::set_stated_button_tooltip(int stated_button_number,string get_text)
 
 void Window::set_default_font(){
     if(font.length()==0){
-        font=engine_interface.default_font;
+        font=Engine_Data::default_font;
     }
 }
 
@@ -299,7 +300,7 @@ int Window::get_scrolling_button_offset(int index){
 
     int position_adjust_y=buttons[index].h*(index-1-last_normal_button);
 
-    return y+engine_interface.scrolling_buttons_offset+scrolling_adjust_y+6+position_adjust_y;
+    return y+Engine_Data::scrolling_buttons_offset+scrolling_adjust_y+6+position_adjust_y;
 }
 
 int Window::get_scrolling_button_position(int index){
@@ -321,9 +322,9 @@ bool Window::is_scrolling_button_on_screen(int index){
 
     Engine_Rect allowed_area;
     allowed_area.x=x;
-    allowed_area.y=y+engine_interface.scrolling_buttons_offset;
+    allowed_area.y=y+Engine_Data::scrolling_buttons_offset;
     allowed_area.w=w;
-    allowed_area.h=h-engine_interface.scrolling_buttons_offset-6;
+    allowed_area.h=h-Engine_Data::scrolling_buttons_offset-6;
 
     int button_y=get_scrolling_button_offset(index);
 
@@ -342,9 +343,9 @@ bool Window::off_screen_scrolling_button_direction(int index){
 
     Engine_Rect allowed_area;
     allowed_area.x=x;
-    allowed_area.y=y+engine_interface.scrolling_buttons_offset;
+    allowed_area.y=y+Engine_Data::scrolling_buttons_offset;
     allowed_area.w=w;
-    allowed_area.h=h-engine_interface.scrolling_buttons_offset-6;
+    allowed_area.h=h-Engine_Data::scrolling_buttons_offset-6;
 
     int button_y=get_scrolling_button_offset(index);
 
@@ -436,7 +437,7 @@ void Window::reset_buttons_moused_over(){
 }
 
 void Window::scroll_up(){
-    if(y+buttons[last_normal_button+1].h*scroll_offset<y+h-buttons[last_normal_button+1].h*floor((double)engine_interface.scrolling_buttons_offset/15.0)){
+    if(y+buttons[last_normal_button+1].h*scroll_offset<y+h-buttons[last_normal_button+1].h*floor((double)Engine_Data::scrolling_buttons_offset/15.0)){
         scroll_offset+=1;
     }
 }
@@ -552,9 +553,9 @@ bool Window::handle_input_events(){
         bool window_opened_on_top=false;
 
         if(!event_consumed){
-            switch(event.type){
+            switch(Engine::event.type){
                 case SDL_MOUSEBUTTONDOWN:
-                    if(!event_consumed && event.button.button==SDL_BUTTON_LEFT){
+                    if(!event_consumed && Engine::event.button.button==SDL_BUTTON_LEFT){
                         bool button_clicked=false;
 
                         //Look through all of the buttons.
@@ -583,7 +584,7 @@ bool Window::handle_input_events(){
                             }
                         }
 
-                        Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
+                        Collision_Rect box_a(mouse_x,mouse_y,Engine_Data::cursor_width,Engine_Data::cursor_height);
                         Collision_Rect box_b(x,y,w,h);
 
                         //If no buttons were just clicked and the title bar of the window is clicked.
@@ -602,10 +603,10 @@ bool Window::handle_input_events(){
                     break;
 
                 case SDL_MOUSEWHEEL:
-                    if(!event_consumed && event.wheel.y<0){
+                    if(!event_consumed && Engine::event.wheel.y<0){
                         if(scrolling_buttons.length()>0){
-                            Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
-                            Collision_Rect box_b(x,y+engine_interface.scrolling_buttons_offset,w,h-engine_interface.scrolling_buttons_offset-6);
+                            Collision_Rect box_a(mouse_x,mouse_y,Engine_Data::cursor_width,Engine_Data::cursor_height);
+                            Collision_Rect box_b(x,y+Engine_Data::scrolling_buttons_offset,w,h-Engine_Data::scrolling_buttons_offset-6);
 
                             if(Collision::check_rect(box_a,box_b)){
                                 scroll_down();
@@ -614,10 +615,10 @@ bool Window::handle_input_events(){
                             }
                         }
                     }
-                    else if(!event_consumed && event.wheel.y>0){
+                    else if(!event_consumed && Engine::event.wheel.y>0){
                         if(scrolling_buttons.length()>0){
-                            Collision_Rect box_a(mouse_x,mouse_y,engine_interface.cursor_width,engine_interface.cursor_height);
-                            Collision_Rect box_b(x,y+engine_interface.scrolling_buttons_offset,w,h-engine_interface.scrolling_buttons_offset-6);
+                            Collision_Rect box_a(mouse_x,mouse_y,Engine_Data::cursor_width,Engine_Data::cursor_height);
+                            Collision_Rect box_b(x,y+Engine_Data::scrolling_buttons_offset,w,h-Engine_Data::scrolling_buttons_offset-6);
 
                             if(Collision::check_rect(box_a,box_b)){
                                 scroll_up();
@@ -629,7 +630,7 @@ bool Window::handle_input_events(){
                     break;
 
                 case SDL_MOUSEBUTTONUP:
-                    if(!event_consumed && event.button.button==SDL_BUTTON_LEFT){
+                    if(!event_consumed && Engine::event.button.button==SDL_BUTTON_LEFT){
                         //Stop moving the window.
                         moving=false;
 
@@ -733,13 +734,13 @@ void Window::render(){
         //Render the background if it's just a solid color.
         else{
             if(engine_interface.current_color_theme()->window_background!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x+engine_interface.window_border_thickness,y+engine_interface.window_border_thickness,w-engine_interface.window_border_thickness*2.0,h-engine_interface.window_border_thickness*2.0,1.0,engine_interface.current_color_theme()->window_background);
+                Render::render_rectangle(main_window.renderer,x+Engine_Data::window_border_thickness,y+Engine_Data::window_border_thickness,w-Engine_Data::window_border_thickness*2.0,h-Engine_Data::window_border_thickness*2.0,1.0,engine_interface.current_color_theme()->window_background);
             }
         }
 
         //Render the title bar.
         if(engine_interface.current_color_theme()->window_title_bar!="<INVISIBLE>"){
-            Render::render_rectangle(main_window.renderer,x+engine_interface.window_border_thickness+2,y+engine_interface.window_border_thickness+2,w-engine_interface.window_border_thickness*2.0-4,ptr_font->spacing_y,1.0,engine_interface.current_color_theme()->window_title_bar);
+            Render::render_rectangle(main_window.renderer,x+Engine_Data::window_border_thickness+2,y+Engine_Data::window_border_thickness+2,w-Engine_Data::window_border_thickness*2.0-4,ptr_font->spacing_y,1.0,engine_interface.current_color_theme()->window_title_bar);
         }
 
         //Display the window's title.
@@ -749,7 +750,7 @@ void Window::render(){
         }
 
         if(font_color_real!="<INVISIBLE>"){
-            ptr_font->show(x+(w-(title.length()*ptr_font->spacing_x))/2,y+engine_interface.window_border_thickness+2+(ptr_font->spacing_y-ptr_font->get_letter_height())/2.0,title,font_color_real);
+            ptr_font->show(x+(w-(title.length()*ptr_font->spacing_x))/2,y+Engine_Data::window_border_thickness+2+(ptr_font->spacing_y-ptr_font->get_letter_height())/2.0,title,font_color_real);
         }
 
         //Render the border if it's a sprite.

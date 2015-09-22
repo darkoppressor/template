@@ -10,6 +10,8 @@
 #include <log.h>
 #include <directories.h>
 #include <sound_manager.h>
+#include <engine.h>
+#include <engine_version.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -249,9 +251,9 @@ void Console::run_commands(const vector<string>& command_list){
                 engine_interface.reload();
             }
             else if(command=="about"){
-                string text=engine_interface.game_title+"\nDeveloped by: "+engine_interface.developer;
-                text+="\nVersion: "+engine_interface.get_version()+" (built on "+engine_interface.get_build_date()+")\nChecksum: "+CHECKSUM;
-                text+="\nEngine version: "+engine_interface.get_engine_version()+" (updated on "+engine_interface.get_engine_date()+")";
+                string text=Engine_Data::game_title+"\nDeveloped by: "+Engine_Data::developer;
+                text+="\nVersion: "+engine_interface.get_version()+" (built on "+engine_interface.get_build_date()+")\nChecksum: "+Engine::CHECKSUM;
+                text+="\nEngine version: "+Engine_Version::get_engine_version()+" (updated on "+Engine_Version::get_engine_date()+")";
                 add_text(text);
             }
             else if(command=="quit"){

@@ -11,6 +11,7 @@
 #include <image_data.h>
 #include <image_manager.h>
 #include <render.h>
+#include <engine.h>
 
 using namespace std;
 
@@ -69,7 +70,7 @@ void Engine_Interface::render_title_background(){
 
     Render::render_rectangle(main_window.renderer,0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,"ui_black");
 
-    font->show(0,main_window.SCREEN_HEIGHT-font->spacing_y*2.0,"Version "+get_version()+"\nChecksum "+CHECKSUM,"ui_white");
+    font->show(0,main_window.SCREEN_HEIGHT-font->spacing_y*2.0,"Version "+get_version()+"\nChecksum "+Engine::CHECKSUM,"ui_white");
 
     Image_Data* logo=Image_Manager::get_image("logo");
 
