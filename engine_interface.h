@@ -7,7 +7,6 @@
 
 #include "special_info.h"
 #include "button_events.h"
-#include "font.h"
 #include "cursor.h"
 #include "tooltip.h"
 #include "toast.h"
@@ -21,7 +20,6 @@
 #include <coords.h>
 #include <file_io.h>
 #include <rng.h>
-#include <color_theme.h>
 #include <custom_sound.h>
 #include <sprite.h>
 #include <game_option.h>
@@ -79,9 +77,7 @@ public:
     Special_Info special_info_manager;
     Button_Events button_events_manager;
 
-    std::vector<Bitmap_Font> fonts;
     std::vector<Cursor> cursors;
-    std::vector<Color_Theme> color_themes;
     std::vector<Window> windows;
 
     ///std::vector<Example_Game_Tag> example_game_tags;
@@ -102,9 +98,6 @@ public:
     bool hide_gui;
 
     RNG rng;
-
-    //Set this to true during runtime to tell the engine to reinitialize everything.
-    bool need_to_reinit;
 
     //If true, some button is moused over this frame.
     bool mouse_over;
@@ -154,9 +147,6 @@ public:
 
     Engine_Interface();
 
-    //Reinitialize the game window when next possible
-    void reload();
-
     void quit();
 
     void build_text_input_characters();
@@ -191,9 +181,7 @@ public:
     void unload_data();
 
     void load_engine_data(File_IO_Load* load);
-    void load_font(File_IO_Load* load);
     void load_cursor(File_IO_Load* load);
-    void load_color_theme(File_IO_Load* load);
     void load_window(File_IO_Load* load);
     void load_information(File_IO_Load* load);
     void load_button(File_IO_Load* load);
@@ -203,17 +191,13 @@ public:
     void load_custom_sound(File_IO_Load* load);
     void load_custom_sound_data(File_IO_Load* load,Custom_Sound& sound);
 
-    Bitmap_Font* get_font(std::string name);
     Cursor* get_cursor(std::string name);
-    Color_Theme* get_color_theme(std::string name);
     Window* get_window(std::string name);
     Game_Command* get_game_command(std::string name);
     Game_Option* get_game_option(std::string name);
 
     ///void load_example_game_tag(File_IO_Load* load);
     ///Example_Game_Tag* get_example_game_tag(std::string name);
-
-    Color_Theme* current_color_theme();
 
     //Rebuild any window data if needed.
     void rebuild_window_data();

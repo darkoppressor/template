@@ -11,6 +11,10 @@
 #include <log.h>
 #include <render.h>
 #include <engine_data.h>
+#include <font.h>
+#include <object_manager.h>
+#include <game_window.h>
+#include <engine.h>
 
 using namespace std;
 
@@ -173,7 +177,7 @@ void Window::set_dimensions(){
 
         for(int i=0;i<buttons.size();i++){
             Button* button=&buttons[i];
-            Bitmap_Font* ptr_font=engine_interface.get_font(button->font);
+            Bitmap_Font* ptr_font=Object_Manager::get_font(button->font);
 
             if(!button->is_x){
                 button->set_dimensions();
@@ -363,11 +367,11 @@ void Window::rebuild_scrolling_buttons(){
 
 void Window::center_in_game_window(){
     if(start_x==-1){
-        x=(main_window.SCREEN_WIDTH-w)/2;
+        x=(Game_Window::SCREEN_WIDTH-w)/2;
     }
 
     if(start_y==-1){
-        y=(main_window.SCREEN_HEIGHT-h)/2;
+        y=(Game_Window::SCREEN_HEIGHT-h)/2;
     }
 }
 
@@ -467,11 +471,11 @@ void Window::handle_input_states(){
                 if(y<0){
                     y=0;
                 }
-                if(x+w>main_window.SCREEN_WIDTH){
-                    x=main_window.SCREEN_WIDTH-w;
+                if(x+w>Game_Window::SCREEN_WIDTH){
+                    x=Game_Window::SCREEN_WIDTH-w;
                 }
-                if(y+h>main_window.SCREEN_HEIGHT){
-                    y=main_window.SCREEN_HEIGHT-h;
+                if(y+h>Game_Window::SCREEN_HEIGHT){
+                    y=Game_Window::SCREEN_HEIGHT-h;
                 }
             }
         }
@@ -701,12 +705,12 @@ void Window::animate(){
 
 void Window::render(){
     if(on){
-        Bitmap_Font* ptr_font=engine_interface.get_font(font);
+        Bitmap_Font* ptr_font=Object_Manager::get_font(font);
 
         //Render the border if it's just a solid color.
         if(border.name.length()==0){
-            if(engine_interface.current_color_theme()->window_border!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x,y,w,h,1.0,engine_interface.current_color_theme()->window_border);
+            if(Engine::current_color_theme()->window_border!="<INVISIBLE>"){
+                Render::render_rectangle(x,y,w,h,1.0,Engine::current_color_theme()->window_border);
             }
         }
 
@@ -729,24 +733,24 @@ void Window::render(){
                 background_y=y-abs(h-background.get_height())/2;
             }
 
-            background.render(main_window.renderer,background_x,background_y);
+            background.render(background_x,background_y);
         }
         //Render the background if it's just a solid color.
         else{
-            if(engine_interface.current_color_theme()->window_background!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x+Engine_Data::window_border_thickness,y+Engine_Data::window_border_thickness,w-Engine_Data::window_border_thickness*2.0,h-Engine_Data::window_border_thickness*2.0,1.0,engine_interface.current_color_theme()->window_background);
+            if(Engine::current_color_theme()->window_background!="<INVISIBLE>"){
+                Render::render_rectangle(x+Engine_Data::window_border_thickness,y+Engine_Data::window_border_thickness,w-Engine_Data::window_border_thickness*2.0,h-Engine_Data::window_border_thickness*2.0,1.0,Engine::current_color_theme()->window_background);
             }
         }
 
         //Render the title bar.
-        if(engine_interface.current_color_theme()->window_title_bar!="<INVISIBLE>"){
-            Render::render_rectangle(main_window.renderer,x+Engine_Data::window_border_thickness+2,y+Engine_Data::window_border_thickness+2,w-Engine_Data::window_border_thickness*2.0-4,ptr_font->spacing_y,1.0,engine_interface.current_color_theme()->window_title_bar);
+        if(Engine::current_color_theme()->window_title_bar!="<INVISIBLE>"){
+            Render::render_rectangle(x+Engine_Data::window_border_thickness+2,y+Engine_Data::window_border_thickness+2,w-Engine_Data::window_border_thickness*2.0-4,ptr_font->spacing_y,1.0,Engine::current_color_theme()->window_title_bar);
         }
 
         //Display the window's title.
         string font_color_real=font_color;
         if(font_color.length()==0){
-            font_color_real=engine_interface.current_color_theme()->window_font;
+            font_color_real=Engine::current_color_theme()->window_font;
         }
 
         if(font_color_real!="<INVISIBLE>"){
@@ -772,7 +776,7 @@ void Window::render(){
                 border_y=y-abs(h-border.get_height())/2;
             }
 
-            border.render(main_window.renderer,border_x,border_y);
+            border.render(border_x,border_y);
         }
 
         for(int i=0;i<informations.size();i++){

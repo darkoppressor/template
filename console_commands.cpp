@@ -12,6 +12,8 @@
 #include <sound_manager.h>
 #include <engine.h>
 #include <engine_version.h>
+#include <engine_data.h>
+#include <engine_mailman.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -248,7 +250,7 @@ void Console::run_commands(const vector<string>& command_list){
             else if(command=="reload"){
                 add_text("Reloading UI...");
 
-                engine_interface.reload();
+                Engine_Mailman::send_letter("reload");
             }
             else if(command=="about"){
                 string text=Engine_Data::game_title+"\nDeveloped by: "+Engine_Data::developer;

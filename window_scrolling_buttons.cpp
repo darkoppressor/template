@@ -7,6 +7,7 @@
 
 #include <strings.h>
 #include <log.h>
+#include <object_manager.h>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ void Window::build_scrolling_buttons(){
             for(int i=0;i<engine_interface.game_commands.size();i++){
                 if(!engine_interface.game_commands[i].dev){
                     buttons.push_back(Button());
-                    buttons[buttons.size()-1].x=engine_interface.get_font(font)->spacing_x*2;
+                    buttons[buttons.size()-1].x=Object_Manager::get_font(font)->spacing_x*2;
                     buttons[buttons.size()-1].y=0;
                     buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                     buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
@@ -37,7 +38,7 @@ void Window::build_scrolling_buttons(){
         else if(scrolling_buttons=="server_list"){
             for(int i=0;i<network.server_list.size();i++){
                 buttons.push_back(Button());
-                buttons[buttons.size()-1].x=engine_interface.get_font(font)->spacing_x*2;
+                buttons[buttons.size()-1].x=Object_Manager::get_font(font)->spacing_x*2;
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
@@ -50,7 +51,7 @@ void Window::build_scrolling_buttons(){
         else if(scrolling_buttons=="server_list_delete"){
             for(int i=0;i<network.server_list.size();i++){
                 buttons.push_back(Button());
-                buttons[buttons.size()-1].x=engine_interface.get_font(font)->spacing_x*2;
+                buttons[buttons.size()-1].x=Object_Manager::get_font(font)->spacing_x*2;
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
@@ -63,7 +64,7 @@ void Window::build_scrolling_buttons(){
         else if(scrolling_buttons=="server_list_edit"){
             for(int i=0;i<network.server_list.size();i++){
                 buttons.push_back(Button());
-                buttons[buttons.size()-1].x=engine_interface.get_font(font)->spacing_x*2;
+                buttons[buttons.size()-1].x=Object_Manager::get_font(font)->spacing_x*2;
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
@@ -76,7 +77,7 @@ void Window::build_scrolling_buttons(){
         else if(scrolling_buttons=="lan_server_list"){
             for(int i=0;i<network.lan_server_list.size();i++){
                 buttons.push_back(Button());
-                buttons[buttons.size()-1].x=engine_interface.get_font(font)->spacing_x*2;
+                buttons[buttons.size()-1].x=Object_Manager::get_font(font)->spacing_x*2;
                 buttons[buttons.size()-1].y=0;
                 buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
                 buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;

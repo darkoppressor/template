@@ -4,10 +4,16 @@
 
 #include "update.h"
 #include "world.h"
+#include "game_mailman.h"
 
 #include <music_manager.h>
 #include <rtt_manager.h>
 #include <controller_manager.h>
+#include <data_reader.h>
+#include <game_window.h>
+#include <log.h>
+#include <engine.h>
+#include <sound_manager.h>
 
 using namespace std;
 
@@ -17,6 +23,15 @@ void Update::check_mail(){
 
         if(letter=="save_options"){
             engine_interface.save_options();
+        }
+        else if(letter=="reload"){
+            Game_Window::reload();
+        }
+        else if(letter=="reset_camera_dimensions"){
+            game.reset_camera_dimensions();
+        }
+        else if(Data_Reader::check_prefix(letter,"console:")){
+            engine_interface.console.add_text(letter);
         }
         else{
             Log::add_error("Game_Mailman received unknown letter: '"+letter+"'");
@@ -142,13 +157,12 @@ void Update::camera(int frame_rate,double ms_per_frame,int logic_frame_rate){
 }
 
 void Update::render(int frame_rate,double ms_per_frame,int logic_frame_rate){
-    SDL_SetRenderDrawColor(main_window.renderer,0,0,0,255);
-    SDL_RenderClear(main_window.renderer);
+    Game_Window::clear_renderer(Color(0,0,0,255));
 
     if(game.in_progress){
-        /**Rtt_Manager::set_render_target(main_window.renderer,"example");
+        /**Rtt_Manager::set_render_target("example");
         ///Render something here
-        Rtt_Manager::reset_render_target(main_window.renderer);*/
+        Rtt_Manager::reset_render_target();*/
 
         game.world.render_background();
 
@@ -162,5 +176,5 @@ void Update::render(int frame_rate,double ms_per_frame,int logic_frame_rate){
 
     engine_interface.render(frame_rate,ms_per_frame,logic_frame_rate);
 
-    SDL_RenderPresent(main_window.renderer);
+    Game_Window::render_present();
 }

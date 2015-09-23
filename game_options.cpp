@@ -8,6 +8,8 @@
 #include <strings.h>
 #include <log.h>
 #include <options.h>
+#include <controller_manager.h>
+#include <game_window.h>
 
 using namespace std;
 
@@ -102,7 +104,7 @@ void Game_Options::set_value(string name,string new_value){
     else if(name=="cl_screensaver"){
         Options::screensaver=Strings::string_to_bool(new_value);
 
-        main_window.set_sdl_hints();
+        Game_Window::set_sdl_hints();
     }
     else if(name=="cl_camera_speed"){
         Options::camera_speed=Strings::string_to_double(new_value);

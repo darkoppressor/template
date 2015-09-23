@@ -5,9 +5,11 @@
 #ifndef network_h
 #define network_h
 
-#include "server.h"
-
 #include <timer.h>
+#include <server.h>
+
+#include <string>
+#include <vector>
 
 #include "raknet/Source/RakPeerInterface.h"
 #include "raknet/Source/RakNetVersion.h"
@@ -16,9 +18,6 @@
 #include "raknet/Source/GetTime.h"
 #include "raknet/Source/MessageIdentifiers.h"
 #include "raknet/Source/RakNetStatistics.h"
-
-#include <string>
-#include <vector>
 
 enum{
     ID_GAME_VERSION=ID_USER_PACKET_ENUM,
@@ -58,9 +57,9 @@ public:
     uint32_t rate_bytes;
     uint32_t rate_updates;
 
-    //The number of bytes sent to this client over the duration of the current second.
+    //The number of bytes sent to this client over the duration of the current second
     uint32_t bytes_this_second;
-    //The number of updates sent to this client over the duration of the current second.
+    //The number of updates sent to this client over the duration of the current second
     uint32_t updates_this_second;
     uint32_t counter_update;
 
@@ -81,7 +80,7 @@ public:
     RakNet::SystemAddress address;
     RakNet::Packet* packet;
     std::vector<Client_Data> clients;
-    //Keeps track of each passing second and resets client update counts (server) or command packet counts (client).
+    //Keeps track of each passing second and resets client update counts (server) or command packet counts (client)
     Timer timer_tick;
     uint64_t stat_bytes_received;
     uint64_t stat_counter_bytes_received;
@@ -112,8 +111,8 @@ public:
     uint32_t rate_commands;
     uint32_t commands_this_second;
     uint32_t counter_commands;
-    //When a client connects to a server, its Engine::UPDATE_RATE is set to the server's.
-    //When the game is stopped, the client reverts to its original Engine::UPDATE_RATE.
+    //When a client connects to a server, its Engine::UPDATE_RATE is set to the server's
+    //When the game is stopped, the client reverts to its original Engine::UPDATE_RATE
     double recall_update_rate;
     RakNet::Time last_update_time;
     std::vector<std::string> command_buffer;
@@ -146,10 +145,10 @@ public:
     Client_Data* get_packet_client();
     int get_client_index(Client_Data* client);
 
-    //Returns a list of clients that are currently players.
+    //Returns a list of clients that are currently players
     std::vector<Client_Data*> get_players();
     uint32_t get_player_count();
-    //Returns our player number, or -1 if we are not a player.
+    //Returns our player number, or -1 if we are not a player
     int get_our_player_number();
 
     bool client_name_taken(std::string name);

@@ -10,6 +10,7 @@
 #include <sound_manager.h>
 #include <engine_data.h>
 #include <engine.h>
+#include <options.h>
 
 using namespace std;
 

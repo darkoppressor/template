@@ -4,12 +4,15 @@
 
 #include "main.h"
 #include "world.h"
+#include "update.h"
 
 #include <file_io.h>
 #include <log.h>
 #include <directories.h>
 #include <timer.h>
 #include <engine.h>
+#include <game_window.h>
+#include <engine_data.h>
 
 #ifdef GAME_OS_OSX
     #include <CoreFoundation/CoreFoundation.h>
@@ -18,13 +21,13 @@
 using namespace std;
 
 void game_loop(){
-    //The maximum number of frames to be skipped.
+    //The maximum number of frames to be skipped
     int max_frameskip=5;
 
     double next_game_tick=(double)SDL_GetTicks();
     double next_render_tick=(double)SDL_GetTicks();
 
-    //The number of logic updates that have occurred since the last render.
+    //The number of logic updates that have occurred since the last render
     int number_of_updates=0;
 
     Timer timer_frame_rate;
@@ -60,12 +63,12 @@ void game_loop(){
             timer_frame_rate.start();
         }
 
-        //For our game loop, we first update game logic, and then render. The two are kept separate and independent.
+        //For our game loop, we first update game logic, and then render. The two are kept separate and independent
 
         number_of_updates=0;
 
-        //We consume Engine::SKIP_TICKS sized chunks of time, which ultimately translates to updating the logic Engine::UPDATE_LIMIT times a second.
-        //We also check to see if we've updated logic max_frameskip times without rendering, at which point we render.
+        //We consume Engine::SKIP_TICKS sized chunks of time, which ultimately translates to updating the logic Engine::UPDATE_LIMIT times a second
+        //We also check to see if we've updated logic max_frameskip times without rendering, at which point we render
         while((double)SDL_GetTicks()>next_game_tick && number_of_updates<max_frameskip){
             if(timer_logic_frame_rate.get_ticks()>=1000){
                 logic_frame_rate=logic_frame_count;
@@ -75,50 +78,45 @@ void game_loop(){
             }
             logic_frame_count++;
 
-            //We are doing another game logic update.
-            //If this reaches max_frameskip, we will render.
+            //We are doing another game logic update
+            //If this reaches max_frameskip, we will render
             number_of_updates++;
 
-            //Clamp the time step to something reasonable.
+            //Clamp the time step to something reasonable
             if(abs((double)SDL_GetTicks()-next_game_tick)>Engine::SKIP_TICKS*2.0){
                 next_game_tick=(double)SDL_GetTicks()-Engine::SKIP_TICKS*2.0;
             }
 
-            //Consume another Engine::SKIP_TICKS sized chunk of time.
+            //Consume another Engine::SKIP_TICKS sized chunk of time
             next_game_tick+=Engine::SKIP_TICKS;
 
-            //Now we update the game logic:
+            //Now we update the game logic
 
-            update.check_mail();
-
-            if(engine_interface.need_to_reinit){
-                engine_interface.need_to_reinit=false;
-                main_window.reinitialize();
-            }
+            Update::check_mail();
 
             engine_interface.rebuild_window_data();
 
             network.receive_packets();
 
-            update.ai();
+            Update::ai();
 
-            update.input();
+            Update::input();
 
             network.send_updates();
             network.send_input();
 
-            update.tick();
+            Update::tick();
 
-            update.movement();
+            Update::movement();
 
-            update.events();
+            Update::events();
 
-            update.animate();
+            Update::animate();
 
-            update.camera(frame_rate,ms_per_frame,logic_frame_rate);
+            Update::camera(frame_rate,ms_per_frame,logic_frame_rate);
         }
 
-        //Now that we've handled logic updates, we do our rendering.
+        //Now that we've handled logic updates, we do our rendering
 
         if((double)SDL_GetTicks()>next_render_tick){
             frame_count++;
@@ -129,7 +127,7 @@ void game_loop(){
 
             next_render_tick+=Engine::SKIP_TICKS_RENDER;
 
-            update.render(frame_rate,ms_per_frame,logic_frame_rate);
+            Update::render(frame_rate,ms_per_frame,logic_frame_rate);
         }
     }
 }
@@ -148,7 +146,7 @@ int handle_app_events(void* userdata,SDL_Event* event){
 
 int main(int argc,char* args[]){
     #ifdef GAME_OS_OSX
-        //Set the working directory to the Resources directory of our bundle.
+        //Set the working directory to the Resources directory of our bundle
         char path[PATH_MAX];
         CFURLRef url=CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
         CFURLGetFileSystemRepresentation(url,true,(uint8_t*)path,PATH_MAX);
@@ -156,11 +154,13 @@ int main(int argc,char* args[]){
         chdir(path);
     #endif
 
-    if(!main_window.init_sdl()){
+    if(!Game_Window::pre_initialize()){
         return 1;
     }
 
     #ifdef GAME_OS_ANDROID
+        Android::initialize();
+
         if(!File_IO::external_storage_available()){
             return 2;
         }

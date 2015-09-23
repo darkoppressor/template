@@ -11,6 +11,9 @@
 #include <symbols.h>
 #include <render.h>
 #include <engine_data.h>
+#include <font.h>
+#include <object_manager.h>
+#include <engine.h>
 
 using namespace std;
 
@@ -46,7 +49,7 @@ void Information::set_default_font(){
 void Information::set_dimensions(){
     set_default_font();
 
-    Bitmap_Font* ptr_font=engine_interface.get_font(font);
+    Bitmap_Font* ptr_font=Object_Manager::get_font(font);
 
     if(scrolling || (scroll_width>0 && scroll_height>0)){
         w=Engine_Data::gui_border_thickness*2.0+ptr_font->spacing_x*(scroll_width+1);
@@ -62,8 +65,8 @@ void Information::set_dimensions(){
             h=Engine_Data::gui_border_thickness*2.0+ptr_font->get_letter_height();
         }
         else{
-            w=Engine_Data::gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
-            h=Engine_Data::gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
+            w=Engine_Data::gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->get_gui_padding_x();
+            h=Engine_Data::gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->get_gui_padding_y();
         }
     }
 }
@@ -370,7 +373,7 @@ void Information::begin_editing(){
 
 void Information::scroll_up(int y_offset){
     if(scrolling){
-        if(y_offset+y+engine_interface.get_font(font)->spacing_y*scroll_offset<y_offset+y+h-engine_interface.get_font(font)->spacing_y*2){
+        if(y_offset+y+Object_Manager::get_font(font)->spacing_y*scroll_offset<y_offset+y+h-Object_Manager::get_font(font)->spacing_y*2){
             scroll_offset+=1;
         }
     }
@@ -378,7 +381,7 @@ void Information::scroll_up(int y_offset){
 
 void Information::scroll_down(int y_offset){
     if(scrolling){
-        if(y_offset+y+engine_interface.get_font(font)->spacing_y*scroll_offset+engine_interface.get_font(font)->spacing_y*Strings::newline_count(text)>y_offset+y){
+        if(y_offset+y+Object_Manager::get_font(font)->spacing_y*scroll_offset+Object_Manager::get_font(font)->spacing_y*Strings::newline_count(text)>y_offset+y){
             scroll_offset-=1;
         }
     }
@@ -439,7 +442,7 @@ bool Information::handle_input_events(int mouse_x,int mouse_y,int x_offset,int y
                                 if(i>=0 && i<lines){
                                     int line_length=Strings::length_of_line(text,i);
 
-                                    Bitmap_Font* ptr_font=engine_interface.get_font(font);
+                                    Bitmap_Font* ptr_font=Object_Manager::get_font(font);
 
                                     for(int j=0;j<line_length;j++){
                                         Collision_Rect box_character(x_offset+x+ptr_font->spacing_x*j,y_offset+y+ptr_font->spacing_y*line_on_screen,ptr_font->spacing_x,ptr_font->spacing_y);
@@ -497,7 +500,7 @@ void Information::animate(){
 }
 
 void Information::render(int x_offset,int y_offset){
-    Bitmap_Font* ptr_font=engine_interface.get_font(font);
+    Bitmap_Font* ptr_font=Object_Manager::get_font(font);
 
     //If there is special info, we must process it before rendering.
     if(special_info_text.length()>0){
@@ -512,17 +515,17 @@ void Information::render(int x_offset,int y_offset){
     }
 
     if(sprite.name.length()>0 && background_type=="sprite"){
-        sprite.render(main_window.renderer,x_offset+x,y_offset+y,background_opacity);
+        sprite.render(x_offset+x,y_offset+y,background_opacity);
     }
     else if(background_type=="standard"){
         //Render the border.
-        if(engine_interface.current_color_theme()->information_border!="<INVISIBLE>"){
-            Render::render_rectangle(main_window.renderer,x_offset+x,y_offset+y,w,h,background_opacity,engine_interface.current_color_theme()->information_border);
+        if(Engine::current_color_theme()->information_border!="<INVISIBLE>"){
+            Render::render_rectangle(x_offset+x,y_offset+y,w,h,background_opacity,Engine::current_color_theme()->information_border);
         }
 
         //Render the background.
-        if(engine_interface.current_color_theme()->information_background!="<INVISIBLE>"){
-            Render::render_rectangle(main_window.renderer,x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,background_opacity,engine_interface.current_color_theme()->information_background);
+        if(Engine::current_color_theme()->information_background!="<INVISIBLE>"){
+            Render::render_rectangle(x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,background_opacity,Engine::current_color_theme()->information_background);
         }
     }
 
@@ -550,7 +553,7 @@ void Information::render(int x_offset,int y_offset){
 
         string font_color_real=font_color;
         if(font_color.length()==0){
-            font_color_real=engine_interface.current_color_theme()->information_font;
+            font_color_real=Engine::current_color_theme()->information_font;
         }
 
         if(font_color_real!="<INVISIBLE>"){
@@ -584,6 +587,6 @@ void Information::render(int x_offset,int y_offset){
     }
     //If the information has a sprite, and it is not already being used as the background.
     else if(sprite.name.length()>0 && background_type!="sprite"){
-        sprite.render(main_window.renderer,x_offset+x,y_offset+y);
+        sprite.render(x_offset+x,y_offset+y);
     }
 }

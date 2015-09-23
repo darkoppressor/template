@@ -20,6 +20,8 @@
 #include <sound_manager.h>
 #include <controller_manager.h>
 #include <engine.h>
+#include <game_window.h>
+#include <engine_mailman.h>
 
 #include <cmath>
 
@@ -62,8 +64,6 @@ Engine_Interface::Engine_Interface(){
 
     hide_gui=false;
 
-    need_to_reinit=false;
-
     mouse_over=false;
 
     gui_mode="mouse";
@@ -88,25 +88,12 @@ Engine_Interface::Engine_Interface(){
     ptr_mutable_info=0;
 }
 
-void Engine_Interface::reload(){
-    need_to_reinit=true;
-}
-
 void Engine_Interface::quit(){
     game.stop();
 
     unload_world();
 
-    main_window.cleanup_video();
-
-    Controller_Manager::remove_controllers();
-
-    IMG_Quit();
-
-    Mix_CloseAudio();
-    Mix_Quit();
-
-    SDL_Quit();
+    Game_Window::deinitialize();
 
     exit(EXIT_SUCCESS);
 }
@@ -317,7 +304,7 @@ bool Engine_Interface::load_data(string tag){
                             load_engine_data(&load);
                         }
                         else if(tag=="font"){
-                            load_font(&load);
+                            Object_Manager::load_font(&load);
                         }
                         else if(tag=="cursor"){
                             load_cursor(&load);
@@ -326,7 +313,7 @@ bool Engine_Interface::load_data(string tag){
                             Object_Manager::load_color(&load);
                         }
                         else if(tag=="color_theme"){
-                            load_color_theme(&load);
+                            Object_Manager::load_color_theme(&load);
                         }
                         else if(tag=="animation"){
                             Object_Manager::load_animation(&load);
@@ -372,9 +359,7 @@ void Engine_Interface::unload_data(){
 
     Object_Manager::unload_data();
 
-    fonts.clear();
     cursors.clear();
-    color_themes.clear();
     windows.clear();
 
     window_z_order.clear();
@@ -878,28 +863,28 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_screen_width.length());
 
-            Option::screen_width=Strings::string_to_long(line);
+            Options::screen_width=Strings::string_to_long(line);
         }
         //default_screen_height
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_screen_height)){
             //Clear the data name.
             line.erase(0,str_default_screen_height.length());
 
-            Option::screen_height=Strings::string_to_long(line);
+            Options::screen_height=Strings::string_to_long(line);
         }
         //default_fullscreen
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_fullscreen)){
             //Clear the data name.
             line.erase(0,str_default_fullscreen.length());
 
-            Option::fullscreen=Strings::string_to_bool(line);
+            Options::fullscreen=Strings::string_to_bool(line);
         }
         //default_fullscreen_mode
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_fullscreen_mode)){
             //Clear the data name.
             line.erase(0,str_default_fullscreen_mode.length());
 
-            Option::fullscreen_mode=line;
+            Options::fullscreen_mode=line;
         }
 
         //default_vsync
@@ -907,28 +892,28 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
             //Clear the data name.
             line.erase(0,str_default_vsync.length());
 
-            Option::vsync=Strings::string_to_bool(line);
+            Options::vsync=Strings::string_to_bool(line);
         }
         //default_accelerometer_controller
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_accelerometer_controller)){
             //Clear the data name.
             line.erase(0,str_default_accelerometer_controller.length());
 
-            Option::accelerometer_controller=Strings::string_to_bool(line);
+            Options::accelerometer_controller=Strings::string_to_bool(line);
         }
         //default_touch_controller_state
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller_state)){
             //Clear the data name.
             line.erase(0,str_default_touch_controller_state.length());
 
-            Option::touch_controller_state=Strings::string_to_bool(line);
+            Options::touch_controller_state=Strings::string_to_bool(line);
         }
         //default_touch_controller_opacity
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_touch_controller_opacity)){
             //Clear the data name.
             line.erase(0,str_default_touch_controller_opacity.length());
 
-            Option::touch_controller_opacity=Strings::string_to_double(line);
+            Options::touch_controller_opacity=Strings::string_to_double(line);
         }
         //default_font_shadows
         else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default_font_shadows)){
@@ -1023,40 +1008,6 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
     }
 }
 
-void Engine_Interface::load_font(File_IO_Load* load){
-    fonts.push_back(Bitmap_Font());
-
-    vector<string> lines=Data_Reader::read_data(load,"</font>");
-
-    for(size_t i=0;i<lines.size();i++){
-        string& line=lines[i];
-
-        if(Data_Reader::check_prefix(line,"name:")){
-            fonts.back().name=line;
-        }
-        else if(Data_Reader::check_prefix(line,"sprite:")){
-            fonts.back().sprite.name=line;
-        }
-        else if(Data_Reader::check_prefix(line,"spacing_x:")){
-            fonts.back().spacing_x=Strings::string_to_long(line);
-        }
-        else if(Data_Reader::check_prefix(line,"spacing_y:")){
-            fonts.back().spacing_y=Strings::string_to_long(line);
-        }
-        else if(Data_Reader::check_prefix(line,"gui_padding_x:")){
-            fonts.back().gui_padding_x=Strings::string_to_long(line);
-        }
-        else if(Data_Reader::check_prefix(line,"gui_padding_y:")){
-            fonts.back().gui_padding_y=Strings::string_to_long(line);
-        }
-        else if(Data_Reader::check_prefix(line,"shadow_distance:")){
-            fonts.back().shadow_distance=Strings::string_to_long(line);
-        }
-    }
-
-    fonts.back().build_font();
-}
-
 void Engine_Interface::load_cursor(File_IO_Load* load){
     cursors.push_back(Cursor());
 
@@ -1109,215 +1060,6 @@ void Engine_Interface::load_cursor(File_IO_Load* load){
 
         //If the line ends the cursor.
         else if(!multi_line_comment && boost::algorithm::starts_with(line,"</cursor>")){
-            return;
-        }
-    }
-}
-
-void Engine_Interface::load_color_theme(File_IO_Load* load){
-    color_themes.push_back(Color_Theme());
-
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_window_font="window_font:";
-        string str_window_title_bar="window_title_bar:";
-        string str_window_background="window_background:";
-        string str_window_border="window_border:";
-        string str_button_font="button_font:";
-        string str_button_background="button_background:";
-        string str_button_background_moused="button_background_moused:";
-        string str_button_background_click="button_background_click:";
-        string str_button_border="button_border:";
-        string str_tooltip_font="tooltip_font:";
-        string str_tooltip_background="tooltip_background:";
-        string str_tooltip_border="tooltip_border:";
-        string str_toast_font="toast_font:";
-        string str_toast_background="toast_background:";
-        string str_toast_border="toast_border:";
-        string str_information_font="information_font:";
-        string str_information_background="information_background:";
-        string str_information_border="information_border:";
-        string str_gui_selector_1="gui_selector_1:";
-        string str_gui_selector_2="gui_selector_2:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //Name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
-            color_themes[color_themes.size()-1].name=line;
-        }
-        //Window font
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_window_font)){
-            //Clear the data name.
-            line.erase(0,str_window_font.length());
-
-            color_themes[color_themes.size()-1].window_font=line;
-        }
-        //Window title bar
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_window_title_bar)){
-            //Clear the data name.
-            line.erase(0,str_window_title_bar.length());
-
-            color_themes[color_themes.size()-1].window_title_bar=line;
-        }
-        //Window background
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_window_background)){
-            //Clear the data name.
-            line.erase(0,str_window_background.length());
-
-            color_themes[color_themes.size()-1].window_background=line;
-        }
-        //Window border
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_window_border)){
-            //Clear the data name.
-            line.erase(0,str_window_border.length());
-
-            color_themes[color_themes.size()-1].window_border=line;
-        }
-        //Button font
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_button_font)){
-            //Clear the data name.
-            line.erase(0,str_button_font.length());
-
-            color_themes[color_themes.size()-1].button_font=line;
-        }
-        //Button background
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_button_background)){
-            //Clear the data name.
-            line.erase(0,str_button_background.length());
-
-            color_themes[color_themes.size()-1].button_background=line;
-        }
-        //Button background moused
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_button_background_moused)){
-            //Clear the data name.
-            line.erase(0,str_button_background_moused.length());
-
-            color_themes[color_themes.size()-1].button_background_moused=line;
-        }
-        //Button background click
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_button_background_click)){
-            //Clear the data name.
-            line.erase(0,str_button_background_click.length());
-
-            color_themes[color_themes.size()-1].button_background_click=line;
-        }
-        //Button border
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_button_border)){
-            //Clear the data name.
-            line.erase(0,str_button_border.length());
-
-            color_themes[color_themes.size()-1].button_border=line;
-        }
-        //Tooltip font
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tooltip_font)){
-            //Clear the data name.
-            line.erase(0,str_tooltip_font.length());
-
-            color_themes[color_themes.size()-1].tooltip_font=line;
-        }
-        //Tooltip background
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tooltip_background)){
-            //Clear the data name.
-            line.erase(0,str_tooltip_background.length());
-
-            color_themes[color_themes.size()-1].tooltip_background=line;
-        }
-        //Tooltip border
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tooltip_border)){
-            //Clear the data name.
-            line.erase(0,str_tooltip_border.length());
-
-            color_themes[color_themes.size()-1].tooltip_border=line;
-        }
-        //Toast font
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_toast_font)){
-            //Clear the data name.
-            line.erase(0,str_toast_font.length());
-
-            color_themes[color_themes.size()-1].toast_font=line;
-        }
-        //Toast background
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_toast_background)){
-            //Clear the data name.
-            line.erase(0,str_toast_background.length());
-
-            color_themes[color_themes.size()-1].toast_background=line;
-        }
-        //Toast border
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_toast_border)){
-            //Clear the data name.
-            line.erase(0,str_toast_border.length());
-
-            color_themes[color_themes.size()-1].toast_border=line;
-        }
-        //Information font
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_information_font)){
-            //Clear the data name.
-            line.erase(0,str_information_font.length());
-
-            color_themes[color_themes.size()-1].information_font=line;
-        }
-        //Information background
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_information_background)){
-            //Clear the data name.
-            line.erase(0,str_information_background.length());
-
-            color_themes[color_themes.size()-1].information_background=line;
-        }
-        //Information border
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_information_border)){
-            //Clear the data name.
-            line.erase(0,str_information_border.length());
-
-            color_themes[color_themes.size()-1].information_border=line;
-        }
-        //GUI selector 1
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_selector_1)){
-            //Clear the data name.
-            line.erase(0,str_gui_selector_1.length());
-
-            color_themes[color_themes.size()-1].gui_selector_1=line;
-        }
-        //GUI selector 2
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_gui_selector_2)){
-            //Clear the data name.
-            line.erase(0,str_gui_selector_2.length());
-
-            color_themes[color_themes.size()-1].gui_selector_2=line;
-        }
-
-        //If the line ends the color theme.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</color_theme>")){
             return;
         }
     }
@@ -2352,24 +2094,6 @@ void Engine_Interface::load_custom_sound_data(File_IO_Load* load,Custom_Sound& s
     }
 }
 
-Bitmap_Font* Engine_Interface::get_font(std::string name){
-    Bitmap_Font* ptr_font=0;
-
-    for(size_t i=0;i<fonts.size();i++){
-        if(fonts[i].name==name){
-            ptr_font=&fonts[i];
-
-            break;
-        }
-    }
-
-    if(ptr_font==0){
-        Log::add_error("Error accessing font '"+name+"'");
-    }
-
-    return ptr_font;
-}
-
 Cursor* Engine_Interface::get_cursor(string name){
     Cursor* ptr_cursor=0;
 
@@ -2386,24 +2110,6 @@ Cursor* Engine_Interface::get_cursor(string name){
     }
 
     return ptr_cursor;
-}
-
-Color_Theme* Engine_Interface::get_color_theme(string name){
-    Color_Theme* ptr_color_theme=0;
-
-    for(int i=0;i<color_themes.size();i++){
-        if(color_themes[i].name==name){
-            ptr_color_theme=&color_themes[i];
-
-            break;
-        }
-    }
-
-    if(ptr_color_theme==0){
-        Log::add_error("Error accessing color theme '"+name+"'");
-    }
-
-    return ptr_color_theme;
 }
 
 Window* Engine_Interface::get_window(string name){
@@ -2458,10 +2164,6 @@ Game_Option* Engine_Interface::get_game_option(string name){
     }
 
     return ptr_object;
-}
-
-Color_Theme* Engine_Interface::current_color_theme(){
-    return get_color_theme(Engine_Data::color_theme);
 }
 
 void Engine_Interface::rebuild_window_data(){
@@ -3029,11 +2731,11 @@ void Engine_Interface::scroll_gui_object_down(){
 
 void Engine_Interface::get_mouse_state(int* mouse_x,int* mouse_y){
     SDL_Rect rect;
-    SDL_RenderGetViewport(main_window.renderer,&rect);
+    Game_Window::get_renderer_viewport(&rect);
 
     float scale_x=0.0f;
     float scale_y=0.0f;
-    SDL_RenderGetScale(main_window.renderer,&scale_x,&scale_y);
+    Game_Window::get_renderer_scale(&scale_x,&scale_y);
 
     SDL_GetMouseState(mouse_x,mouse_y);
 
@@ -3065,7 +2767,7 @@ void Engine_Interface::update_window_caption(int render_rate,double ms_per_frame
         msg+="  MS/Frame: "+Strings::num_to_string(ms_per_frame);
     }
 
-    SDL_SetWindowTitle(main_window.screen,msg.c_str());
+    Game_Window::set_title(msg);
 }
 
 void Engine_Interface::set_mutable_info(Information* ptr_info){
@@ -3087,7 +2789,7 @@ void Engine_Interface::set_mutable_info(Information* ptr_info){
 void Engine_Interface::clear_mutable_info(){
     ptr_mutable_info=0;
 
-    if(SDL_IsScreenKeyboardShown(main_window.screen)){
+    if(Game_Window::is_screen_keyboard_shown()){
         SDL_StopTextInput();
     }
 
@@ -3525,7 +3227,7 @@ void Engine_Interface::prepare_for_input(){
 
     window_under_mouse=0;
 
-    if(allow_screen_keyboard() && !SDL_IsScreenKeyboardShown(main_window.screen) && mutable_info_selected()){
+    if(allow_screen_keyboard() && !Game_Window::is_screen_keyboard_shown() && mutable_info_selected()){
         clear_mutable_info();
     }
 
@@ -3584,7 +3286,7 @@ bool Engine_Interface::handle_input_events_touch(){
     switch(Engine::event.type){
     case SDL_FINGERDOWN:
         if(!event_consumed){
-            Controller_Manager::finger_down(Engine::event,main_window.renderer);
+            Controller_Manager::finger_down(Engine::event);
 
             event_consumed=true;
         }
@@ -3976,7 +3678,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                 if(Engine::event.key.repeat==0){
                     //Screenshot
                     if(!event_consumed && Engine::event.key.keysym.scancode==SDL_SCANCODE_F5){
-                        main_window.screenshot();
+                        Game_Window::screenshot();
 
                         event_consumed=true;
                     }
@@ -3984,7 +3686,8 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
                     //Toggle fullscreen
                     if(!event_consumed && (keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && (Engine::event.key.keysym.scancode==SDL_SCANCODE_RETURN || Engine::event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER)){
                         change_option("cl_fullscreen_state",Strings::bool_to_string(!Options::fullscreen));
-                        reload();
+
+                        Engine_Mailman::send_letter("reload");
 
                         event_consumed=true;
                     }
@@ -4099,7 +3802,7 @@ bool Engine_Interface::handle_input_events(bool event_ignore_command_set){
         case SDL_WINDOWEVENT:
             if(!event_consumed){
                 if(Engine::event.window.event==SDL_WINDOWEVENT_MOVED){
-                    main_window.update_display_number();
+                    Game_Window::update_display_number();
 
                     event_consumed=true;
                 }
@@ -4171,21 +3874,21 @@ string Engine_Interface::get_system_info(){
 
     int logical_width=0;
     int logical_height=0;
-    SDL_RenderGetLogicalSize(main_window.renderer,&logical_width,&logical_height);
+    Game_Window::get_renderer_logical_size(&logical_width,&logical_height);
 
     SDL_Rect rect;
-    SDL_RenderGetViewport(main_window.renderer,&rect);
+    Game_Window::get_renderer_viewport(&rect);
 
     float scale_x=0.0;
     float scale_y=0.0;
-    SDL_RenderGetScale(main_window.renderer,&scale_x,&scale_y);
+    Game_Window::get_renderer_scale(&scale_x,&scale_y);
 
     int actual_width=0;
     int actual_height=0;
-    SDL_GetRendererOutputSize(main_window.renderer,&actual_width,&actual_height);
+    Game_Window::get_renderer_output_size(&actual_width,&actual_height);
 
     SDL_RendererInfo info;
-    SDL_GetRendererInfo(main_window.renderer,&info);
+    Game_Window::get_renderer_info(&info);
     string renderer_name=info.name;
 
     int mouse_x=0;
@@ -4361,7 +4064,7 @@ void Engine_Interface::render_gui_selector(){
                 offset+=2.0;
             }
 
-            Render::render_rectangle_empty(main_window.renderer,object_pos.x-offset,object_pos.y-offset,object_pos.w+offset*2.0,object_pos.h+offset*2.0,1.0,current_color_theme()->gui_selector_1,thickness);
+            Render::render_rectangle_empty(object_pos.x-offset,object_pos.y-offset,object_pos.w+offset*2.0,object_pos.h+offset*2.0,1.0,Engine::current_color_theme()->gui_selector_1,thickness);
         }
 
         if(gui_selector_style=="corners"){
@@ -4371,10 +4074,10 @@ void Engine_Interface::render_gui_selector(){
                 corner_size+=2.0;
             }
 
-            Render::render_rectangle(main_window.renderer,object_pos.x-corner_size/2.0+1,object_pos.y-corner_size/2.0+1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
-            Render::render_rectangle(main_window.renderer,object_pos.x+object_pos.w-corner_size/2.0-1,object_pos.y-corner_size/2.0+1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
-            Render::render_rectangle(main_window.renderer,object_pos.x-corner_size/2.0+1,object_pos.y+object_pos.h-corner_size/2.0-1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
-            Render::render_rectangle(main_window.renderer,object_pos.x+object_pos.w-corner_size/2.0-1,object_pos.y+object_pos.h-corner_size/2.0-1,corner_size,corner_size,1.0,current_color_theme()->gui_selector_2);
+            Render::render_rectangle(object_pos.x-corner_size/2.0+1,object_pos.y-corner_size/2.0+1,corner_size,corner_size,1.0,Engine::current_color_theme()->gui_selector_2);
+            Render::render_rectangle(object_pos.x+object_pos.w-corner_size/2.0-1,object_pos.y-corner_size/2.0+1,corner_size,corner_size,1.0,Engine::current_color_theme()->gui_selector_2);
+            Render::render_rectangle(object_pos.x-corner_size/2.0+1,object_pos.y+object_pos.h-corner_size/2.0-1,corner_size,corner_size,1.0,Engine::current_color_theme()->gui_selector_2);
+            Render::render_rectangle(object_pos.x+object_pos.w-corner_size/2.0-1,object_pos.y+object_pos.h-corner_size/2.0-1,corner_size,corner_size,1.0,Engine::current_color_theme()->gui_selector_2);
         }
 
         if(gui_selector_style=="underline"){
@@ -4385,7 +4088,7 @@ void Engine_Interface::render_gui_selector(){
             }
 
             for(int i=0;i<thickness;i++){
-                Render::render_line(main_window.renderer,object_pos.x,object_pos.y+object_pos.h+i,object_pos.x+object_pos.w-1,object_pos.y+object_pos.h+i,1.0,current_color_theme()->gui_selector_1);
+                Render::render_line(object_pos.x,object_pos.y+object_pos.h+i,object_pos.x+object_pos.w-1,object_pos.y+object_pos.h+i,1.0,Engine::current_color_theme()->gui_selector_1);
             }
         }
 
@@ -4397,66 +4100,66 @@ void Engine_Interface::render_gui_selector(){
             }
 
             for(int i=0;i<gui_selector_chasers.size();i++){
-                Render::render_rectangle(main_window.renderer,gui_selector_chasers[i].x-chaser_size/2.0,gui_selector_chasers[i].y-chaser_size/2.0,chaser_size,chaser_size,1.0,current_color_theme()->gui_selector_2);
+                Render::render_rectangle(gui_selector_chasers[i].x-chaser_size/2.0,gui_selector_chasers[i].y-chaser_size/2.0,chaser_size,chaser_size,1.0,Engine::current_color_theme()->gui_selector_2);
             }
         }
     }
 }
 
 void Engine_Interface::render_small_text_inputter(){
-    Render::render_rectangle(main_window.renderer,0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_border);
-    Render::render_rectangle(main_window.renderer,Engine_Data::window_border_thickness,Engine_Data::window_border_thickness,main_window.SCREEN_WIDTH-Engine_Data::window_border_thickness*2.0,
-                     main_window.SCREEN_HEIGHT-Engine_Data::window_border_thickness*2.0,0.75,current_color_theme()->window_background);
+    Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,0.75,Engine::current_color_theme()->window_border);
+    Render::render_rectangle(Engine_Data::window_border_thickness,Engine_Data::window_border_thickness,Game_Window::SCREEN_WIDTH-Engine_Data::window_border_thickness*2.0,
+                     Game_Window::SCREEN_HEIGHT-Engine_Data::window_border_thickness*2.0,0.75,Engine::current_color_theme()->window_background);
 
     if(mutable_info_selected()){
-        Bitmap_Font* font=get_font("small");
+        Bitmap_Font* font=Object_Manager::get_font("small");
 
-        font->show(Engine_Data::window_border_thickness+2.0,Engine_Data::window_border_thickness+2.0,ptr_mutable_info->get_cursor_line(),current_color_theme()->window_font);
+        font->show(Engine_Data::window_border_thickness+2.0,Engine_Data::window_border_thickness+2.0,ptr_mutable_info->get_cursor_line(),Engine::current_color_theme()->window_font);
     }
 
-    Bitmap_Font* font=get_font("standard");
+    Bitmap_Font* font=Object_Manager::get_font("standard");
 
     double buttons_start_y=Engine_Data::window_border_thickness+2.0+font->spacing_y*2.0;
 
-    double x_offset=((double)main_window.SCREEN_WIDTH-font->get_letter_width()*13.0)/2.0+Engine_Data::window_border_thickness;
+    double x_offset=((double)Game_Window::SCREEN_WIDTH-font->get_letter_width()*13.0)/2.0+Engine_Data::window_border_thickness;
     double offset_y=buttons_start_y;
 
     for(int i=0;i<13;i++){
-        font->show(x_offset+i*font->get_letter_width(),offset_y,characters_upper[i],current_color_theme()->window_font);
+        font->show(x_offset+i*font->get_letter_width(),offset_y,characters_upper[i],Engine::current_color_theme()->window_font);
     }
     offset_y+=font->get_letter_height();
     for(int i=13;i<characters_upper.size();i++){
-        font->show(x_offset+(i-13)*font->get_letter_width(),offset_y,characters_upper[i],current_color_theme()->window_font);
+        font->show(x_offset+(i-13)*font->get_letter_width(),offset_y,characters_upper[i],Engine::current_color_theme()->window_font);
     }
 
     offset_y+=font->get_letter_height();
     for(int i=0;i<13;i++){
-        font->show(x_offset+i*font->get_letter_width(),offset_y,characters_lower[i],current_color_theme()->window_font);
+        font->show(x_offset+i*font->get_letter_width(),offset_y,characters_lower[i],Engine::current_color_theme()->window_font);
     }
     offset_y+=font->get_letter_height();
     for(int i=13;i<characters_lower.size();i++){
-        font->show(x_offset+(i-13)*font->get_letter_width(),offset_y,characters_lower[i],current_color_theme()->window_font);
+        font->show(x_offset+(i-13)*font->get_letter_width(),offset_y,characters_lower[i],Engine::current_color_theme()->window_font);
     }
     offset_y+=font->get_letter_height();
 
     for(int i=0;i<characters_numbers.size();i++){
-        font->show(x_offset+i*font->get_letter_width(),offset_y,characters_numbers[i],current_color_theme()->window_font);
+        font->show(x_offset+i*font->get_letter_width(),offset_y,characters_numbers[i],Engine::current_color_theme()->window_font);
     }
     offset_y+=font->get_letter_height();
 
     for(int i=0;i<13;i++){
-        font->show(x_offset+i*font->get_letter_width(),offset_y,characters_symbols[i],current_color_theme()->window_font);
+        font->show(x_offset+i*font->get_letter_width(),offset_y,characters_symbols[i],Engine::current_color_theme()->window_font);
     }
     offset_y+=font->get_letter_height();
     for(int i=13;i<26;i++){
-        font->show(x_offset+(i-13)*font->get_letter_width(),offset_y,characters_symbols[i],current_color_theme()->window_font);
+        font->show(x_offset+(i-13)*font->get_letter_width(),offset_y,characters_symbols[i],Engine::current_color_theme()->window_font);
     }
     offset_y+=font->get_letter_height();
     for(int i=26;i<characters_symbols.size();i++){
-        font->show(x_offset+(i-26)*font->get_letter_width(),offset_y,characters_symbols[i],current_color_theme()->window_font);
+        font->show(x_offset+(i-26)*font->get_letter_width(),offset_y,characters_symbols[i],Engine::current_color_theme()->window_font);
     }
 
-    text_selector.render(main_window.renderer,x_offset+text_entry_small_selector.x*font->get_letter_width()-(text_selector.get_width()-font->get_letter_width())/2.0,buttons_start_y+text_entry_small_selector.y*font->get_letter_height()-(text_selector.get_height()-font->get_letter_height())/2.0);
+    text_selector.render(x_offset+text_entry_small_selector.x*font->get_letter_width()-(text_selector.get_width()-font->get_letter_width())/2.0,buttons_start_y+text_entry_small_selector.y*font->get_letter_height()-(text_selector.get_height()-font->get_letter_height())/2.0);
 }
 
 void Engine_Interface::render_text_inputter(){
@@ -4464,7 +4167,7 @@ void Engine_Interface::render_text_inputter(){
 
     int selected_chunk=get_text_input_selected_chunk();
 
-    double outer_radius=main_window.SCREEN_WIDTH/5;
+    double outer_radius=Game_Window::SCREEN_WIDTH/5;
     double outer_center_y=outer_radius+10;
 
     //The topmost instructions' y position.
@@ -4491,52 +4194,52 @@ void Engine_Interface::render_text_inputter(){
         }
 
         if(object_pos.x!=-1){
-            if(object_pos.x<=main_window.SCREEN_WIDTH/2){
-                x_adjust=main_window.SCREEN_WIDTH/2;
+            if(object_pos.x<=Game_Window::SCREEN_WIDTH/2){
+                x_adjust=Game_Window::SCREEN_WIDTH/2;
             }
 
-            if(object_pos.y<=main_window.SCREEN_HEIGHT/2){
-                outer_center_y=main_window.SCREEN_HEIGHT-outer_radius-10;
+            if(object_pos.y<=Game_Window::SCREEN_HEIGHT/2){
+                outer_center_y=Game_Window::SCREEN_HEIGHT-outer_radius-10;
                 words_y=outer_center_y-outer_radius-120;
             }
         }
     }
 
-    double outer_center_x=x_adjust+main_window.SCREEN_WIDTH/4;
+    double outer_center_x=x_adjust+Game_Window::SCREEN_WIDTH/4;
 
-    Bitmap_Font* font=get_font("standard");
+    Bitmap_Font* font=Object_Manager::get_font("standard");
 
-    Render::render_rectangle(main_window.renderer,x_adjust,0,main_window.SCREEN_WIDTH/2,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_background);
-    Render::render_rectangle_empty(main_window.renderer,x_adjust,0,main_window.SCREEN_WIDTH/2,main_window.SCREEN_HEIGHT,0.75,current_color_theme()->window_border,2.0);
-    Render::render_circle(main_window.renderer,outer_center_x+4,outer_center_y+4,outer_radius,1.0,"ui_black");
-    Render::render_circle(main_window.renderer,outer_center_x,outer_center_y,outer_radius,1.0,current_color_theme()->window_border);
+    Render::render_rectangle(x_adjust,0,Game_Window::SCREEN_WIDTH/2,Game_Window::SCREEN_HEIGHT,0.75,Engine::current_color_theme()->window_background);
+    Render::render_rectangle_empty(x_adjust,0,Game_Window::SCREEN_WIDTH/2,Game_Window::SCREEN_HEIGHT,0.75,Engine::current_color_theme()->window_border,2.0);
+    Render::render_circle(outer_center_x+4,outer_center_y+4,outer_radius,1.0,"ui_black");
+    Render::render_circle(outer_center_x,outer_center_y,outer_radius,1.0,Engine::current_color_theme()->window_border);
 
-    Render::render_circle(main_window.renderer,outer_center_x,outer_center_y,16.0,1.0,"ui_gray");
+    Render::render_circle(outer_center_x,outer_center_y,16.0,1.0,"ui_gray");
     font->show(outer_center_x-12.0,outer_center_y-8.0,"LS","ui_white");
 
     string text="";
 
     text="(Press for Return)";
-    font->show(x_adjust+(main_window.SCREEN_WIDTH/2-text.length()*font->spacing_x)/2,outer_center_y-8.0+font->spacing_y,text,"ui_white");
+    font->show(x_adjust+(Game_Window::SCREEN_WIDTH/2-text.length()*font->spacing_x)/2,outer_center_y-8.0+font->spacing_y,text,"ui_white");
 
     text="[LB] Backspace";
-    font->show(x_adjust+100,words_y,text,current_color_theme()->window_font);
+    font->show(x_adjust+100,words_y,text,Engine::current_color_theme()->window_font);
     text="Space [RB]";
-    font->show(x_adjust+main_window.SCREEN_WIDTH/2-text.length()*font->spacing_x-100,words_y,text,current_color_theme()->window_font);
+    font->show(x_adjust+Game_Window::SCREEN_WIDTH/2-text.length()*font->spacing_x-100,words_y,text,Engine::current_color_theme()->window_font);
 
     text="(LT) Caps";
-    font->show(x_adjust+100,words_y+30,text,current_color_theme()->window_font);
+    font->show(x_adjust+100,words_y+30,text,Engine::current_color_theme()->window_font);
     text="Numbers (RT)";
-    font->show(x_adjust+main_window.SCREEN_WIDTH/2-text.length()*font->spacing_x-100,words_y+30,text,current_color_theme()->window_font);
+    font->show(x_adjust+Game_Window::SCREEN_WIDTH/2-text.length()*font->spacing_x-100,words_y+30,text,Engine::current_color_theme()->window_font);
 
     if(selected_chunk==-1){
         if(is_console_selected()){
             text="(A) Auto-complete";
-            font->show(x_adjust+(main_window.SCREEN_WIDTH/2-text.length()*font->spacing_x)/2,words_y+60,text,current_color_theme()->window_font);
+            font->show(x_adjust+(Game_Window::SCREEN_WIDTH/2-text.length()*font->spacing_x)/2,words_y+60,text,Engine::current_color_theme()->window_font);
         }
 
         text="(B) Back/Done";
-        font->show(x_adjust+(main_window.SCREEN_WIDTH/2-text.length()*font->spacing_x)/2,words_y+90,text,current_color_theme()->window_font);
+        font->show(x_adjust+(Game_Window::SCREEN_WIDTH/2-text.length()*font->spacing_x)/2,words_y+90,text,Engine::current_color_theme()->window_font);
     }
 
     int character_chunk=0;
@@ -4549,12 +4252,12 @@ void Engine_Interface::render_text_inputter(){
         double inner_center_x=outer_center_x+mid_radius*cos(Math::degrees_to_radians(angle));
         double inner_center_y=outer_center_y+mid_radius*sin(Math::degrees_to_radians(angle));
 
-        string outer_circle_color=current_color_theme()->window_background;
+        string outer_circle_color=Engine::current_color_theme()->window_background;
         if(character_chunk==selected_chunk){
-            outer_circle_color=current_color_theme()->window_title_bar;
+            outer_circle_color=Engine::current_color_theme()->window_title_bar;
         }
 
-        Render::render_circle(main_window.renderer,inner_center_x,inner_center_y,inner_radius,1.0,outer_circle_color);
+        Render::render_circle(inner_center_x,inner_center_y,inner_radius,1.0,outer_circle_color);
 
         for(double letter_angle=-180.0;letter_angle<180.0;letter_angle+=90.0){
             double letter_circle_radius=inner_radius*0.75;
@@ -4577,12 +4280,12 @@ void Engine_Interface::render_text_inputter(){
             double letter_center_x=inner_center_x+letter_circle_radius*cos(Math::degrees_to_radians(letter_angle));
             double letter_center_y=inner_center_y+letter_circle_radius*sin(Math::degrees_to_radians(letter_angle));
 
-            string font_color=current_color_theme()->window_font;
+            string font_color=Engine::current_color_theme()->window_font;
 
             if(character_chunk==selected_chunk){
                 font_color="ui_white";
 
-                Render::render_circle(main_window.renderer,letter_center_x,letter_center_y,letter_radius,1.0,circle_color);
+                Render::render_circle(letter_center_x,letter_center_y,letter_radius,1.0,circle_color);
             }
 
             if(character<characters->size()){
@@ -4598,15 +4301,15 @@ void Engine_Interface::render_text_inputter(){
 
 void Engine_Interface::render_text_editing(){
     if(mutable_info_selected()){
-        Bitmap_Font* font=get_font("small");
+        Bitmap_Font* font=Object_Manager::get_font("small");
 
         string text=ptr_mutable_info->get_cursor_line();
 
-        Render::render_rectangle(main_window.renderer,0.0,0.0,main_window.SCREEN_WIDTH,font->spacing_y+Engine_Data::window_border_thickness*2.0,0.75,current_color_theme()->window_border);
-        Render::render_rectangle(main_window.renderer,Engine_Data::window_border_thickness,Engine_Data::window_border_thickness,main_window.SCREEN_WIDTH-Engine_Data::window_border_thickness*2.0,
-                         font->spacing_y,0.75,current_color_theme()->window_background);
+        Render::render_rectangle(0.0,0.0,Game_Window::SCREEN_WIDTH,font->spacing_y+Engine_Data::window_border_thickness*2.0,0.75,Engine::current_color_theme()->window_border);
+        Render::render_rectangle(Engine_Data::window_border_thickness,Engine_Data::window_border_thickness,Game_Window::SCREEN_WIDTH-Engine_Data::window_border_thickness*2.0,
+                         font->spacing_y,0.75,Engine::current_color_theme()->window_background);
 
-        font->show((main_window.SCREEN_WIDTH-(text.length()*font->spacing_x))/2.0,Engine_Data::window_border_thickness,text,current_color_theme()->window_font);
+        font->show((Game_Window::SCREEN_WIDTH-(text.length()*font->spacing_x))/2.0,Engine_Data::window_border_thickness,text,Engine::current_color_theme()->window_font);
     }
 }
 
@@ -4651,11 +4354,11 @@ void Engine_Interface::render(int render_rate,double ms_per_frame,int logic_fram
             }
         }
 
-        if(mutable_info_selected() && allow_screen_keyboard() && SDL_IsScreenKeyboardShown(main_window.screen)){
+        if(mutable_info_selected() && allow_screen_keyboard() && Game_Window::is_screen_keyboard_shown()){
             render_text_editing();
         }
 
-        Controller_Manager::render_touch_controller(main_window.renderer,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT);
+        Controller_Manager::render_touch_controller();
 
         if(Options::dev){
             render_dev_info();

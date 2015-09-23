@@ -9,18 +9,13 @@
 #include <sound_manager.h>
 #include <music_manager.h>
 #include <rtt_manager.h>
+#include <game_window.h>
 
 using namespace std;
 
-Game_Window main_window;
-
 Engine_Interface engine_interface;
 
-Update update;
-
 Network network;
-
-Game game;
 
 bool load_world(){
     engine_interface.load_data_game_options();
@@ -29,7 +24,7 @@ bool load_world(){
         return false;
     }
 
-    if(!main_window.init()){
+    if(!Game_Window::initialize()){
         return false;
     }
 
@@ -41,7 +36,7 @@ bool load_world(){
 
     engine_interface.load_data_main();
 
-    ///Rtt_Manager::add_texture(main_window.renderer,"example",1024.0,1024.0);
+    ///Rtt_Manager::add_texture("example",1024.0,1024.0);
 
     engine_interface.console.setup(false);
     engine_interface.chat.setup(true);

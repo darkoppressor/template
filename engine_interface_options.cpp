@@ -13,6 +13,9 @@
 #include <options.h>
 #include <music_manager.h>
 #include <engine.h>
+#include <controller_manager.h>
+#include <game_window.h>
+#include <engine_mailman.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -404,7 +407,7 @@ void Engine_Interface::change_option(string option,string new_value){
     else if(option=="cl_screen_keyboard"){
         Options::screen_keyboard=Strings::string_to_bool(new_value);
 
-        if(!Options::screen_keyboard && SDL_IsScreenKeyboardShown(main_window.screen)){
+        if(!Options::screen_keyboard && Game_Window::is_screen_keyboard_shown()){
             SDL_StopTextInput();
         }
     }
@@ -415,10 +418,10 @@ void Engine_Interface::change_option(string option,string new_value){
         Options::bind_cursor=Strings::string_to_bool(new_value);
 
         if(Options::bind_cursor){
-            SDL_SetWindowGrab(main_window.screen,SDL_TRUE);
+            Game_Window::set_window_grab(true);
         }
         else{
-            SDL_SetWindowGrab(main_window.screen,SDL_FALSE);
+            Game_Window::set_window_grab(false);
         }
     }
 
@@ -503,7 +506,7 @@ void Engine_Interface::apply_options_graphics(const string& cl_screen_width,cons
 
     if(old_screen_width!=cl_screen_width || old_screen_height!=cl_screen_height || old_display_number!=cl_display_number ||
        old_fullscreen_state!=cl_fullscreen_state || old_fullscreen_mode!=cl_fullscreen_mode){
-        reload();
+        Engine_Mailman::send_letter("reload");
     }
 }
 

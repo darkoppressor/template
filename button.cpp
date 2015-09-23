@@ -11,6 +11,9 @@
 #include <sound_manager.h>
 #include <engine_data.h>
 #include <controller_manager.h>
+#include <font.h>
+#include <object_manager.h>
+#include <engine.h>
 
 using namespace std;
 
@@ -85,10 +88,10 @@ void Button::set_dimensions(){
 }
 
 void Button::set_dimensions_text(){
-    Bitmap_Font* ptr_font=engine_interface.get_font(font);
+    Bitmap_Font* ptr_font=Object_Manager::get_font(font);
 
-    w=Engine_Data::gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->gui_padding_x;
-    h=Engine_Data::gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->gui_padding_y;
+    w=Engine_Data::gui_border_thickness*2.0+Strings::longest_line(text)*ptr_font->spacing_x+ptr_font->get_gui_padding_x();
+    h=Engine_Data::gui_border_thickness*2.0+(Strings::newline_count(text)+1)*ptr_font->spacing_y+ptr_font->get_gui_padding_y();
 }
 
 void Button::center_in_window(int window_width,int window_height){
@@ -268,30 +271,30 @@ void Button::animate(){
 }
 
 void Button::render(int x_offset,int y_offset){
-    Bitmap_Font* ptr_font=engine_interface.get_font(font);
+    Bitmap_Font* ptr_font=Object_Manager::get_font(font);
 
     set_dimensions();
 
     string font_color_real=font_color;
     if(font_color.length()==0){
-        font_color_real=engine_interface.current_color_theme()->button_font;
+        font_color_real=Engine::current_color_theme()->button_font;
     }
 
     //Normal.
     if(!moused_over && !clicked){
         //If we are using sprites for the button instead of the standard system.
         if(sprite.name.length()>0){
-            sprite.render(main_window.renderer,x_offset+x,y_offset+y);
+            sprite.render(x_offset+x,y_offset+y);
         }
         else{
             //Render the border.
-            if(engine_interface.current_color_theme()->button_border!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
+            if(Engine::current_color_theme()->button_border!="<INVISIBLE>"){
+                Render::render_rectangle(x_offset+x,y_offset+y,w,h,1.0,Engine::current_color_theme()->button_border);
             }
 
             //Render the background.
-            if(engine_interface.current_color_theme()->button_background!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background);
+            if(Engine::current_color_theme()->button_background!="<INVISIBLE>"){
+                Render::render_rectangle(x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,1.0,Engine::current_color_theme()->button_background);
             }
 
             //Display the button's text.
@@ -304,17 +307,17 @@ void Button::render(int x_offset,int y_offset){
     else if(moused_over && !clicked){
         //If we are using sprites for the button instead of the standard system.
         if(sprite_moused.name.length()>0){
-            sprite_moused.render(main_window.renderer,x_offset+x,y_offset+y);
+            sprite_moused.render(x_offset+x,y_offset+y);
         }
         else{
             //Render the border.
-            if(engine_interface.current_color_theme()->button_border!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
+            if(Engine::current_color_theme()->button_border!="<INVISIBLE>"){
+                Render::render_rectangle(x_offset+x,y_offset+y,w,h,1.0,Engine::current_color_theme()->button_border);
             }
 
             //Render the background.
-            if(engine_interface.current_color_theme()->button_background_moused!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_moused);
+            if(Engine::current_color_theme()->button_background_moused!="<INVISIBLE>"){
+                Render::render_rectangle(x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,1.0,Engine::current_color_theme()->button_background_moused);
             }
 
             //Display the button's text.
@@ -327,17 +330,17 @@ void Button::render(int x_offset,int y_offset){
     else if(clicked){
         //If we are using sprites for the button instead of the standard system.
         if(sprite_click.name.length()>0){
-            sprite_click.render(main_window.renderer,x_offset+x,y_offset+y);
+            sprite_click.render(x_offset+x,y_offset+y);
         }
         else{
             //Render the border.
-            if(engine_interface.current_color_theme()->button_border!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x,y_offset+y,w,h,1.0,engine_interface.current_color_theme()->button_border);
+            if(Engine::current_color_theme()->button_border!="<INVISIBLE>"){
+                Render::render_rectangle(x_offset+x,y_offset+y,w,h,1.0,Engine::current_color_theme()->button_border);
             }
 
             //Render the background.
-            if(engine_interface.current_color_theme()->button_background_click!="<INVISIBLE>"){
-                Render::render_rectangle(main_window.renderer,x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-engine_interface.gui_border_thickness*2.0,1.0,engine_interface.current_color_theme()->button_background_click);
+            if(Engine::current_color_theme()->button_background_click!="<INVISIBLE>"){
+                Render::render_rectangle(x_offset+x+Engine_Data::gui_border_thickness,y_offset+y+Engine_Data::gui_border_thickness,w-Engine_Data::gui_border_thickness*2.0,h-Engine_Data::gui_border_thickness*2.0,1.0,Engine::current_color_theme()->button_background_click);
             }
 
             //Display the button's text.

@@ -8,23 +8,23 @@
 class Update{
 public:
 
-    void check_mail();
+    static void check_mail();
 
-    void ai();
+    static void ai();
 
-    void input();
+    static void input();
 
-    void tick();
+    static void tick();
 
-    void movement();
+    static void movement();
 
-    void events();
+    static void events();
 
-    void animate();
+    static void animate();
 
-    void camera(int frame_rate,double ms_per_frame,int logic_frame_rate);
+    static void camera(int frame_rate,double ms_per_frame,int logic_frame_rate);
 
-    void render(int frame_rate,double ms_per_frame,int logic_frame_rate);
+    static void render(int frame_rate,double ms_per_frame,int logic_frame_rate);
 };
 
 #endif

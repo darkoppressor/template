@@ -7,6 +7,8 @@
 
 #include <strings.h>
 #include <log.h>
+#include <engine.h>
+#include <options.h>
 
 using namespace std;
 

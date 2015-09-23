@@ -73,6 +73,6 @@ void Cursor::render(int x,int y){
     else{
         SDL_ShowCursor(SDL_DISABLE);
 
-        sprite.render(main_window.renderer,x,y);
+        sprite.render(x,y);
     }
 }

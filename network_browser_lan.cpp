@@ -7,6 +7,7 @@
 
 #include <strings.h>
 #include <log.h>
+#include <engine_data.h>
 
 #include <boost/algorithm/string.hpp>
 

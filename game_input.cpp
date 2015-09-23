@@ -2,20 +2,13 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#include "game.h"
 #include "world.h"
 
+#include <game_manager.h>
 #include <options.h>
+#include <engine.h>
 
 using namespace std;
-
-void Game::prepare_for_input(){
-    if(in_progress){
-        command_states.clear();
-
-        display_scoreboard=false;
-    }
-}
 
 void Game::handle_command_states_multiplayer(){
     if(in_progress){

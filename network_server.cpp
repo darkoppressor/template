@@ -8,6 +8,8 @@
 #include <strings.h>
 #include <log.h>
 #include <engine.h>
+#include <options.h>
+#include <engine_data.h>
 
 using namespace std;
 

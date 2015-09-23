@@ -7,6 +7,11 @@
 
 #include <strings.h>
 #include <log.h>
+#include <game_window.h>
+#include <object_manager.h>
+#include <engine_data.h>
+#include <options.h>
+#include <engine.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -51,7 +56,7 @@ void Console::setup(bool get_chat){
     info_display.background_type="standard";
     info_display.background_opacity=background_opacity;
     info_display.scrolling=true;
-    info_display.scroll_width=main_window.SCREEN_WIDTH/engine_interface.get_font(info_display.font)->spacing_x-1;
+    info_display.scroll_width=Game_Window::SCREEN_WIDTH/Object_Manager::get_font(info_display.font)->spacing_x-1;
     if(!chat){
         info_display.scroll_height=Engine_Data::console_height;
     }
@@ -62,13 +67,13 @@ void Console::setup(bool get_chat){
     info_display.start_x=info_display.x;
     info_display.start_y=info_display.y;
     info_display.set_dimensions();
-    info_display.center_in_window(main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT);
+    info_display.center_in_window(Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT);
 
     if(!chat){
         info_display.y=-info_display.h;
     }
     else{
-        info_display.y=main_window.SCREEN_HEIGHT;
+        info_display.y=Game_Window::SCREEN_HEIGHT;
     }
 
     y=info_display.y;
@@ -84,14 +89,14 @@ void Console::setup(bool get_chat){
     info_input.font_color=font_color;
     info_input.background_type="standard";
     info_input.background_opacity=background_opacity;
-    info_input.scroll_width=main_window.SCREEN_WIDTH/engine_interface.get_font(info_input.font)->spacing_x-1;
+    info_input.scroll_width=Game_Window::SCREEN_WIDTH/Object_Manager::get_font(info_input.font)->spacing_x-1;
     info_input.scroll_height=1;
     info_input.x=-1;
     info_input.y=y+info_display.h;
     info_input.start_x=info_input.x;
     info_input.start_y=info_input.y;
     info_input.set_dimensions();
-    info_input.center_in_window(main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT);
+    info_input.center_in_window(Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT);
 
     //If the command strings vector is larger or smaller than it is allowed to be, resize it.
     while(recalled_command_strings.size()<max_command_recall){
@@ -279,21 +284,21 @@ void Console::move(){
     }
     else{
         if(move_speed>0){
-            if(on && y>main_window.SCREEN_HEIGHT-info_display.h-info_input.h){
+            if(on && y>Game_Window::SCREEN_HEIGHT-info_display.h-info_input.h){
                 y-=(int)ceil((double)move_speed/Engine::UPDATE_RATE);
 
-                if(y<main_window.SCREEN_HEIGHT-info_display.h-info_input.h){
-                    y=main_window.SCREEN_HEIGHT-info_display.h-info_input.h;
+                if(y<Game_Window::SCREEN_HEIGHT-info_display.h-info_input.h){
+                    y=Game_Window::SCREEN_HEIGHT-info_display.h-info_input.h;
                 }
 
                 info_display.y=y;
                 info_input.y=y+info_display.h;
             }
-            else if(!on && y<main_window.SCREEN_HEIGHT){
+            else if(!on && y<Game_Window::SCREEN_HEIGHT){
                 y+=(int)ceil((double)move_speed/Engine::UPDATE_RATE);
 
-                if(y>main_window.SCREEN_HEIGHT){
-                    y=main_window.SCREEN_HEIGHT;
+                if(y>Game_Window::SCREEN_HEIGHT){
+                    y=Game_Window::SCREEN_HEIGHT;
                 }
 
                 info_display.y=y;
@@ -302,13 +307,13 @@ void Console::move(){
         }
         else{
             if(on){
-                y=main_window.SCREEN_HEIGHT-info_display.h-info_input.h;
+                y=Game_Window::SCREEN_HEIGHT-info_display.h-info_input.h;
 
                 info_display.y=y;
                 info_input.y=y+info_display.h;
             }
             else{
-                y=main_window.SCREEN_HEIGHT;
+                y=Game_Window::SCREEN_HEIGHT;
 
                 info_display.y=y;
                 info_input.y=y+info_display.h;
@@ -394,7 +399,7 @@ void Console::tab_complete(){
                                 this_line+=" ";
                             }
 
-                            if(valid_command_display[valid_command_display.size()-1].length()+this_line.length()>info_display.w/engine_interface.get_font(info_display.font)->spacing_x){
+                            if(valid_command_display[valid_command_display.size()-1].length()+this_line.length()>info_display.w/Object_Manager::get_font(info_display.font)->spacing_x){
                                 valid_command_display.push_back("");
                             }
 
@@ -543,13 +548,13 @@ void Console::render(){
     }
     else{
         if(game.in_progress){
-            if(y<main_window.SCREEN_HEIGHT){
+            if(y<Game_Window::SCREEN_HEIGHT){
                 info_display.render(0,0);
                 info_input.render(0,0);
             }
             else{
                 Information info_temp_display=info_display;
-                info_temp_display.y=main_window.SCREEN_HEIGHT-info_display.h-info_input.h;
+                info_temp_display.y=Game_Window::SCREEN_HEIGHT-info_display.h-info_input.h;
                 info_temp_display.background_type="none";
 
                 int line=0;

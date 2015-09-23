@@ -8,6 +8,8 @@
 #include <strings.h>
 #include <render.h>
 #include <options.h>
+#include <font.h>
+#include <object_manager.h>
 
 using namespace std;
 
@@ -21,7 +23,7 @@ void Engine_Interface::render_dev_info(){
     }
 
     if(msg.length()>0){
-        Bitmap_Font* font=get_font("small");
+        Bitmap_Font* font=Object_Manager::get_font("small");
 
 		double y=2.0;
         if(Options::fps){
@@ -32,7 +34,7 @@ void Engine_Interface::render_dev_info(){
             }
         }
 
-        Render::render_rectangle(main_window.renderer,2.0,y,Strings::longest_line(msg)*font->spacing_x,Strings::newline_count(msg)*font->spacing_y,0.75,"ui_black");
+        Render::render_rectangle(2.0,y,Strings::longest_line(msg)*font->spacing_x,Strings::newline_count(msg)*font->spacing_y,0.75,"ui_black");
         font->show(2.0,y,msg,"red");
     }
 }

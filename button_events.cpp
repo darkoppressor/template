@@ -8,6 +8,8 @@
 #include <strings.h>
 #include <log.h>
 #include <directories.h>
+#include <object_manager.h>
+#include <game_window.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -44,8 +46,8 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             string save_path=Directories::get_save_directory_absolute();
 
             vector<string> lines;
-            int spacing_x=engine_interface.get_font("small")->spacing_x;
-            int window_width=(int)floor((double)main_window.SCREEN_WIDTH*0.8);
+            int spacing_x=Object_Manager::get_font("small")->spacing_x;
+            int window_width=(int)floor((double)Game_Window::SCREEN_WIDTH*0.8);
 
             while(save_path.length()*spacing_x>window_width){
                 int i=window_width/spacing_x;

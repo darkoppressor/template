@@ -9,18 +9,9 @@
 using namespace std;
 
 bool Game_Mailman::has_mail(){
-    return !Engine_Mailman::mail_out.empty();
+    return Engine_Mailman::has_mail();
 }
 
 string Game_Mailman::get_letter(){
-    if(has_mail()){
-        string letter=Engine_Mailman::mail_out.front();
-
-        Engine_Mailman::mail_out.pop();
-
-        return letter;
-    }
-    else{
-        return "";
-    }
+    return Engine_Mailman::deliver_letter();
 }
