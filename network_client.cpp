@@ -273,7 +273,7 @@ void Network::receive_initial_game_data(){
 
     engine_interface.set_logic_update_rate(update_rate);
 
-    game.start_client();
+    Game_Manager::start_client();
 
     read_initial_game_data(&bitstream);
 
@@ -341,7 +341,7 @@ void Network::receive_update(){
 
 void Network::send_input(){
     if(status=="client"){
-        if(game.in_progress){
+        if(Game_Manager::in_progress){
             if(commands_this_second<rate_commands && ++counter_commands>=(uint32_t)ceil(Engine::UPDATE_RATE/(double)rate_commands)){
                 counter_commands=0;
 
@@ -356,9 +356,9 @@ void Network::send_input(){
                 }
                 command_buffer.clear();
 
-                bitstream.WriteCompressed((int)game.command_states.size());
-                for(int i=0;i<game.command_states.size();i++){
-                    bitstream.WriteCompressed((RakNet::RakString)game.command_states[i].c_str());
+                bitstream.WriteCompressed((int)Game_Manager::command_states.size());
+                for(int i=0;i<Game_Manager::command_states.size();i++){
+                    bitstream.WriteCompressed((RakNet::RakString)Game_Manager::command_states[i].c_str());
                 }
 
                 stat_counter_bytes_sent+=bitstream.GetNumberOfBytesUsed();
@@ -398,7 +398,7 @@ void Network::receive_paused(){
     RakNet::MessageID type_id;
     bitstream.Read(type_id);
 
-    game.toggle_pause();
+    Game_Manager::toggle_pause();
 }
 
 void Network::receive_sound(){

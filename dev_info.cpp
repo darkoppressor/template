@@ -16,10 +16,10 @@ using namespace std;
 void Engine_Interface::render_dev_info(){
     string msg="";
 
-    if(game.in_progress){
-        msg+="Camera Position: "+Strings::num_to_string(game.camera.x)+","+Strings::num_to_string(game.camera.y)+"\n";
-        msg+="Camera Size: "+Strings::num_to_string(game.camera.w/game.camera_zoom)+","+Strings::num_to_string(game.camera.h/game.camera_zoom)+"\n";
-        msg+="Camera Zoom: "+Strings::num_to_string(game.camera_zoom)+"\n";
+    if(Game_Manager::in_progress){
+        msg+="Camera Position: "+Strings::num_to_string(Game_Manager::camera.x)+","+Strings::num_to_string(Game_Manager::camera.y)+"\n";
+        msg+="Camera Size: "+Strings::num_to_string(Game_Manager::camera.w/Game_Manager::camera_zoom)+","+Strings::num_to_string(Game_Manager::camera.h/Game_Manager::camera_zoom)+"\n";
+        msg+="Camera Zoom: "+Strings::num_to_string(Game_Manager::camera_zoom)+"\n";
     }
 
     if(msg.length()>0){

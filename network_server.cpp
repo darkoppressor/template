@@ -128,7 +128,7 @@ uint32_t Network::get_client_count(){
 void Network::prepare_server_input_states(){
     clients[0].command_states.clear();
 
-    clients[0].command_states=game.command_states;
+    clients[0].command_states=Game_Manager::command_states;
 }
 
 void Network::send_version(){
@@ -278,7 +278,7 @@ void Network::send_client_list(){
 
 void Network::send_updates(){
     if(status=="server"){
-        if(game.in_progress){
+        if(Game_Manager::in_progress){
             for(int i=1;i<clients.size();i++){
                 if(clients[i].connected){
                     uint32_t client_rate_bytes=clients[i].rate_bytes;

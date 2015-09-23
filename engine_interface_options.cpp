@@ -271,7 +271,7 @@ string Engine_Interface::get_option_value(string option){
 
     for(int i=0;i<game_options.size();i++){
         if(option==game_options[i].name){
-            return Game_Options::get_value(game_options[i].name);
+            return game_options[i].get_value();
         }
     }
 
@@ -463,7 +463,7 @@ void Engine_Interface::change_option(string option,string new_value){
 
         for(int i=0;i<game_options.size();i++){
             if(option==game_options[i].name){
-                Game_Options::set_value(game_options[i].name,new_value);
+                game_options[i].set_value(new_value);
 
                 game_option=true;
 
@@ -606,7 +606,7 @@ bool Engine_Interface::save_options(){
     save<<"\n";
 
     for(int i=0;i<game_options.size();i++){
-        save<<"\t"<<game_options[i].name<<":"<<Game_Options::get_value(game_options[i].name)<<"\n";
+        save<<"\t"<<game_options[i].name<<":"<<game_options[i].get_value()<<"\n";
     }
 
     save<<"</options>\n";
@@ -848,7 +848,7 @@ bool Engine_Interface::load_options(){
                         //Clear the data name.
                         line.erase(0,str_game_option.length());
 
-                        Game_Options::set_value(game_options[i].name,line);
+                        game_options[i].set_value(line);
                     }
                 }
             }

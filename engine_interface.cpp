@@ -89,7 +89,7 @@ Engine_Interface::Engine_Interface(){
 }
 
 void Engine_Interface::quit(){
-    game.stop();
+    Game_Manager::stop();
 
     unload_world();
 
@@ -252,9 +252,7 @@ void Engine_Interface::load_data_main(){
         windows[i].set_last_normal_button();
     }
 
-    for(int i=0;i<cursors.size();i++){
-        cursors[i].load_hw_cursor();
-    }
+    Object_Manager::load_hw_cursors();
 
     text_selector.set_name("text_selector");
 }
@@ -307,7 +305,7 @@ bool Engine_Interface::load_data(string tag){
                             Object_Manager::load_font(&load);
                         }
                         else if(tag=="cursor"){
-                            load_cursor(&load);
+                            Object_Manager::load_cursor(&load);
                         }
                         else if(tag=="color"){
                             Object_Manager::load_color(&load);
@@ -322,16 +320,16 @@ bool Engine_Interface::load_data(string tag){
                             load_window(&load);
                         }
                         else if(tag=="game_command"){
-                            load_game_command(&load);
+                            Object_Manager::load_game_command(&load);
                         }
                         else if(tag=="game_option"){
-                            load_game_option(&load);
+                            Object_Manager::load_game_option(&load);
                         }
                         else if(tag=="game_constant"){
-                            load_game_constant(&load);
+                            Object_Manager::load_game_constant(&load);
                         }
                         else if(tag=="custom_sound"){
-                            load_custom_sound(&load);
+                            Object_Manager::load_custom_sound(&load);
                         }
                         else{
                             load_data_tag_game(tag,&load);
@@ -351,22 +349,14 @@ bool Engine_Interface::load_data(string tag){
 }
 
 void Engine_Interface::unload_data(){
-    for(int i=0;i<cursors.size();i++){
-        cursors[i].free_hw_cursor();
-    }
-
     clear_mutable_info();
 
     Object_Manager::unload_data();
 
-    cursors.clear();
     windows.clear();
 
     window_z_order.clear();
     window_under_mouse=0;
-
-    game_commands.clear();
-    game_options.clear();
 
     unload_data_game();
 }
@@ -1008,63 +998,6 @@ void Engine_Interface::load_engine_data(File_IO_Load* load){
     }
 }
 
-void Engine_Interface::load_cursor(File_IO_Load* load){
-    cursors.push_back(Cursor());
-
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_sprite="sprite:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //Name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
-            cursors[cursors.size()-1].name=line;
-        }
-        //Sprite
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sprite)){
-            //Clear the data name.
-            line.erase(0,str_sprite.length());
-
-            cursors[cursors.size()-1].sprite.name=line;
-        }
-
-        //If the line ends the cursor.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</cursor>")){
-            return;
-        }
-    }
-}
-
 void Engine_Interface::load_window(File_IO_Load* load){
     windows.push_back(Window());
 
@@ -1620,498 +1553,6 @@ void Engine_Interface::load_button(File_IO_Load* load){
     }
 }
 
-void Engine_Interface::load_game_command(File_IO_Load* load){
-    game_commands.push_back(Game_Command());
-
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_title="title:";
-        string str_description="description:";
-        string str_developer="developer:";
-        string str_key="key:";
-        string str_controller_button="controller_button:";
-        string str_controller_axis="controller_axis:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //Name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
-            game_commands[game_commands.size()-1].name=line;
-        }
-        //Title
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_title)){
-            //Clear the data name.
-            line.erase(0,str_title.length());
-
-            game_commands[game_commands.size()-1].title=line;
-        }
-        //Description
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_description)){
-            //Clear the data name.
-            line.erase(0,str_description.length());
-
-            game_commands[game_commands.size()-1].description=Strings::process_newlines(line);
-        }
-        //Developer
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_developer)){
-            //Clear the data name.
-            line.erase(0,str_developer.length());
-
-            game_commands[game_commands.size()-1].dev=Strings::string_to_bool(line);
-        }
-        //Key
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_key)){
-            //Clear the data name.
-            line.erase(0,str_key.length());
-
-            game_commands[game_commands.size()-1].key=SDL_GetScancodeFromName(line.c_str());
-        }
-        //Controller Button
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_controller_button)){
-            //Clear the data name.
-            line.erase(0,str_controller_button.length());
-
-            game_commands[game_commands.size()-1].button=SDL_GameControllerGetButtonFromString(line.c_str());
-        }
-        //Controller Axis
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_controller_axis)){
-            //Clear the data name.
-            line.erase(0,str_controller_axis.length());
-
-            game_commands[game_commands.size()-1].axis=SDL_GameControllerGetAxisFromString(line.c_str());
-        }
-
-        //If the line ends the game command.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</game_command>")){
-            return;
-        }
-    }
-}
-
-void Engine_Interface::load_game_option(File_IO_Load* load){
-    game_options.push_back(Game_Option());
-
-    string option_default="";
-
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_description="description:";
-        string str_default="default:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //Name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
-            game_options[game_options.size()-1].name=line;
-        }
-        //Description
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_description)){
-            //Clear the data name.
-            line.erase(0,str_description.length());
-
-            game_options[game_options.size()-1].description=Strings::process_newlines(line);
-        }
-        //Default
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_default)){
-            //Clear the data name.
-            line.erase(0,str_default.length());
-
-            option_default=line;
-        }
-
-        //If the line ends the game option.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</game_option>")){
-            if(option_default.length()>0){
-                Game_Options::set_value(game_options[game_options.size()-1].name,option_default);
-            }
-
-            return;
-        }
-    }
-}
-
-void Engine_Interface::load_game_constant(File_IO_Load* load){
-    string constant_name="";
-    string constant_value="";
-
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_value="value:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //Name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
-            constant_name=line;
-        }
-        //Value
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_value)){
-            //Clear the data name.
-            line.erase(0,str_value.length());
-
-            constant_value=line;
-        }
-
-        //If the line ends the game constant.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</game_constant>")){
-            set_game_constant(constant_name,constant_value);
-
-            return;
-        }
-    }
-}
-
-void Engine_Interface::load_custom_sound(File_IO_Load* load){
-    Custom_Sound sound;
-
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_name="name:";
-        string str_sample_rate="sample_rate:";
-        string str_tempo="tempo:";
-        string str_channels="channels:";
-        string str_sharps="sharps:";
-        string str_flats="flats:";
-        string str_length="length:";
-        string str_volumes="volume:";
-        string str_waveforms="waveform:";
-        string str_frequencies="frequency:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //name
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_name)){
-            //Clear the data name.
-            line.erase(0,str_name.length());
-
-            sound.name=line;
-        }
-        //sample_rate
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sample_rate)){
-            //Clear the data name.
-            line.erase(0,str_sample_rate.length());
-
-            sound.sample_rate=Strings::string_to_long(line);
-        }
-        //tempo
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_tempo)){
-            //Clear the data name.
-            line.erase(0,str_tempo.length());
-
-            sound.tempo=Strings::string_to_double(line);
-        }
-        //channels
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_channels)){
-            //Clear the data name.
-            line.erase(0,str_channels.length());
-
-            sound.channels=Strings::string_to_long(line);
-        }
-        //sharps
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_sharps)){
-            //Clear the data name.
-            line.erase(0,str_sharps.length());
-
-            sound.sharps=line;
-        }
-        //flats
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_flats)){
-            //Clear the data name.
-            line.erase(0,str_flats.length());
-
-            sound.flats=line;
-        }
-        //length
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_length)){
-            //Clear the data name.
-            line.erase(0,str_length.length());
-
-            sound.set_length(line);
-        }
-        //volumes
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_volumes)){
-            //Clear the data name.
-            line.erase(0,str_volumes.length());
-
-            sound.set_volumes(line);
-        }
-        //waveforms
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_waveforms)){
-            //Clear the data name.
-            line.erase(0,str_waveforms.length());
-
-            sound.set_waveforms(line);
-        }
-        //frequencies
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frequencies)){
-            //Clear the data name.
-            line.erase(0,str_frequencies.length());
-
-            sound.set_frequencies(line);
-        }
-
-        //If the line begins the custom sound's data.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"<data>")){
-            load_custom_sound_data(load,sound);
-        }
-
-        //If the line ends the custom sound.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</custom_sound>")){
-            Sound_Manager::add_sound(sound);
-
-            return;
-        }
-    }
-}
-
-void Engine_Interface::load_custom_sound_data(File_IO_Load* load,Custom_Sound& sound){
-    bool multi_line_comment=false;
-
-    //As long as we haven't reached the end of the file.
-    while(!load->eof()){
-        string line="";
-
-        //The option strings used in the file.
-
-        string str_length="length:";
-        string str_volumes="volume:";
-        string str_waveforms="waveform:";
-        string str_frequencies="frequency:";
-
-        //Grab the next line of the file.
-        load->getline(&line);
-
-        //Clear initial whitespace from the line.
-        boost::algorithm::trim(line);
-
-        //If the line ends a multi-line comment.
-        if(boost::algorithm::contains(line,"*/")){
-            multi_line_comment=false;
-        }
-        //If the line starts a multi-line comment.
-        if(!multi_line_comment && boost::algorithm::starts_with(line,"/*")){
-            multi_line_comment=true;
-        }
-        //If the line is a comment.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"//")){
-            //Ignore this line.
-        }
-
-        //Load data based on the line.
-
-        //length
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_length)){
-            //Clear the data name.
-            line.erase(0,str_length.length());
-
-            sound.set_length(line);
-        }
-        //volumes
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_volumes)){
-            //Clear the data name.
-            line.erase(0,str_volumes.length());
-
-            sound.set_volumes(line);
-        }
-        //waveforms
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_waveforms)){
-            //Clear the data name.
-            line.erase(0,str_waveforms.length());
-
-            sound.set_waveforms(line);
-        }
-        //frequencies
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,str_frequencies)){
-            //Clear the data name.
-            line.erase(0,str_frequencies.length());
-
-            sound.set_frequencies(line);
-        }
-
-        //If the line ends the custom sound data.
-        else if(!multi_line_comment && boost::algorithm::starts_with(line,"</data>")){
-            return;
-        }
-
-        else if(!multi_line_comment){
-            vector<string> components;
-            boost::algorithm::split(components,line,boost::algorithm::is_any_of(","));
-
-            if(components.size()>0 && components[0].length()>0){
-                string frequency="";
-                string length="";
-                string waveform="off";
-                double volume=-1.0;
-
-                if(components.size()>=4){
-                    frequency=components[0];
-                    length=components[1];
-                    waveform=components[2];
-                    volume=Strings::string_to_double(components[3]);
-                }
-                else if(components.size()==3){
-                    frequency=components[0];
-                    length=components[1];
-                    waveform=components[2];
-                }
-                else if(components.size()==2){
-                    frequency=components[0];
-                    length=components[1];
-                }
-                else{
-                    if(isdigit(components[0][0])){
-                        frequency=components[0];
-                    }
-                    else if(components[0][0]>='A' && components[0][0]<='G'){
-                        frequency=components[0];
-                    }
-                    else if(components[0]=="rest"){
-                        frequency=components[0];
-                    }
-                    else{
-                        length=components[0];
-                    }
-                }
-
-                //Allow spaces instead of underscores in note length names for convenience
-                boost::algorithm::replace_all(length," ","_");
-
-                sound.add_note(frequency,length,waveform,volume);
-            }
-        }
-    }
-}
-
-Cursor* Engine_Interface::get_cursor(string name){
-    Cursor* ptr_cursor=0;
-
-    for(int i=0;i<cursors.size();i++){
-        if(cursors[i].name==name){
-            ptr_cursor=&cursors[i];
-
-            break;
-        }
-    }
-
-    if(ptr_cursor==0){
-        Log::add_error("Error accessing cursor '"+name+"'");
-    }
-
-    return ptr_cursor;
-}
-
 Window* Engine_Interface::get_window(string name){
     Window* ptr_window=0;
 
@@ -2128,42 +1569,6 @@ Window* Engine_Interface::get_window(string name){
     }
 
     return ptr_window;
-}
-
-Game_Command* Engine_Interface::get_game_command(string name){
-    Game_Command* ptr_object=0;
-
-    for(int i=0;i<game_commands.size();i++){
-        if(game_commands[i].name==name){
-            ptr_object=&game_commands[i];
-
-            break;
-        }
-    }
-
-    if(ptr_object==0){
-        Log::add_error("Error accessing game command '"+name+"'");
-    }
-
-    return ptr_object;
-}
-
-Game_Option* Engine_Interface::get_game_option(string name){
-    Game_Option* ptr_object=0;
-
-    for(int i=0;i<game_options.size();i++){
-        if(game_options[i].name==name){
-            ptr_object=&game_options[i];
-
-            break;
-        }
-    }
-
-    if(ptr_object==0){
-        Log::add_error("Error accessing game option '"+name+"'");
-    }
-
-    return ptr_object;
 }
 
 void Engine_Interface::rebuild_window_data(){
@@ -2943,7 +2348,7 @@ void Engine_Interface::gui_nav_back_android(){
         clear_mutable_info();
     }
     else if(is_any_window_open()){
-        if(!game.in_progress && is_window_open(window) && open_window_count()==1){
+        if(!Game_Manager::in_progress && is_window_open(window) && open_window_count()==1){
             quit();
         }
         else{
@@ -2957,7 +2362,7 @@ void Engine_Interface::gui_nav_back_android(){
 
 void Engine_Interface::gui_nav_toggle_menu_android(){
     string window_name="main_menu";
-    if(game.in_progress){
+    if(Game_Manager::in_progress){
         window_name="ingame_menu";
     }
 
@@ -2986,7 +2391,7 @@ void Engine_Interface::gui_nav_toggle_menu_controller(){
     set_gui_mode("controller");
 
     string window_name="main_menu";
-    if(game.in_progress){
+    if(Game_Manager::in_progress){
         window_name="ingame_menu";
     }
 
@@ -3012,7 +2417,7 @@ void Engine_Interface::gui_nav_back_keyboard_and_mouse(){
         close_top_window();
     }
     else{
-        if(game.in_progress){
+        if(Game_Manager::in_progress){
             get_window("ingame_menu")->toggle_on();
         }
         else{
@@ -3969,9 +3374,7 @@ void Engine_Interface::animate(){
         }
     }
 
-    for(int i=0;i<cursors.size();i++){
-        cursors[i].animate();
-    }
+    Object_Manager::animate_cursors();
 
     animate_gui_selector_chasers();
 
@@ -4315,7 +3718,7 @@ void Engine_Interface::render_text_editing(){
 
 void Engine_Interface::render(int render_rate,double ms_per_frame,int logic_frame_rate){
     if(!hide_gui){
-        if(game.in_progress && game.paused){
+        if(Game_Manager::in_progress && Game_Manager::paused){
             render_pause();
         }
 
@@ -4374,10 +3777,10 @@ void Engine_Interface::render(int render_rate,double ms_per_frame,int logic_fram
             get_mouse_state(&mouse_x,&mouse_y);
 
             if(!mouse_over){
-                get_cursor(Engine_Data::cursor)->render(mouse_x,mouse_y);
+                Object_Manager::get_cursor(Engine_Data::cursor)->render(mouse_x,mouse_y);
             }
             else{
-                get_cursor(Engine_Data::cursor_mouse_over)->render(mouse_x,mouse_y);
+                Object_Manager::get_cursor(Engine_Data::cursor_mouse_over)->render(mouse_x,mouse_y);
             }
         }
         else{

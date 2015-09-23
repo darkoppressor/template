@@ -31,7 +31,7 @@ void Game_World::movement(){
 }
 
 void Game_World::events(){
-    ///Sound_Manager::set_listener(Game::example_player.circle.x,Game::example_player.circle.y,game.camera_zoom);
+    ///Sound_Manager::set_listener(Game::example_player.circle.x,Game::example_player.circle.y,Game_Manager::camera_zoom);
 }
 
 void Game_World::animate(){

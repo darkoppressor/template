@@ -7,22 +7,17 @@
 
 #include "special_info.h"
 #include "button_events.h"
-#include "cursor.h"
 #include "tooltip.h"
 #include "toast.h"
 #include "window.h"
 #include "console.h"
-#include "game_command.h"
-#include "game_constants.h"
 
 ///#include "example_game_tag.h"
 
 #include <coords.h>
 #include <file_io.h>
 #include <rng.h>
-#include <custom_sound.h>
 #include <sprite.h>
-#include <game_option.h>
 
 #include <string>
 
@@ -77,7 +72,6 @@ public:
     Special_Info special_info_manager;
     Button_Events button_events_manager;
 
-    std::vector<Cursor> cursors;
     std::vector<Window> windows;
 
     ///std::vector<Example_Game_Tag> example_game_tags;
@@ -115,10 +109,6 @@ public:
 
     std::vector<GUI_Selector_Chaser> gui_selector_chasers;
 
-    std::vector<Game_Command> game_commands;
-
-    std::vector<Game_Option> game_options;
-
     std::string gui_axis_nav_last_direction;
 
     int counter_gui_scroll_axis;
@@ -136,7 +126,7 @@ public:
 
     int editing_server;
 
-    //Mutable text cursor.
+    //Mutable text cursor
     //The time to spend on each step of fading animation, in milliseconds
     int counter_cursor;
     bool cursor_fade_direction;
@@ -181,20 +171,11 @@ public:
     void unload_data();
 
     void load_engine_data(File_IO_Load* load);
-    void load_cursor(File_IO_Load* load);
     void load_window(File_IO_Load* load);
     void load_information(File_IO_Load* load);
     void load_button(File_IO_Load* load);
-    void load_game_command(File_IO_Load* load);
-    void load_game_option(File_IO_Load* load);
-    void load_game_constant(File_IO_Load* load);
-    void load_custom_sound(File_IO_Load* load);
-    void load_custom_sound_data(File_IO_Load* load,Custom_Sound& sound);
 
-    Cursor* get_cursor(std::string name);
     Window* get_window(std::string name);
-    Game_Command* get_game_command(std::string name);
-    Game_Option* get_game_option(std::string name);
 
     ///void load_example_game_tag(File_IO_Load* load);
     ///Example_Game_Tag* get_example_game_tag(std::string name);
@@ -375,25 +356,25 @@ public:
 
     void apply_options_network(const std::string& cl_name,const std::string& cl_chat_timestamps);
 
-    //Returns false if options could not be saved.
-    //Returns true otherwise.
+    //Returns false if options could not be saved
+    //Returns true otherwise
     bool save_options();
-    //Returns false if options could not be loaded.
-    //Returns true otherwise.
+    //Returns false if options could not be loaded
+    //Returns true otherwise
     bool load_options();
 
-    //Returns false if game commands could not be saved.
-    //Returns true otherwise.
+    //Returns false if game commands could not be saved
+    //Returns true otherwise
     bool save_game_commands();
-    //Returns false if game commands could not be loaded.
-    //Returns true otherwise.
+    //Returns false if game commands could not be loaded
+    //Returns true otherwise
     bool load_game_commands();
 
-    //Returns false if servers could not be saved.
-    //Returns true otherwise.
+    //Returns false if servers could not be saved
+    //Returns true otherwise
     bool save_servers();
-    //Returns false if servers could not be loaded.
-    //Returns true otherwise.
+    //Returns false if servers could not be loaded
+    //Returns true otherwise
     bool load_servers();
 };
 

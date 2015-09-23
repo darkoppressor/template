@@ -329,12 +329,12 @@ void Console::run_commands(const vector<string>& command_list){
                             connection_password=command_input[2];
                         }
 
-                        game.stop();
+                        Game_Manager::stop();
 
                         network.set_server_target(connection_address,connection_port,connection_password);
 
                         if(!network.start_as_client()){
-                            game.stop();
+                            Game_Manager::stop();
                         }
                     }
                 }

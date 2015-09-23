@@ -79,14 +79,14 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
         else if(button_event=="start_game"){
             engine_interface.close_all_windows();
 
-            game.stop();
+            Game_Manager::stop();
 
-            game.start();
+            Game_Manager::start();
         }
         else if(button_event=="stop_game"){
             engine_interface.close_all_windows();
 
-            game.stop();
+            Game_Manager::stop();
 
             engine_interface.get_window("main_menu")->toggle_on();
         }
@@ -317,12 +317,12 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             engine_interface.change_option("sv_network_name",window->get_info_text(0));
             engine_interface.change_option("sv_network_password",window->get_info_text(1));
 
-            game.stop();
+            Game_Manager::stop();
 
-            game.start();
+            Game_Manager::start();
 
             if(!network.start_as_server()){
-                game.stop();
+                Game_Manager::stop();
             }
         }
         else if(button_event=="start_server_window"){
@@ -445,12 +445,12 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
                 else{
                     engine_interface.close_all_windows();
 
-                    game.stop();
+                    Game_Manager::stop();
 
                     network.set_server_target(server_index);
 
                     if(!network.start_as_client()){
-                        game.stop();
+                        Game_Manager::stop();
                     }
                 }
             }
@@ -497,12 +497,12 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
                 else{
                     engine_interface.close_all_windows();
 
-                    game.stop();
+                    Game_Manager::stop();
 
                     network.set_lan_server_target(lan_server_index);
 
                     if(!network.start_as_client()){
-                        game.stop();
+                        Game_Manager::stop();
                     }
                 }
             }
@@ -513,7 +513,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             int lan_server_index=network.lan_connecting_index;
             int server_list_server_index=network.server_list_connecting_index;
 
-            game.stop();
+            Game_Manager::stop();
 
             Window* window=engine_interface.get_window("input_server_password");
 
@@ -527,7 +527,7 @@ bool Button_Events::handle_button_event(string button_event,Window* parent_windo
             window->set_info_text(0,"");
 
             if(!network.start_as_client()){
-                game.stop();
+                Game_Manager::stop();
             }
         }
 

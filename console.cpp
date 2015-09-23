@@ -547,7 +547,7 @@ void Console::render(){
         }
     }
     else{
-        if(game.in_progress){
+        if(Game_Manager::in_progress){
             if(y<Game_Window::SCREEN_HEIGHT){
                 info_display.render(0,0);
                 info_input.render(0,0);

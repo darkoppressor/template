@@ -27,9 +27,6 @@ void Update::check_mail(){
         else if(letter=="reload"){
             Game_Window::reload();
         }
-        else if(letter=="reset_camera_dimensions"){
-            game.reset_camera_dimensions();
-        }
         else if(Data_Reader::check_prefix(letter,"console:")){
             engine_interface.console.add_text(letter);
         }
@@ -40,15 +37,15 @@ void Update::check_mail(){
 }
 
 void Update::ai(){
-    if(game.in_progress && !game.paused){
-        game.world.ai();
+    if(Game_Manager::in_progress && !Game_Manager::paused){
+        Game_World::ai();
     }
 }
 
 void Update::input(){
     engine_interface.prepare_for_input();
 
-    game.prepare_for_input();
+    Game_Manager::prepare_for_input();
 
     bool event_ignore_command_set=false;
 
@@ -87,11 +84,11 @@ void Update::input(){
 
         if(!engine_interface.console.on && !engine_interface.chat.on && !event_ignore_command_set){
             if(!event_consumed && !engine_interface.mutable_info_selected()){
-                event_consumed=game.handle_input_events_gui();
+                event_consumed=Game_Manager::handle_input_events_gui();
             }
 
             if(!event_consumed && !engine_interface.is_any_window_open()){
-                event_consumed=game.handle_input_events();
+                event_consumed=Game_Manager::handle_input_events();
             }
         }
     }
@@ -100,38 +97,38 @@ void Update::input(){
 
     if(!engine_interface.console.on && !engine_interface.chat.on && !event_ignore_command_set){
         if(!engine_interface.mutable_info_selected()){
-            game.handle_input_states_gui();
+            Game_Manager::handle_input_states_gui();
         }
 
         if(!engine_interface.is_any_window_open()){
-            game.handle_input_states();
+            Game_Manager::handle_input_states();
         }
     }
 
-    game.handle_game_commands_multiplayer();
-    game.handle_command_states_multiplayer();
+    Game_Manager::handle_game_commands_multiplayer();
+    Game_Manager::handle_command_states_multiplayer();
 }
 
 void Update::tick(){
-    if(game.in_progress && !game.paused){
-        game.world.tick();
+    if(Game_Manager::in_progress && !Game_Manager::paused){
+        Game_World::tick();
     }
 }
 
 void Update::movement(){
-    if(game.in_progress && !game.paused){
-        game.world.movement();
+    if(Game_Manager::in_progress && !Game_Manager::paused){
+        Game_World::movement();
     }
 }
 
 void Update::events(){
-    game.manage_music();
+    Game_Manager::manage_music();
 
-    if(game.in_progress && !game.paused){
-        game.world.events();
+    if(Game_Manager::in_progress && !Game_Manager::paused){
+        Game_World::events();
     }
     else{
-        Sound_Manager::set_listener(game.camera.center_x(),game.camera.center_y(),game.camera_zoom);
+        Sound_Manager::set_listener(Game_Manager::camera.center_x(),Game_Manager::camera.center_y(),Game_Manager::camera_zoom);
     }
 }
 
@@ -141,34 +138,34 @@ void Update::animate(){
 
     engine_interface.animate();
 
-    if(game.in_progress && !game.paused){
-        game.world.animate();
+    if(Game_Manager::in_progress && !Game_Manager::paused){
+        Game_World::animate();
     }
 }
 
 void Update::camera(int frame_rate,double ms_per_frame,int logic_frame_rate){
     engine_interface.update_window_caption(frame_rate,ms_per_frame,logic_frame_rate);
 
-    if(game.in_progress){
-        game.set_camera();
+    if(Game_Manager::in_progress){
+        Game_Manager::set_camera();
 
-        game.world.update_background();
+        Game_World::update_background();
     }
 }
 
 void Update::render(int frame_rate,double ms_per_frame,int logic_frame_rate){
     Game_Window::clear_renderer(Color(0,0,0,255));
 
-    if(game.in_progress){
+    if(Game_Manager::in_progress){
         /**Rtt_Manager::set_render_target("example");
         ///Render something here
         Rtt_Manager::reset_render_target();*/
 
-        game.world.render_background();
+        Game_World::render_background();
 
-        game.world.render();
+        Game_World::render();
 
-        game.render_scoreboard();
+        Game_Manager::render_scoreboard();
     }
     else{
         engine_interface.render_title_background();

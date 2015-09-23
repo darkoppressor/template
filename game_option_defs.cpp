@@ -2,9 +2,9 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#include "game_options.h"
 #include "world.h"
 
+#include <game_option.h>
 #include <strings.h>
 #include <log.h>
 #include <options.h>
@@ -13,7 +13,7 @@
 
 using namespace std;
 
-string Game_Options::get_value(string name){
+string Game_Option::get_value(){
     if(name=="cl_effect_limit"){
         return Strings::num_to_string(Options::effect_limit);
     }
@@ -87,7 +87,7 @@ string Game_Options::get_value(string name){
     }
 }
 
-void Game_Options::set_value(string name,string new_value){
+void Game_Option::set_value(string new_value){
     if(name=="cl_effect_limit"){
         Options::effect_limit=Strings::string_to_unsigned_long(new_value);
     }

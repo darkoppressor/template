@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void Game::handle_command_states_multiplayer(){
+void Game_Manager::handle_command_states_multiplayer(){
     if(in_progress){
         if(network.status=="server"){
             network.prepare_server_input_states();
@@ -27,7 +27,7 @@ void Game::handle_command_states_multiplayer(){
     }
 }
 
-void Game::handle_game_commands_multiplayer(){
+void Game_Manager::handle_game_commands_multiplayer(){
     if(in_progress){
         if(network.status=="server"){
             for(int i=0;i<network.clients.size();i++){
@@ -48,7 +48,7 @@ void Game::handle_game_commands_multiplayer(){
     }
 }
 
-void Game::handle_input_states_gui(){
+void Game_Manager::handle_input_states_gui(){
     int mouse_x=0;
     int mouse_y=0;
     engine_interface.get_mouse_state(&mouse_x,&mouse_y);
@@ -60,7 +60,7 @@ void Game::handle_input_states_gui(){
     }
 }
 
-void Game::handle_input_states(){
+void Game_Manager::handle_input_states(){
     int mouse_x=0;
     int mouse_y=0;
     engine_interface.get_mouse_state(&mouse_x,&mouse_y);
@@ -75,8 +75,8 @@ void Game::handle_input_states(){
     }
 }
 
-bool Game::handle_game_command_gui(string command_name){
-    //Pause the game.
+bool Game_Manager::handle_game_command_gui(string command_name){
+    //Pause the game
     if(command_name=="pause"){
         toggle_pause();
 
@@ -104,7 +104,7 @@ bool Game::handle_game_command_gui(string command_name){
     return false;
 }
 
-bool Game::handle_game_command(string command_name){
+bool Game_Manager::handle_game_command(string command_name){
     const uint8_t* keystates=SDL_GetKeyboardState(NULL);
 
     ///DEV COMMANDS
@@ -137,7 +137,7 @@ bool Game::handle_game_command(string command_name){
     return false;
 }
 
-bool Game::handle_input_events_gui(){
+bool Game_Manager::handle_input_events_gui(){
     bool event_consumed=false;
 
     if(in_progress){
@@ -152,7 +152,7 @@ bool Game::handle_input_events_gui(){
     return event_consumed;
 }
 
-bool Game::handle_input_events(){
+bool Game_Manager::handle_input_events(){
     bool event_consumed=false;
 
     if(in_progress){
