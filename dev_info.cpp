@@ -2,9 +2,7 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#include "engine_interface.h"
-#include "world.h"
-
+#include <engine.h>
 #include <strings.h>
 #include <render.h>
 #include <options.h>
@@ -13,7 +11,7 @@
 
 using namespace std;
 
-void Engine_Interface::render_dev_info(){
+void Engine::render_dev_info(){
     string msg="";
 
     if(Game_Manager::in_progress){

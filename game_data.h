@@ -16,7 +16,10 @@ private:
 
 public:
 
-    static void load_data_game();
+    //The total number of progress bar items in load_data_game()
+    static const int game_data_load_item_count;
+
+    static void load_data_game(Progress_Bar& bar);
     //Load any data of the passed tag type
     //Returns false if passed tag type's data could not be loaded
     //Returns true otherwise

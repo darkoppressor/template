@@ -8,7 +8,11 @@ using namespace std;
 
 ///vector<Example_Game_Tag> Game_Data::example_game_tags;
 
-void Game_Data::load_data_game(){
+///Don't forget to increment this for each progress item in load_data_game() below
+const int Game_Data::game_data_load_item_count=0;
+
+void Game_Data::load_data_game(Progress_Bar& bar){
+    ///bar.progress("Loading example game tag");
     ///Data_Manager::load_data("example_game_tag");
 }
 

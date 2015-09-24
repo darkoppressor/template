@@ -2,8 +2,6 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#include "world.h"
-
 #include <game_manager.h>
 #include <options.h>
 #include <music_manager.h>
@@ -16,7 +14,7 @@
 using namespace std;
 
 bool Game_Manager::effect_allowed(){
-    uint32_t effects=/**Game_Objects::effects_example.size()*/0;
+    uint32_t effects=/**Game_Data::effects_example.size()*/0;
 
     if(effects<Options::effect_limit){
         return true;
@@ -48,22 +46,6 @@ void Game_Manager::manage_music(){
     }
 
     current_music=music_to_play;
-}
-
-void Game_Manager::stop(){
-    network.stop();
-
-    if(in_progress){
-        in_progress=false;
-
-        reset();
-
-        Game_World::clear_world();
-
-        if(engine_interface.chat.on){
-            engine_interface.chat.toggle_on();
-        }
-    }
 }
 
 void Game_Manager::set_camera(){
@@ -125,10 +107,6 @@ void Game_Manager::set_camera(){
     camera_delta_y=camera.y-camera_delta_y;
 }
 
-void Game_Manager::handle_drag_and_drop(string file){
-    ///Do something with file
-}
-
 string Game_Manager::get_game_window_caption(){
     string msg="";
 
@@ -139,8 +117,8 @@ void Game_Manager::render_scoreboard(){
     if(display_scoreboard){
         Bitmap_Font* font=Object_Manager::get_font("small");
 
-        string name_list=network.get_name_list();
-        string ping_list=network.get_ping_list();
+        string name_list=Network_Engine::get_name_list();
+        string ping_list=Network_Engine::get_ping_list();
 
         Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,0.5,"ui_black");
 
@@ -154,7 +132,7 @@ void Game_Manager::render_title_background(){
 
     Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,1.0,"ui_black");
 
-    font->show(0,Game_Window::SCREEN_HEIGHT-font->spacing_y*2.0,"Version "+get_version()+"\nChecksum "+Engine::CHECKSUM,"ui_white");
+    font->show(0,Game_Window::SCREEN_HEIGHT-font->spacing_y*2.0,"Version "+Engine_Version::get_version()+"\nChecksum "+Engine::CHECKSUM,"ui_white");
 
     Image_Data* logo=Image_Manager::get_image("logo");
 
@@ -172,41 +150,37 @@ void Game_Manager::render_pause(){
 }
 
 void Game_Manager::render_fps(int render_rate,double ms_per_frame,int logic_frame_rate){
-    Object_Manager::get_font("small")->show(2,2,"FPS: "+Strings::num_to_string(render_rate)+"\n"+network.get_stats(),"ui_white");
+    Object_Manager::get_font("small")->show(2,2,"FPS: "+Strings::num_to_string(render_rate)+"\n"+Network_Engine::get_stats(),"ui_white");
 }
 
-void Game_Manager::render_loading_screen(double percentage,string load_message){
-    Bitmap_Font* font=Object_Manager::get_font("standard");
+void Game_Manager::render_loading_screen(const Progress_Bar& bar,string message){
+    if(Game_Window::is_initialized()){
+        Game_Window::clear_renderer(Color(0,0,0,255));
 
-    Game_Window::clear_renderer(Color(0,0,0,255));
+        if(Data_Manager::are_images_loaded()){
+            ///Render::render_texture(0,0,Image_Manager::get_image("loading_screen"),0.25);
+        }
+        else if(Data_Manager::are_colors_loaded()){
+            Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,1.0,"ui_2");
+        }
 
-    ///If images are loaded
-    ///Render::render_texture(0,0,Image_Manager::get_image("loading_screen"),0.25);
+        if(Data_Manager::are_colors_loaded()){
+            double percentage=bar.get_percentage_done();
+            double bar_width=240.0*percentage;
+            double max_bar_width=240.0*1.0;
+            Render::render_rectangle(Game_Window::SCREEN_WIDTH/2.0-120-2,Game_Window::SCREEN_HEIGHT-75-2,max_bar_width+4,30+4,1.0,"ui_3");
+            Render::render_rectangle(Game_Window::SCREEN_WIDTH/2.0-120,Game_Window::SCREEN_HEIGHT-75,bar_width,30,1.0,"ui_1");
 
-    Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,1.0,"ui_black");
+            if(Data_Manager.are_fonts_loaded()){
+                Bitmap_Font* font=Object_Manager::get_font("standard");
 
-    double bar_width=240.0*percentage;
-    double max_bar_width=240.0*1.0;
-    Render::render_rectangle(Game_Window::SCREEN_WIDTH/2.0-120-2,Game_Window::SCREEN_HEIGHT-75-2,max_bar_width+4,30+4,1.0,"ui_3");
-    Render::render_rectangle(Game_Window::SCREEN_WIDTH/2.0-120,Game_Window::SCREEN_HEIGHT-75,bar_width,30,1.0,"ui_1");
+                string msg=Strings::num_to_string((int)(percentage*100.0))+"%";
 
-    string msg=Strings::num_to_string((int)(percentage*100.0))+"%";
+                font->show(Game_Window::SCREEN_WIDTH/2.0-120+(max_bar_width-msg.length()*font->spacing_x)/2.0,Game_Window::SCREEN_HEIGHT-75+font->spacing_y/4.0,msg,"ui_0");
+                font->show((Game_Window::SCREEN_WIDTH-message.length()*font->spacing_x)/2.0,Game_Window::SCREEN_HEIGHT-75+font->spacing_y*2.0,message,"ui_0");
+            }
+        }
 
-    font->show(Game_Window::SCREEN_WIDTH/2.0-120+(max_bar_width-msg.length()*font->spacing_x)/2.0,Game_Window::SCREEN_HEIGHT-75+font->spacing_y/4.0,msg,"ui_0");
-
-    font->show((Game_Window::SCREEN_WIDTH-load_message.length()*font->spacing_x)/2.0,Game_Window::SCREEN_HEIGHT-75+font->spacing_y*2.0,load_message,"ui_0");
-
-    Game_Window::render_present();
-}
-
-void Game_Manager::load_data_game(){
-    Game_Data::load_data_game();
-}
-
-void Game_Manager::load_data_tag_game(string tag,File_IO_Load* load){
-    Game_Data::load_data_tag_game(tag,load);
-}
-
-void Game_Manager::unload_data_game(){
-    Game_Data::unload_data_game();
+        Game_Window::render_present();
+    }
 }

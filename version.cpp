@@ -33,3 +33,7 @@ int Engine_Version::get_micro(){
 string Engine_Version::get_status(){
     return "alpha"; //STATUS
 }
+
+void Engine_Version::populate_version_series(vector<Version_Series>& version_series){
+    version_series.push_back(Version_Series("0.0.0","0.0.1"));
+}

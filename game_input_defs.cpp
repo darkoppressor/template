@@ -2,23 +2,25 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#include "world.h"
-
 #include <game_manager.h>
 #include <options.h>
 #include <engine.h>
 
 using namespace std;
 
+void Game_Manager::handle_drag_and_drop(string file){
+    ///Do something with file
+}
+
 void Game_Manager::handle_command_states_multiplayer(){
     if(in_progress){
         if(Network_Engine::status=="server"){
-            network.prepare_server_input_states();
+            Network_Server::prepare_server_input_states();
 
-            for(int i=0;i<network.clients.size();i++){
+            for(int i=0;i<Network_Engine::clients.size();i++){
                 if(!paused){
                     //Example multiplayer command state
-                    /**if(network.clients[i].game_command_state("some_command")){
+                    /**if(Network_Engine::clients[i].game_command_state("some_command")){
                         ///Deal with command state here
                     }*/
                 }
@@ -30,9 +32,9 @@ void Game_Manager::handle_command_states_multiplayer(){
 void Game_Manager::handle_game_commands_multiplayer(){
     if(in_progress){
         if(Network_Engine::status=="server"){
-            for(int i=0;i<network.clients.size();i++){
-                for(int j=0;j<network.clients[i].command_buffer.size();j++){
-                    string command_name=network.clients[i].command_buffer[j];
+            for(int i=0;i<Network_Engine::clients.size();i++){
+                for(int j=0;j<Network_Engine::clients[i].command_buffer.size();j++){
+                    string command_name=Network_Engine::clients[i].command_buffer[j];
 
                     if(!paused){
                         //Example multiplayer command
@@ -42,7 +44,7 @@ void Game_Manager::handle_game_commands_multiplayer(){
                     }
                 }
 
-                network.clients[i].command_buffer.clear();
+                Network_Engine::clients[i].command_buffer.clear();
             }
         }
     }
@@ -88,7 +90,7 @@ bool Game_Manager::handle_game_command_gui(string command_name){
         if(Network_Engine::status=="server"){
             toggle_pause();
 
-            network.send_paused();
+            Network_Server::send_paused();
         }
 
         return true;
@@ -96,7 +98,7 @@ bool Game_Manager::handle_game_command_gui(string command_name){
 
     //Toggle chat box
     else if(command_name=="chat"){
-        engine_interface.chat.toggle_on();
+        Engine::chat.toggle_on();
 
         return true;
     }
@@ -128,7 +130,7 @@ bool Game_Manager::handle_game_command(string command_name){
 
         //Example multiplayer command input
         /**if(command_name=="some_command"){
-            network.add_command(command_name);
+            Network_Engine::add_command(command_name);
 
             return true;
         }*/
@@ -144,8 +146,8 @@ bool Game_Manager::handle_input_events_gui(){
         const vector<Game_Command>& game_commands=Object_Manager::get_game_commands();
 
         for(int i=0;i<game_commands.size() && !event_consumed;i++){
-            if((Engine::event.type==SDL_CONTROLLERBUTTONDOWN && game_commands[i].button==Engine::event.cbutton.button) ||
-               (Engine::event.type==SDL_KEYDOWN && Engine::event.key.repeat==0 && game_commands[i].key==Engine::event.key.keysym.scancode)){
+            if((Engine_Input::event.type==SDL_CONTROLLERBUTTONDOWN && game_commands[i].button==Engine_Input::event.cbutton.button) ||
+               (Engine_Input::event.type==SDL_KEYDOWN && Engine_Input::event.key.repeat==0 && game_commands[i].key==Engine_Input::event.key.keysym.scancode)){
                 event_consumed=handle_game_command_gui(game_commands[i].name);
             }
         }
@@ -161,8 +163,8 @@ bool Game_Manager::handle_input_events(){
         const vector<Game_Command>& game_commands=Object_Manager::get_game_commands();
 
         for(int i=0;i<game_commands.size() && !event_consumed;i++){
-            if((Engine::event.type==SDL_CONTROLLERBUTTONDOWN && game_commands[i].button==Engine::event.cbutton.button) ||
-               (Engine::event.type==SDL_KEYDOWN && Engine::event.key.repeat==0 && game_commands[i].key==Engine::event.key.keysym.scancode)){
+            if((Engine_Input::event.type==SDL_CONTROLLERBUTTONDOWN && game_commands[i].button==Engine_Input::event.cbutton.button) ||
+               (Engine_Input::event.type==SDL_KEYDOWN && Engine_Input::event.key.repeat==0 && game_commands[i].key==Engine_Input::event.key.keysym.scancode)){
                 event_consumed=handle_game_command(game_commands[i].name);
             }
         }

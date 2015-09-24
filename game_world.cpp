@@ -40,6 +40,12 @@ void Game_World::animate(){
 void Game_World::render(){
 }
 
+void Game_World::render_to_textures(){
+    /**Rtt_Manager::set_render_target("example");
+    ///Render something here
+    Rtt_Manager::reset_render_target();*/
+}
+
 void Game_World::update_background(){
 }
 

@@ -3,8 +3,6 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include "main.h"
-#include "world.h"
-#include "update.h"
 
 #include <file_io.h>
 #include <log.h>
@@ -13,6 +11,7 @@
 #include <engine.h>
 #include <game_window.h>
 #include <engine_data.h>
+#include <update.h>
 
 #ifdef GAME_OS_OSX
     #include <CoreFoundation/CoreFoundation.h>
@@ -92,18 +91,18 @@ void game_loop(){
 
             //Now we update the game logic
 
-            Update::check_mail();
+            Game_Window::reload_check();
 
             Window_Manager::rebuild_window_data();
 
-            network.receive_packets();
+            Network_Engine::receive_packets();
 
             Update::ai();
 
             Update::input();
 
-            network.send_updates();
-            network.send_input();
+            Network_Server::send_updates();
+            Network_Client::send_input();
 
             Update::tick();
 
@@ -178,13 +177,11 @@ int main(int argc,char* args[]){
 
     Log::clear_error_log();
 
-    int things_loaded=0;
-    int things_to_load=1;
+    Progress_Bar bar(Data_Manager::world_load_item_count+Game_Data::game_data_load_item_count);
 
-    if(!load_world()){
+    if(!load_world(bar)){
         return 5;
     }
-    engine_interface.render_loading_screen((double)++things_loaded/(double)things_to_load,"Initializing");
 
     for(int i=0;i<Engine_Data::starting_windows.size();i++){
         Window_Manager::get_window(Engine_Data::starting_windows[i])->toggle_on(true,true);
@@ -196,7 +193,7 @@ int main(int argc,char* args[]){
         SDL_EventState(SDL_DROPFILE,SDL_ENABLE);
     }
 
-    engine_interface.console.exec_file("autoexec.cfg");
+    Engine::console.exec_file("autoexec.cfg");
 
     game_loop();
 

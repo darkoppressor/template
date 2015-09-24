@@ -2,16 +2,11 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#ifndef game_mailman_h
-#define game_mailman_h
+#include <data_manager.h>
+#include <rtt_manager.h>
 
-#include <string>
+using namespace std;
 
-class Game_Mailman{
-public:
-
-    static bool has_mail();
-    static std::string get_letter();
-};
-
-#endif
+void Data_Manager::add_rtts(){
+    ///Rtt_Manager::add_texture("example",1024.0,1024.0);
+}
