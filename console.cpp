@@ -144,15 +144,15 @@ void Console::toggle_on(){
     on=!on;
 
     if(!on){
-        //If the mutable information is in the console, it is no longer selected.
-        if(engine_interface.mutable_info_selected()){
-            if(engine_interface.mutable_info_this(&info_input)){
-                engine_interface.clear_mutable_info();
+        //If the mutable information is in the console, it is no longer selected
+        if(Engine::mutable_info_selected()){
+            if(Engine::mutable_info_this(&info_input)){
+                Engine::clear_mutable_info();
             }
         }
     }
     else{
-        engine_interface.set_mutable_info(&info_input);
+        Engine::set_mutable_info(&info_input);
     }
 }
 
@@ -161,7 +161,7 @@ void Console::add_text(string text){
         text=Log::get_timestamp(false)+" "+text;
     }
 
-    //If the text extends beyond the text box, wrap it around.
+    //If the text extends beyond the text box, wrap it around
     for(int i=0,j=0;i<text.size();i++,j++){
         if(text[i]=='\n'){
             j=0;
@@ -195,15 +195,15 @@ void Console::add_text(string text){
 
     if(chat){
         for(int i=0;i<Strings::newline_count(text)+1;i++){
-            //Create a timer for this line.
+            //Create a timer for this line
             text_timers.push_back(Timer());
 
-            //Start this line's timer.
+            //Start this line's timer
             text_timers[text_timers.size()-1].start();
         }
 
         while(text_timers.size()>max_log_recall){
-            //Forget the oldest chat line's timer.
+            //Forget the oldest chat line's timer
             text_timers.erase(text_timers.begin());
         }
     }
@@ -226,10 +226,10 @@ void Console::send_chat(){
 
             info_input.set_text("");
 
-            if(network.status=="server"){
+            if(Network_Engine::status=="server"){
                 network.send_chat_message(msg,RakNet::UNASSIGNED_RAKNET_GUID,true);
             }
-            else if(network.status=="client"){
+            else if(Network_Engine::status=="client"){
                 network.send_chat_message(msg,network.server_id,false);
             }
 
@@ -428,7 +428,7 @@ void Console::handle_input_states(){
     if(on){
         int mouse_x=0;
         int mouse_y=0;
-        engine_interface.get_mouse_state(&mouse_x,&mouse_y);
+        Engine::get_mouse_state(&mouse_x,&mouse_y);
 
         info_display.handle_input_states(mouse_x,mouse_y,0,0);
         info_input.handle_input_states(mouse_x,mouse_y,0,0);
@@ -461,7 +461,7 @@ bool Console::handle_input_events(){
             case SDL_KEYDOWN:
                 if(Engine::event.key.repeat==0){
                     if((Engine::event.key.keysym.scancode==SDL_SCANCODE_GRAVE && !keystates[SDL_SCANCODE_LSHIFT] && !keystates[SDL_SCANCODE_RSHIFT]) || Engine::event.key.keysym.scancode==SDL_SCANCODE_AC_SEARCH){
-                        if(engine_interface.gui_mode=="controller"){
+                        if(Engine::gui_mode=="controller"){
                             engine_interface.set_gui_mode("mouse");
                         }
 
@@ -514,10 +514,10 @@ bool Console::handle_input_events(){
         }
     }
 
-    if(on && engine_interface.mouse_allowed()){
+    if(on && Engine::mouse_allowed()){
         int mouse_x=0;
         int mouse_y=0;
-        engine_interface.get_mouse_state(&mouse_x,&mouse_y);
+        Engine::get_mouse_state(&mouse_x,&mouse_y);
 
         if(!event_consumed){
             event_consumed=info_display.handle_input_events(mouse_x,mouse_y,0,0);

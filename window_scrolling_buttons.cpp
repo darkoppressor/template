@@ -2,9 +2,9 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#include "window.h"
 #include "world.h"
 
+#include <window.h>
 #include <strings.h>
 #include <log.h>
 #include <object_manager.h>
@@ -13,7 +13,7 @@ using namespace std;
 
 void Window::build_scrolling_buttons(){
     if(scrolling_buttons.length()>0){
-        //Erase any previously existing scrolling buttons.
+        //Erase any previously existing scrolling buttons
         while(buttons.size()>last_normal_button+1){
             buttons.pop_back();
         }
@@ -21,19 +21,7 @@ void Window::build_scrolling_buttons(){
         scroll_offset=0;
 
         if(scrolling_buttons=="configure_commands"){
-            for(int i=0;i<engine_interface.game_commands.size();i++){
-                if(!engine_interface.game_commands[i].dev){
-                    buttons.push_back(Button());
-                    buttons[buttons.size()-1].x=Object_Manager::get_font(font)->spacing_x*2;
-                    buttons[buttons.size()-1].y=0;
-                    buttons[buttons.size()-1].start_x=buttons[buttons.size()-1].x;
-                    buttons[buttons.size()-1].start_y=buttons[buttons.size()-1].y;
-                    buttons[buttons.size()-1].text=engine_interface.game_commands[i].title;
-                    buttons[buttons.size()-1].tooltip_text=engine_interface.game_commands[i].description;
-                    buttons[buttons.size()-1].event_function="configure_commands_"+Strings::num_to_string(i);
-                    buttons[buttons.size()-1].set_dimensions();
-                }
-            }
+            Object_Manager::add_game_command_scrolling_button(buttons);
         }
         else if(scrolling_buttons=="server_list"){
             for(int i=0;i<network.server_list.size();i++){

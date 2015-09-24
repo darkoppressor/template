@@ -12,7 +12,7 @@ using namespace std;
 
 void Game_Manager::handle_command_states_multiplayer(){
     if(in_progress){
-        if(network.status=="server"){
+        if(Network_Engine::status=="server"){
             network.prepare_server_input_states();
 
             for(int i=0;i<network.clients.size();i++){
@@ -29,7 +29,7 @@ void Game_Manager::handle_command_states_multiplayer(){
 
 void Game_Manager::handle_game_commands_multiplayer(){
     if(in_progress){
-        if(network.status=="server"){
+        if(Network_Engine::status=="server"){
             for(int i=0;i<network.clients.size();i++){
                 for(int j=0;j<network.clients[i].command_buffer.size();j++){
                     string command_name=network.clients[i].command_buffer[j];
@@ -51,10 +51,10 @@ void Game_Manager::handle_game_commands_multiplayer(){
 void Game_Manager::handle_input_states_gui(){
     int mouse_x=0;
     int mouse_y=0;
-    engine_interface.get_mouse_state(&mouse_x,&mouse_y);
+    Engine::get_mouse_state(&mouse_x,&mouse_y);
 
     if(in_progress){
-        if(engine_interface.game_command_state("scoreboard")){
+        if(Object_Manager::game_command_state("scoreboard")){
             display_scoreboard=true;
         }
     }
@@ -63,12 +63,12 @@ void Game_Manager::handle_input_states_gui(){
 void Game_Manager::handle_input_states(){
     int mouse_x=0;
     int mouse_y=0;
-    engine_interface.get_mouse_state(&mouse_x,&mouse_y);
+    Engine::get_mouse_state(&mouse_x,&mouse_y);
 
     if(in_progress){
         if(!paused){
             //Example multiplayer command state
-            /**if(engine_interface.game_command_state("some_command")){
+            /**if(Object_Manager::game_command_state("some_command")){
                 command_states.push_back("some_command");
             }*/
         }
@@ -85,7 +85,7 @@ bool Game_Manager::handle_game_command_gui(string command_name){
 
     //Example multiplayer pause
     /**if(command_name=="pause"){
-        if(network.status=="server"){
+        if(Network_Engine::status=="server"){
             toggle_pause();
 
             network.send_paused();
@@ -141,10 +141,12 @@ bool Game_Manager::handle_input_events_gui(){
     bool event_consumed=false;
 
     if(in_progress){
-        for(int i=0;i<engine_interface.game_commands.size() && !event_consumed;i++){
-            if((Engine::event.type==SDL_CONTROLLERBUTTONDOWN && engine_interface.game_commands[i].button==Engine::event.cbutton.button) ||
-               (Engine::event.type==SDL_KEYDOWN && Engine::event.key.repeat==0 && engine_interface.game_commands[i].key==Engine::event.key.keysym.scancode)){
-                event_consumed=handle_game_command_gui(engine_interface.game_commands[i].name);
+        const vector<Game_Command>& game_commands=Object_Manager::get_game_commands();
+
+        for(int i=0;i<game_commands.size() && !event_consumed;i++){
+            if((Engine::event.type==SDL_CONTROLLERBUTTONDOWN && game_commands[i].button==Engine::event.cbutton.button) ||
+               (Engine::event.type==SDL_KEYDOWN && Engine::event.key.repeat==0 && game_commands[i].key==Engine::event.key.keysym.scancode)){
+                event_consumed=handle_game_command_gui(game_commands[i].name);
             }
         }
     }
@@ -156,10 +158,12 @@ bool Game_Manager::handle_input_events(){
     bool event_consumed=false;
 
     if(in_progress){
-        for(int i=0;i<engine_interface.game_commands.size() && !event_consumed;i++){
-            if((Engine::event.type==SDL_CONTROLLERBUTTONDOWN && engine_interface.game_commands[i].button==Engine::event.cbutton.button) ||
-               (Engine::event.type==SDL_KEYDOWN && Engine::event.key.repeat==0 && engine_interface.game_commands[i].key==Engine::event.key.keysym.scancode)){
-                event_consumed=handle_game_command(engine_interface.game_commands[i].name);
+        const vector<Game_Command>& game_commands=Object_Manager::get_game_commands();
+
+        for(int i=0;i<game_commands.size() && !event_consumed;i++){
+            if((Engine::event.type==SDL_CONTROLLERBUTTONDOWN && game_commands[i].button==Engine::event.cbutton.button) ||
+               (Engine::event.type==SDL_KEYDOWN && Engine::event.key.repeat==0 && game_commands[i].key==Engine::event.key.keysym.scancode)){
+                event_consumed=handle_game_command(game_commands[i].name);
             }
         }
     }

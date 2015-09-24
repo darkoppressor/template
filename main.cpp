@@ -94,7 +94,7 @@ void game_loop(){
 
             Update::check_mail();
 
-            engine_interface.rebuild_window_data();
+            Window_Manager::rebuild_window_data();
 
             network.receive_packets();
 
@@ -137,7 +137,7 @@ int handle_app_events(void* userdata,SDL_Event* event){
     case SDL_APP_TERMINATING:
         Log::add_error("The OS is terminating this application, shutting down...");
 
-        engine_interface.quit();
+        Engine::quit();
         return 0;
     default:
         return 1;
@@ -166,11 +166,11 @@ int main(int argc,char* args[]){
         }
     #endif
 
-    if(!engine_interface.load_data_engine()){
+    if(!Data_Manager::load_data_engine()){
         return 3;
     }
 
-    if(!engine_interface.load_save_location()){
+    if(!Options::load_save_location()){
         return 4;
     }
 
@@ -187,7 +187,7 @@ int main(int argc,char* args[]){
     engine_interface.render_loading_screen((double)++things_loaded/(double)things_to_load,"Initializing");
 
     for(int i=0;i<Engine_Data::starting_windows.size();i++){
-        engine_interface.get_window(Engine_Data::starting_windows[i])->toggle_on(true,true);
+        Window_Manager::get_window(Engine_Data::starting_windows[i])->toggle_on(true,true);
     }
 
     SDL_SetEventFilter(handle_app_events,NULL);

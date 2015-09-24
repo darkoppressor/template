@@ -2,9 +2,7 @@
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
-#include "button_events.h"
-#include "world.h"
-
+#include <button_events.h>
 #include <boost/algorithm/string.hpp>
 
 using namespace std;

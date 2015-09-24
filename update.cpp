@@ -21,10 +21,7 @@ void Update::check_mail(){
     while(Game_Mailman::has_mail()){
         string letter=Game_Mailman::get_letter();
 
-        if(letter=="save_options"){
-            engine_interface.save_options();
-        }
-        else if(letter=="reload"){
+        if(letter=="reload"){
             Game_Window::reload();
         }
         else if(Data_Reader::check_prefix(letter,"console:")){
@@ -53,7 +50,7 @@ void Update::input(){
         bool event_consumed=false;
 
         if(Engine::event.type==SDL_QUIT){
-            engine_interface.quit();
+            Engine::quit();
 
             event_consumed=true;
         }
@@ -67,11 +64,11 @@ void Update::input(){
         }
 
         if(!event_consumed){
-            event_consumed=engine_interface.handle_input_events_command_set();
+            event_consumed=Engine::handle_input_events_command_set();
         }
 
-        //If we are still binding a command input.
-        if(engine_interface.configure_command!=-1){
+        //If we are still binding a command input
+        if(Engine::configure_command!=-1){
             event_ignore_command_set=true;
         }
         else{
@@ -83,11 +80,11 @@ void Update::input(){
         }
 
         if(!engine_interface.console.on && !engine_interface.chat.on && !event_ignore_command_set){
-            if(!event_consumed && !engine_interface.mutable_info_selected()){
+            if(!event_consumed && !Engine::mutable_info_selected()){
                 event_consumed=Game_Manager::handle_input_events_gui();
             }
 
-            if(!event_consumed && !engine_interface.is_any_window_open()){
+            if(!event_consumed && !Window_Manager::is_any_window_open()){
                 event_consumed=Game_Manager::handle_input_events();
             }
         }
@@ -96,11 +93,11 @@ void Update::input(){
     engine_interface.handle_input_states();
 
     if(!engine_interface.console.on && !engine_interface.chat.on && !event_ignore_command_set){
-        if(!engine_interface.mutable_info_selected()){
+        if(!Engine::mutable_info_selected()){
             Game_Manager::handle_input_states_gui();
         }
 
-        if(!engine_interface.is_any_window_open()){
+        if(!Window_Manager::is_any_window_open()){
             Game_Manager::handle_input_states();
         }
     }

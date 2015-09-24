@@ -29,7 +29,7 @@ void Engine_Interface::render_dev_info(){
         if(Options::fps){
             y+=font->spacing_y;
 
-            if(network.status!="off"){
+            if(Network_Engine::status!="off"){
                 y+=font->spacing_y*2.0;
             }
         }

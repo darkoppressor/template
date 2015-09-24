@@ -15,12 +15,12 @@ using namespace std;
 
 Engine_Interface engine_interface;
 
-Network network;
-
 bool load_world(){
-    engine_interface.load_data_game_options();
+    GUI_Manager::initialize();
 
-    if(!engine_interface.load_options()){
+    Data_Manager::load_data_game_options();
+
+    if(!Options::load_options()){
         return false;
     }
 
@@ -34,18 +34,18 @@ bool load_world(){
 
     Music_Manager::prepare_tracks();
 
-    engine_interface.load_data_main();
+    Data_Manager::load_data_main();
 
     ///Rtt_Manager::add_texture("example",1024.0,1024.0);
 
     engine_interface.console.setup(false);
     engine_interface.chat.setup(true);
 
-    if(!engine_interface.load_game_commands()){
+    if(!Options::load_game_commands()){
         return false;
     }
 
-    engine_interface.load_servers();
+    Options::load_servers();
 
     //To be safe, this should be at the very bottom of load_world().
     Image_Manager::set_error_image();
@@ -53,20 +53,4 @@ bool load_world(){
     Engine::world_loaded=true;
 
     return true;
-}
-
-void unload_world(){
-    if(Engine::world_loaded){
-        Engine::world_loaded=false;
-
-        Image_Manager::unload_images();
-
-        Rtt_Manager::unload_textures();
-
-        Sound_Manager::unload_sounds();
-
-        Music_Manager::unload_tracks();
-
-        engine_interface.unload_data();
-    }
 }

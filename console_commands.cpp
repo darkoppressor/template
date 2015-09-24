@@ -63,9 +63,7 @@ void Console::setup_commands(){
     commands.push_back("cl_mute_sound");
     commands.push_back("cl_mute_music");
 
-    for(int i=0;i<engine_interface.game_options.size();i++){
-        commands.push_back(engine_interface.game_options[i].name);
-    }
+    Object_Manager::add_game_options_to_commands(commands);
 }
 
 vector<string> Console::parse_input(string str_input){
@@ -261,7 +259,7 @@ void Console::run_commands(const vector<string>& command_list){
             else if(command=="quit"){
                 add_text("Be seeing you...");
 
-                engine_interface.quit();
+                Engine::quit();
             }
             else if(command=="play"){
                 if(command_input[1].length()>0){
@@ -297,7 +295,7 @@ void Console::run_commands(const vector<string>& command_list){
                         toast_length="long";
                     }
 
-                    engine_interface.make_toast(command_input[1],toast_length,custom_toast_length);
+                    Engine::make_toast(command_input[1],toast_length,custom_toast_length);
                 }
                 else{
                     add_text(command+"\n - create a toast message\nUsage:\n"+command+" [-sml] MESSAGE CUSTOMLENGTH\n - CUSTOMLENGTH is optional, and specifies a custom length in seconds\n - options:\n    -s short message duration\n    -m medium message duration\n    -l long message duration");
@@ -344,9 +342,9 @@ void Console::run_commands(const vector<string>& command_list){
             }
 
             else if(command=="sv_network_password" && input_has_option("c",command_input[0])){
-                engine_interface.change_option(command,"");
+                Options::change_option(command,"");
 
-                add_text("\""+command+"\" set to \""+engine_interface.get_option_value(command)+"\"");
+                add_text("\""+command+"\" set to \""+Options::get_option_value(command)+"\"");
             }
 
             //If the command is a valid one but is not handled above.
@@ -354,14 +352,14 @@ void Console::run_commands(const vector<string>& command_list){
                 for(int i=0;i<commands.size();i++){
                     if(command==commands[i]){
                         if(command_input[1].length()==0){
-                            add_text("\""+commands[i]+"\" = \""+engine_interface.get_option_value(commands[i])+"\"");
+                            add_text("\""+commands[i]+"\" = \""+Options::get_option_value(commands[i])+"\"");
 
-                            add_text(" - "+engine_interface.get_option_description(commands[i]));
+                            add_text(" - "+Options::get_option_description(commands[i]));
                         }
                         else{
-                            engine_interface.change_option(commands[i],command_input[1]);
+                            Options::change_option(commands[i],command_input[1]);
 
-                            add_text("\""+commands[i]+"\" set to \""+engine_interface.get_option_value(commands[i])+"\"");
+                            add_text("\""+commands[i]+"\" set to \""+Options::get_option_value(commands[i])+"\"");
                         }
 
                         break;
