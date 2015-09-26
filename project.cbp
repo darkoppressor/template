@@ -392,6 +392,7 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
 		<Unit filename="network_game.cpp" />
+		<Unit filename="network_game.h" />
 		<Unit filename="special_info.cpp" />
 		<Unit filename="version.cpp" />
 		<Unit filename="window_close_function.cpp" />

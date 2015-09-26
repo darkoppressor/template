@@ -4,9 +4,11 @@
 
 #include "game_data.h"
 #include "game_options.h"
+#include "network_game.h"
 
 #include <game_manager.h>
 #include <game_option.h>
+#include <network_engine.h>
 
 using namespace std;
 
@@ -28,4 +30,20 @@ bool Game_Option::game_get_value(string& value){
 
 void Game_Option::game_set_value(string value){
     Game_Options::set_option(name,value);
+}
+
+void Network_Engine::write_initial_game_data(RakNet::BitStream* bitstream){
+    Network_Game::write_initial_game_data(bitstream);
+}
+
+void Network_Engine::read_initial_game_data(RakNet::BitStream* bitstream){
+    Network_Game::read_initial_game_data(bitstream);
+}
+
+void Network_Engine::write_update(RakNet::BitStream* bitstream){
+    Network_Game::write_update(bitstream);
+}
+
+void Network_Engine::read_update(RakNet::BitStream* bitstream){
+    Network_Game::read_update(bitstream);
 }
