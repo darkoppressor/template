@@ -16,6 +16,14 @@ bool Network_Game::receive_game_packet(RakNet::Packet* packet,const RakNet::Mess
     return false;
 }
 
+string Network_Game::allow_new_connection(){
+    /**if(SOME_EXAMPLE_REASON_TO_REJECT_NEW_CONNECTIONS){
+        return "Example reason";
+    }*/
+
+    return "";
+}
+
 void Network_Game::write_initial_game_data(RakNet::BitStream* bitstream){
     ///bitstream->WriteCompressed();
 }

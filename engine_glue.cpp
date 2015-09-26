@@ -36,6 +36,10 @@ bool Network_Engine::receive_game_packet(RakNet::Packet* packet,const RakNet::Me
     return Network_Game::receive_game_packet(packet,packet_id);
 }
 
+string Network_Engine::allow_new_connection(){
+    return Network_Game::allow_new_connection();
+}
+
 void Network_Engine::write_initial_game_data(RakNet::BitStream* bitstream){
     Network_Game::write_initial_game_data(bitstream);
 }

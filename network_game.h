@@ -5,7 +5,9 @@
 #ifndef network_game_h
 #define network_game_h
 
-#include "network_message_identifiers.h"
+#include <network_message_identifiers.h>
+
+#include <string>
 
 #include "raknet/Source/BitStream.h"
 
@@ -21,6 +23,10 @@ class Network_Game{
 public:
 
     static bool receive_game_packet(RakNet::Packet* packet,const RakNet::MessageID& packet_id);
+
+    //Returns an empty string if a new connection should be allowed
+    //Otherwise, returns a string containing the reason a new connection is not allowed
+    static std::string allow_new_connection();
 
     static void write_initial_game_data(RakNet::BitStream* bitstream);
     static void read_initial_game_data(RakNet::BitStream* bitstream);
