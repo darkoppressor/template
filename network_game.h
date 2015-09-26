@@ -20,6 +20,8 @@ enum{
 class Network_Game{
 public:
 
+    static bool receive_game_packet(RakNet::Packet* packet,const RakNet::MessageID& packet_id);
+
     static void write_initial_game_data(RakNet::BitStream* bitstream);
     static void read_initial_game_data(RakNet::BitStream* bitstream);
 

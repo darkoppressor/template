@@ -6,6 +6,16 @@
 
 using namespace std;
 
+bool Network_Game::receive_game_packet(RakNet::Packet* packet,const RakNet::MessageID& packet_id){
+    /**if(packet_id==ID_GAME_EXAMPLE){
+        ///Do something with this packet
+
+        return true;
+    }*/
+
+    return false;
+}
+
 void Network_Game::write_initial_game_data(RakNet::BitStream* bitstream){
     ///bitstream->WriteCompressed();
 }
