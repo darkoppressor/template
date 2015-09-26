@@ -63,32 +63,32 @@ void Game_Manager::set_camera(){
     }
     else{
         if(cam_state=="left"){
-            camera.x-=camera_speed/Engine::UPDATE_RATE;
+            camera.x-=camera_speed/(double)Engine::UPDATE_RATE;
         }
         else if(cam_state=="up"){
-            camera.y-=camera_speed/Engine::UPDATE_RATE;
+            camera.y-=camera_speed/(double)Engine::UPDATE_RATE;
         }
         else if(cam_state=="right"){
-            camera.x+=camera_speed/Engine::UPDATE_RATE;
+            camera.x+=camera_speed/(double)Engine::UPDATE_RATE;
         }
         else if(cam_state=="down"){
-            camera.y+=camera_speed/Engine::UPDATE_RATE;
+            camera.y+=camera_speed/(double)Engine::UPDATE_RATE;
         }
         else if(cam_state=="left_up"){
-            camera.x-=camera_speed/Engine::UPDATE_RATE;
-            camera.y-=camera_speed/Engine::UPDATE_RATE;
+            camera.x-=camera_speed/(double)Engine::UPDATE_RATE;
+            camera.y-=camera_speed/(double)Engine::UPDATE_RATE;
         }
         else if(cam_state=="right_up"){
-            camera.x+=camera_speed/Engine::UPDATE_RATE;
-            camera.y-=camera_speed/Engine::UPDATE_RATE;
+            camera.x+=camera_speed/(double)Engine::UPDATE_RATE;
+            camera.y-=camera_speed/(double)Engine::UPDATE_RATE;
         }
         else if(cam_state=="right_down"){
-            camera.x+=camera_speed/Engine::UPDATE_RATE;
-            camera.y+=camera_speed/Engine::UPDATE_RATE;
+            camera.x+=camera_speed/(double)Engine::UPDATE_RATE;
+            camera.y+=camera_speed/(double)Engine::UPDATE_RATE;
         }
         else if(cam_state=="left_down"){
-            camera.x-=camera_speed/Engine::UPDATE_RATE;
-            camera.y+=camera_speed/Engine::UPDATE_RATE;
+            camera.x-=camera_speed/(double)Engine::UPDATE_RATE;
+            camera.y+=camera_speed/(double)Engine::UPDATE_RATE;
         }
     }
 

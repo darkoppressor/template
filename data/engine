@@ -5,8 +5,8 @@
 	home_directory:template
 	developer:Kevin Wells
 	resolution_mode:scaling
-	logic_update_rate:60.0
-	frame_rate_max:200.0
+	logic_update_rate:60
+	frame_rate_max:200
 	axis_scroll_rate:5
 	cursor_width:2
 	cursor_height:2

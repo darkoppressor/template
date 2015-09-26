@@ -29,8 +29,8 @@ void game_loop(){
     //The maximum number of frames to be skipped
     int max_frameskip=5;
 
-    double next_game_tick=(double)SDL_GetTicks();
-    double next_render_tick=(double)SDL_GetTicks();
+    uint32_t next_game_tick=SDL_GetTicks();
+    uint32_t next_render_tick=SDL_GetTicks();
 
     //The number of logic updates that have occurred since the last render
     int number_of_updates=0;
@@ -74,7 +74,7 @@ void game_loop(){
 
         //We consume Engine::SKIP_TICKS sized chunks of time, which ultimately translates to updating the logic Engine::UPDATE_LIMIT times a second
         //We also check to see if we've updated logic max_frameskip times without rendering, at which point we render
-        while((double)SDL_GetTicks()>next_game_tick && number_of_updates<max_frameskip){
+        while(SDL_GetTicks()>next_game_tick && number_of_updates<max_frameskip){
             if(timer_logic_frame_rate.get_ticks()>=1000){
                 logic_frame_rate=logic_frame_count;
                 logic_frame_count=0;
@@ -88,8 +88,8 @@ void game_loop(){
             number_of_updates++;
 
             //Clamp the time step to something reasonable
-            if(abs((double)SDL_GetTicks()-next_game_tick)>Engine::SKIP_TICKS*2.0){
-                next_game_tick=(double)SDL_GetTicks()-Engine::SKIP_TICKS*2.0;
+            if(abs(SDL_GetTicks()-next_game_tick)>Engine::SKIP_TICKS*2){
+                next_game_tick=SDL_GetTicks()-Engine::SKIP_TICKS*2;
             }
 
             //Consume another Engine::SKIP_TICKS sized chunk of time
@@ -123,11 +123,11 @@ void game_loop(){
 
         //Now that we've handled logic updates, we do our rendering
 
-        if((double)SDL_GetTicks()>next_render_tick){
+        if(SDL_GetTicks()>next_render_tick){
             frame_count++;
 
-            if(abs((double)SDL_GetTicks()-next_render_tick)>Engine::SKIP_TICKS_RENDER*2.0){
-                next_render_tick=(double)SDL_GetTicks()-Engine::SKIP_TICKS_RENDER*2.0;
+            if(abs(SDL_GetTicks()-next_render_tick)>Engine::SKIP_TICKS_RENDER*2){
+                next_render_tick=SDL_GetTicks()-Engine::SKIP_TICKS_RENDER*2;
             }
 
             next_render_tick+=Engine::SKIP_TICKS_RENDER;
