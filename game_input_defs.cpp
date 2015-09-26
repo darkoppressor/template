@@ -3,8 +3,12 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include <game_manager.h>
-#include <options.h>
+#include <network_engine.h>
+#include <network_server.h>
 #include <engine.h>
+#include <object_manager.h>
+#include <options.h>
+#include <engine_input.h>
 
 using namespace std;
 

@@ -3,15 +3,21 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include "main.h"
+#include "game_data.h"
 
-#include <file_io.h>
-#include <log.h>
-#include <directories.h>
 #include <timer.h>
 #include <engine.h>
 #include <game_window.h>
-#include <engine_data.h>
+#include <window_manager.h>
+#include <network_engine.h>
 #include <update.h>
+#include <network_server.h>
+#include <network_client.h>
+#include <log.h>
+#include <data_manager.h>
+#include <options.h>
+#include <directories.h>
+#include <engine_data.h>
 
 #ifdef GAME_OS_OSX
     #include <CoreFoundation/CoreFoundation.h>
@@ -178,8 +184,9 @@ int main(int argc,char* args[]){
     Log::clear_error_log();
 
     Progress_Bar bar(Data_Manager::world_load_item_count+Game_Data::game_data_load_item_count);
+    Log::add_log("Initializing");
 
-    if(!load_world(bar)){
+    if(!Data_Manager::load_world(bar)){
         return 5;
     }
 

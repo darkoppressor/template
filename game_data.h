@@ -7,7 +7,10 @@
 
 ///#include "example_game_tag.h"
 
-///#include <vector>
+#include <progress_bar.h>
+#include <file_io.h>
+
+#include <vector>
 
 class Game_Data{
 private:

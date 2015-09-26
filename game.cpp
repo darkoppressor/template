@@ -7,7 +7,7 @@
 #include <game_world.h>
 #include <render.h>
 #include <game_window.h>
-///#include <sound_manager.h>
+#include <sound_manager.h>
 
 using namespace std;
 
@@ -50,5 +50,5 @@ void Game_World::update_background(){
 }
 
 void Game_World::render_background(){
-    Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,1.0,"ui_black");
+    Render::render_rectangle(0,0,Game_Window::width(),Game_Window::height(),1.0,"ui_black");
 }

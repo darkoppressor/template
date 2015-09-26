@@ -7,9 +7,14 @@
 #include <music_manager.h>
 #include <screen_shake.h>
 #include <engine.h>
-#include <render.h>
 #include <font.h>
 #include <object_manager.h>
+#include <network_engine.h>
+#include <render.h>
+#include <game_window.h>
+#include <engine_version.h>
+#include <image_manager.h>
+#include <data_manager.h>
 
 using namespace std;
 
@@ -120,33 +125,33 @@ void Game_Manager::render_scoreboard(){
         string name_list=Network_Engine::get_name_list();
         string ping_list=Network_Engine::get_ping_list();
 
-        Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,0.5,"ui_black");
+        Render::render_rectangle(0,0,Game_Window::width(),Game_Window::height(),0.5,"ui_black");
 
-        font->show(72,(Game_Window::SCREEN_HEIGHT-(Strings::newline_count(name_list)+1)*font->spacing_y)/2.0,name_list,"ui_white");
-        font->show(168,(Game_Window::SCREEN_HEIGHT-(Strings::newline_count(ping_list)+1)*font->spacing_y)/2.0,ping_list,"ui_white");
+        font->show(72,(Game_Window::height()-(Strings::newline_count(name_list)+1)*font->spacing_y)/2.0,name_list,"ui_white");
+        font->show(168,(Game_Window::height()-(Strings::newline_count(ping_list)+1)*font->spacing_y)/2.0,ping_list,"ui_white");
     }
 }
 
 void Game_Manager::render_title_background(){
     Bitmap_Font* font=Object_Manager::get_font("small");
 
-    Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,1.0,"ui_black");
+    Render::render_rectangle(0,0,Game_Window::width(),Game_Window::height(),1.0,"ui_black");
 
-    font->show(0,Game_Window::SCREEN_HEIGHT-font->spacing_y*2.0,"Version "+Engine_Version::get_version()+"\nChecksum "+Engine::CHECKSUM,"ui_white");
+    font->show(0,Game_Window::height()-font->spacing_y*2.0,"Version: "+Engine_Version::get_version()+" "+Engine_Version::get_status()+"\nChecksum: "+Engine::CHECKSUM,"ui_white");
 
     Image_Data* logo=Image_Manager::get_image("logo");
 
-    double logo_scale_x=(double)Game_Window::SCREEN_WIDTH/(double)1280.0;
-    double logo_scale_y=(double)Game_Window::SCREEN_HEIGHT/(double)720.0;
+    double logo_scale_x=(double)Game_Window::width()/(double)1280.0;
+    double logo_scale_y=(double)Game_Window::height()/(double)720.0;
 
-    Render::render_texture(Game_Window::SCREEN_WIDTH-logo->w*logo_scale_x,Game_Window::SCREEN_HEIGHT-logo->h*logo_scale_y,logo,1.0,logo_scale_x,logo_scale_y);
+    Render::render_texture(Game_Window::width()-logo->w*logo_scale_x,Game_Window::height()-logo->h*logo_scale_y,logo,1.0,logo_scale_x,logo_scale_y);
 }
 
 void Game_Manager::render_pause(){
     Bitmap_Font* font=Object_Manager::get_font("standard");
 
     string msg="Paused";
-    font->show((Game_Window::SCREEN_WIDTH-(font->spacing_x*msg.length()))/2,(Game_Window::SCREEN_HEIGHT-font->spacing_y)/2,msg,"ui_white");
+    font->show((Game_Window::width()-(font->spacing_x*msg.length()))/2,(Game_Window::height()-font->spacing_y)/2,msg,"ui_white");
 }
 
 void Game_Manager::render_fps(int render_rate,double ms_per_frame,int logic_frame_rate){
@@ -161,23 +166,23 @@ void Game_Manager::render_loading_screen(const Progress_Bar& bar,string message)
             ///Render::render_texture(0,0,Image_Manager::get_image("loading_screen"),0.25);
         }
         else if(Data_Manager::are_colors_loaded()){
-            Render::render_rectangle(0,0,Game_Window::SCREEN_WIDTH,Game_Window::SCREEN_HEIGHT,1.0,"ui_2");
+            Render::render_rectangle(0,0,Game_Window::width(),Game_Window::height(),1.0,"ui_2");
         }
 
         if(Data_Manager::are_colors_loaded()){
             double percentage=bar.get_percentage_done();
             double bar_width=240.0*percentage;
             double max_bar_width=240.0*1.0;
-            Render::render_rectangle(Game_Window::SCREEN_WIDTH/2.0-120-2,Game_Window::SCREEN_HEIGHT-75-2,max_bar_width+4,30+4,1.0,"ui_3");
-            Render::render_rectangle(Game_Window::SCREEN_WIDTH/2.0-120,Game_Window::SCREEN_HEIGHT-75,bar_width,30,1.0,"ui_1");
+            Render::render_rectangle(Game_Window::width()/2.0-120-2,Game_Window::height()-75-2,max_bar_width+4,30+4,1.0,"ui_3");
+            Render::render_rectangle(Game_Window::width()/2.0-120,Game_Window::height()-75,bar_width,30,1.0,"ui_1");
 
-            if(Data_Manager.are_fonts_loaded()){
+            if(Data_Manager::are_fonts_loaded()){
                 Bitmap_Font* font=Object_Manager::get_font("standard");
 
                 string msg=Strings::num_to_string((int)(percentage*100.0))+"%";
 
-                font->show(Game_Window::SCREEN_WIDTH/2.0-120+(max_bar_width-msg.length()*font->spacing_x)/2.0,Game_Window::SCREEN_HEIGHT-75+font->spacing_y/4.0,msg,"ui_0");
-                font->show((Game_Window::SCREEN_WIDTH-message.length()*font->spacing_x)/2.0,Game_Window::SCREEN_HEIGHT-75+font->spacing_y*2.0,message,"ui_0");
+                font->show(Game_Window::width()/2.0-120+(max_bar_width-msg.length()*font->spacing_x)/2.0,Game_Window::height()-75+font->spacing_y/4.0,msg,"ui_0");
+                font->show((Game_Window::width()-message.length()*font->spacing_x)/2.0,Game_Window::height()-75+font->spacing_y*2.0,message,"ui_0");
             }
         }
 

@@ -5,6 +5,8 @@
 #ifndef game_options_h
 #define game_options_h
 
+#include <string>
+
 class Game_Options{
 public:
 

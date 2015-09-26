@@ -3,8 +3,8 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include <special_info.h>
-#include <strings.h>
 #include <log.h>
+#include <object_manager.h>
 
 using namespace std;
 

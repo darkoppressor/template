@@ -3,11 +3,12 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include <engine.h>
-#include <strings.h>
-#include <render.h>
-#include <options.h>
+#include <game_manager.h>
 #include <font.h>
 #include <object_manager.h>
+#include <options.h>
+#include <network_engine.h>
+#include <render.h>
 
 using namespace std;
 
