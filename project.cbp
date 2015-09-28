@@ -215,7 +215,7 @@
 				<Option platforms="Unix;" />
 				<Option output="Template-Windows-x86_64.exe" prefix_auto="1" extension_auto="0" />
 				<Option object_output=".objs/windows-x86_64" />
-				<Option type="0" />
+				<Option type="5" />
 				<Option compiler="mingw_x86_64_compiler" />
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
@@ -266,7 +266,7 @@
 				<Option platforms="Unix;" />
 				<Option output="Template-Windows-x86.exe" prefix_auto="1" extension_auto="0" />
 				<Option object_output=".objs/windows-x86" />
-				<Option type="0" />
+				<Option type="5" />
 				<Option compiler="mingw_x86_compiler" />
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
