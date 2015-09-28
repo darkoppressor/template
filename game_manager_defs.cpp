@@ -15,6 +15,7 @@
 #include <engine_version.h>
 #include <image_manager.h>
 #include <data_manager.h>
+#include <strings.h>
 
 using namespace std;
 

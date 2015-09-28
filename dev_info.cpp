@@ -9,6 +9,7 @@
 #include <options.h>
 #include <network_engine.h>
 #include <render.h>
+#include <strings.h>
 
 using namespace std;
 
