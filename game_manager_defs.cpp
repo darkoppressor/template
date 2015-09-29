@@ -16,6 +16,7 @@
 #include <image_manager.h>
 #include <data_manager.h>
 #include <strings.h>
+#include <engine_math.h>
 
 using namespace std;
 
@@ -171,19 +172,27 @@ void Game_Manager::render_loading_screen(const Progress_Bar& bar,string message)
         }
 
         if(Data_Manager::are_colors_loaded()){
+            double screen_width=Game_Window::width();
+            double screen_height=Game_Window::height();
+
             double percentage=bar.get_percentage_done();
-            double bar_width=240.0*percentage;
-            double max_bar_width=240.0*1.0;
-            Render::render_rectangle(Game_Window::width()/2.0-120-2,Game_Window::height()-75-2,max_bar_width+4,30+4,1.0,"ui_3");
-            Render::render_rectangle(Game_Window::width()/2.0-120,Game_Window::height()-75,bar_width,30,1.0,"ui_1");
+
+            double max_bar_width=screen_width/5.0;
+            double bar_width=max_bar_width*percentage;
+            double bar_height=screen_height/24.0;
+            double back_thickness=Math::ceil(screen_width/640.0);
+            double offset=bar_height*2.0+screen_height/32.0;
+
+            Render::render_rectangle(screen_width/2.0-max_bar_width/2.0-back_thickness,screen_height-offset-back_thickness,max_bar_width+back_thickness*2.0,bar_height+back_thickness*2.0,1.0,"ui_3");
+            Render::render_rectangle(screen_width/2.0-max_bar_width/2.0,screen_height-offset,bar_width,bar_height,1.0,"ui_1");
 
             if(Data_Manager::are_fonts_loaded()){
-                Bitmap_Font* font=Object_Manager::get_font("standard");
+                Bitmap_Font* font=Object_Manager::get_font("small");
 
                 string msg=Strings::num_to_string((int)(percentage*100.0))+"%";
 
-                font->show(Game_Window::width()/2.0-120+(max_bar_width-msg.length()*font->spacing_x)/2.0,Game_Window::height()-75+font->spacing_y/4.0,msg,"ui_0");
-                font->show((Game_Window::width()-message.length()*font->spacing_x)/2.0,Game_Window::height()-75+font->spacing_y*2.0,message,"ui_0");
+                font->show((screen_width-(double)msg.length()*(double)font->spacing_x)/2.0,screen_height-offset,msg,"ui_0");
+                font->show((screen_width-(double)message.length()*(double)font->spacing_x)/2.0,screen_height-offset+back_thickness*2.0+font->spacing_y,message,"ui_0");
             }
         }
 
