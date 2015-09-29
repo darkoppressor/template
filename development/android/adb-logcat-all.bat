@@ -1,3 +1,3 @@
 @echo off
 
-C:\Development\android-studio\sdk\platform-tools\adb.exe logcat
+C:\Development\android-sdk\platform-tools\adb.exe logcat

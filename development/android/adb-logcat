@@ -3,4 +3,4 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-/home/tails/build-server/android/android-studio/sdk/platform-tools/adb logcat SDL:V SDL/APP:V *:S
+$HOME/build-server/android/android-sdk/platform-tools/adb logcat SDL:V SDL/APP:V *:S
