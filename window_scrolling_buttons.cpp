@@ -14,7 +14,7 @@ using namespace std;
 void Window::build_scrolling_buttons(){
     if(scrolling_buttons.length()>0){
         //Erase any previously existing scrolling buttons
-        while(buttons.size()>last_normal_button+1){
+        while(buttons.size()>(size_t)last_normal_button+1){
             buttons.pop_back();
         }
 
@@ -24,7 +24,7 @@ void Window::build_scrolling_buttons(){
             Object_Manager::add_game_command_scrolling_button(font,buttons);
         }
         else if(scrolling_buttons=="server_list"){
-            for(int i=0;i<Network_Client::server_list.size();i++){
+            for(size_t i=0;i<Network_Client::server_list.size();i++){
                 buttons.push_back(Button());
                 buttons.back().x=Object_Manager::get_font(font)->spacing_x*2;
                 buttons.back().y=0;
@@ -37,7 +37,7 @@ void Window::build_scrolling_buttons(){
             }
         }
         else if(scrolling_buttons=="server_list_delete"){
-            for(int i=0;i<Network_Client::server_list.size();i++){
+            for(size_t i=0;i<Network_Client::server_list.size();i++){
                 buttons.push_back(Button());
                 buttons.back().x=Object_Manager::get_font(font)->spacing_x*2;
                 buttons.back().y=0;
@@ -50,7 +50,7 @@ void Window::build_scrolling_buttons(){
             }
         }
         else if(scrolling_buttons=="server_list_edit"){
-            for(int i=0;i<Network_Client::server_list.size();i++){
+            for(size_t i=0;i<Network_Client::server_list.size();i++){
                 buttons.push_back(Button());
                 buttons.back().x=Object_Manager::get_font(font)->spacing_x*2;
                 buttons.back().y=0;
@@ -63,7 +63,7 @@ void Window::build_scrolling_buttons(){
             }
         }
         else if(scrolling_buttons=="lan_server_list"){
-            for(int i=0;i<Network_LAN_Browser::lan_server_list.size();i++){
+            for(size_t i=0;i<Network_LAN_Browser::lan_server_list.size();i++){
                 buttons.push_back(Button());
                 buttons.back().x=Object_Manager::get_font(font)->spacing_x*2;
                 buttons.back().y=0;

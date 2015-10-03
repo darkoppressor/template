@@ -21,7 +21,7 @@ void Game_Manager::handle_command_states_multiplayer(){
         if(Network_Engine::status=="server"){
             Network_Server::prepare_server_input_states();
 
-            for(int i=0;i<Network_Engine::clients.size();i++){
+            for(size_t i=0;i<Network_Engine::clients.size();i++){
                 if(!paused){
                     //Example multiplayer command state
                     /**if(Network_Engine::clients[i].game_command_state("some_command")){
@@ -36,8 +36,8 @@ void Game_Manager::handle_command_states_multiplayer(){
 void Game_Manager::handle_game_commands_multiplayer(){
     if(in_progress){
         if(Network_Engine::status=="server"){
-            for(int i=0;i<Network_Engine::clients.size();i++){
-                for(int j=0;j<Network_Engine::clients[i].command_buffer.size();j++){
+            for(size_t i=0;i<Network_Engine::clients.size();i++){
+                for(size_t j=0;j<Network_Engine::clients[i].command_buffer.size();j++){
                     string command_name=Network_Engine::clients[i].command_buffer[j];
 
                     if(!paused){
@@ -149,7 +149,7 @@ bool Game_Manager::handle_input_events_gui(){
     if(in_progress){
         const vector<Game_Command>& game_commands=Object_Manager::get_game_commands();
 
-        for(int i=0;i<game_commands.size() && !event_consumed;i++){
+        for(size_t i=0;i<game_commands.size() && !event_consumed;i++){
             if((Engine_Input::event.type==SDL_CONTROLLERBUTTONDOWN && game_commands[i].button==Engine_Input::event.cbutton.button) ||
                (Engine_Input::event.type==SDL_KEYDOWN && Engine_Input::event.key.repeat==0 && game_commands[i].key==Engine_Input::event.key.keysym.scancode)){
                 event_consumed=handle_game_command_gui(game_commands[i].name);
@@ -166,7 +166,7 @@ bool Game_Manager::handle_input_events(){
     if(in_progress){
         const vector<Game_Command>& game_commands=Object_Manager::get_game_commands();
 
-        for(int i=0;i<game_commands.size() && !event_consumed;i++){
+        for(size_t i=0;i<game_commands.size() && !event_consumed;i++){
             if((Engine_Input::event.type==SDL_CONTROLLERBUTTONDOWN && game_commands[i].button==Engine_Input::event.cbutton.button) ||
                (Engine_Input::event.type==SDL_KEYDOWN && Engine_Input::event.key.repeat==0 && game_commands[i].key==Engine_Input::event.key.keysym.scancode)){
                 event_consumed=handle_game_command(game_commands[i].name);
