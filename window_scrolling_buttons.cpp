@@ -3,7 +3,7 @@
 /* See the file docs/LICENSE.txt for the full license text. */
 
 #include <window.h>
-#include <strings.h>
+#include <engine_strings.h>
 #include <log.h>
 #include <object_manager.h>
 #include <network_client.h>

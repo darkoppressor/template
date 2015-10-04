@@ -5,7 +5,7 @@
 #include "game_constants.h"
 
 #include <game_constants_loader.h>
-#include <strings.h>
+#include <engine_strings.h>
 #include <engine_data.h>
 
 using namespace std;
