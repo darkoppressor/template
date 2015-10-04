@@ -21,10 +21,10 @@ void Game_World::generate_world(){
     clear_world();
 }
 
-void Game_World::ai(){
+void Game_World::tick(){
 }
 
-void Game_World::tick(){
+void Game_World::ai(){
 }
 
 void Game_World::movement(){
