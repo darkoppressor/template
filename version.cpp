@@ -11,11 +11,11 @@ string Engine_Version::get_year(){
 }
 
 string Engine_Version::get_month(){
-    return "09"; //MONTH
+    return "10"; //MONTH
 }
 
 string Engine_Version::get_day(){
-    return "26"; //DAY
+    return "04"; //DAY
 }
 
 int Engine_Version::get_major(){
