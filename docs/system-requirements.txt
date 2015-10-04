@@ -12,7 +12,7 @@ Architecture: x86_64
 
 Linux
 Architecture: x86 / x86_64
-Requires glibc 2.11 or newer
+Requires glibc 2.19 or newer
 
 Minimum:
 Processor: 2 GHz
