@@ -55,3 +55,11 @@ void Network_Engine::write_update(RakNet::BitStream* bitstream){
 void Network_Engine::read_update(RakNet::BitStream* bitstream){
     Network_Game::read_update(bitstream);
 }
+
+void Network_Engine::write_server_ready(RakNet::BitStream* bitstream){
+    Network_Game::write_server_ready(bitstream);
+}
+
+void Network_Engine::read_server_ready(RakNet::BitStream* bitstream){
+    Network_Game::read_server_ready(bitstream);
+}

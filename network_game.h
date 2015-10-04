@@ -33,6 +33,10 @@ public:
 
     static void write_update(RakNet::BitStream* bitstream);
     static void read_update(RakNet::BitStream* bitstream);
+
+    //These are used in the lockstep networking model
+    static void write_server_ready(RakNet::BitStream* bitstream);
+    static void read_server_ready(RakNet::BitStream* bitstream);
 };
 
 #endif

@@ -4,6 +4,8 @@
 
 #include "network_game.h"
 
+#include <network_lockstep.h>
+
 using namespace std;
 
 bool Network_Game::receive_game_packet(RakNet::Packet* packet,const RakNet::MessageID& packet_id){
@@ -38,4 +40,16 @@ void Network_Game::write_update(RakNet::BitStream* bitstream){
 
 void Network_Game::read_update(RakNet::BitStream* bitstream){
     ///bitstream->ReadCompressed();
+}
+
+void Network_Game::write_server_ready(RakNet::BitStream* bitstream){
+    bitstream->WriteCompressed(Network_Lockstep::server_turn_complete);
+
+    ///Write game commands
+}
+
+void Network_Game::read_server_ready(RakNet::BitStream* bitstream){
+    bitstream->ReadCompressed(Network_Lockstep::server_turn_complete);
+
+    ///Read game commands
 }
