@@ -43,13 +43,15 @@ void Network_Game::read_update(RakNet::BitStream* bitstream){
 }
 
 void Network_Game::write_server_ready(RakNet::BitStream* bitstream){
-    bitstream->WriteCompressed(Network_Lockstep::server_turn_complete);
+    bitstream->WriteCompressed(Network_Lockstep::get_server_completed_turn());
 
     ///Write game commands
 }
 
 void Network_Game::read_server_ready(RakNet::BitStream* bitstream){
-    bitstream->ReadCompressed(Network_Lockstep::server_turn_complete);
+    uint32_t server_completed_turn=0;
+    bitstream->ReadCompressed(server_completed_turn);
+    Network_Lockstep::set_server_completed_turn(server_completed_turn);
 
     ///Read game commands
 }
