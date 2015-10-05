@@ -5,10 +5,12 @@
 #include "game_data.h"
 #include "game_options.h"
 #include "network_game.h"
+#include "game.h"
 
 #include <game_manager.h>
 #include <game_option.h>
 #include <network_engine.h>
+#include <game_world.h>
 
 using namespace std;
 
@@ -62,4 +64,48 @@ void Network_Engine::write_server_ready(RakNet::BitStream* bitstream){
 
 void Network_Engine::read_server_ready(RakNet::BitStream* bitstream){
     Network_Game::read_server_ready(bitstream);
+}
+
+void Game_World::clear_world(){
+    Game::clear_world();
+}
+
+void Game_World::generate_world(){
+    Game::generate_world();
+}
+
+void Game_World::tick(){
+    Game::tick();
+}
+
+void Game_World::ai(){
+    Game::ai();
+}
+
+void Game_World::movement(){
+    Game::movement();
+}
+
+void Game_World::events(){
+    Game::events();
+}
+
+void Game_World::animate(){
+    Game::animate();
+}
+
+void Game_World::render(){
+    Game::render();
+}
+
+void Game_World::render_to_textures(){
+    Game::render_to_textures();
+}
+
+void Game_World::update_background(){
+    Game::update_background();
+}
+
+void Game_World::render_background(){
+    Game::render_background();
 }
