@@ -16,6 +16,14 @@ void Game_Manager::handle_drag_and_drop(string file){
     ///Do something with file
 }
 
+void Game_Manager::prepare_for_input(){
+    if(in_progress){
+        command_states.clear();
+
+        display_scoreboard=false;
+    }
+}
+
 void Game_Manager::handle_command_states_multiplayer(){
     if(in_progress){
         if(Network_Engine::status=="server"){
