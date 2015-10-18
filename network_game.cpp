@@ -4,8 +4,6 @@
 
 #include "network_game.h"
 
-#include <network_lockstep.h>
-
 using namespace std;
 
 bool Network_Game::receive_game_packet(RakNet::Packet* packet,const RakNet::MessageID& packet_id){
@@ -26,32 +24,34 @@ string Network_Game::allow_new_connection(){
     return "";
 }
 
-void Network_Game::write_initial_game_data(RakNet::BitStream* bitstream){
-    ///bitstream->WriteCompressed();
+void Network_Game::write_initial_game_data(RakNet::BitStream& bitstream){
+    ///bitstream.WriteCompressed();
 }
 
-void Network_Game::read_initial_game_data(RakNet::BitStream* bitstream){
-    ///bitstream->ReadCompressed();
+void Network_Game::read_initial_game_data(RakNet::BitStream& bitstream){
+    ///bitstream.ReadCompressed();
 }
 
-void Network_Game::write_update(RakNet::BitStream* bitstream){
-    ///bitstream->WriteCompressed();
+void Network_Game::write_update(RakNet::BitStream& bitstream){
+    ///bitstream.WriteCompressed();
 }
 
-void Network_Game::read_update(RakNet::BitStream* bitstream){
-    ///bitstream->ReadCompressed();
+void Network_Game::read_update(RakNet::BitStream& bitstream){
+    ///bitstream.ReadCompressed();
 }
 
-void Network_Game::write_server_ready(RakNet::BitStream* bitstream){
-    bitstream->WriteCompressed(Network_Lockstep::get_server_completed_turn());
-
+void Network_Game::write_server_ready(RakNet::BitStream& bitstream){
     ///Write game commands
 }
 
-void Network_Game::read_server_ready(RakNet::BitStream* bitstream){
-    uint32_t server_completed_turn=0;
-    bitstream->ReadCompressed(server_completed_turn);
-    Network_Lockstep::set_server_completed_turn(server_completed_turn);
-
+void Network_Game::read_server_ready(RakNet::BitStream& bitstream){
     ///Read game commands
+}
+
+void Network_Game::write_client_ready(RakNet::BitStream& bitstream){
+    ///Write desync detection data, etc.
+}
+
+void Network_Game::read_client_ready(RakNet::BitStream& bitstream){
+    ///Read desync detection data, etc.
 }

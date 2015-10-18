@@ -42,28 +42,36 @@ string Network_Engine::allow_new_connection(){
     return Network_Game::allow_new_connection();
 }
 
-void Network_Engine::write_initial_game_data(RakNet::BitStream* bitstream){
+void Network_Engine::write_initial_game_data(RakNet::BitStream& bitstream){
     Network_Game::write_initial_game_data(bitstream);
 }
 
-void Network_Engine::read_initial_game_data(RakNet::BitStream* bitstream){
+void Network_Engine::read_initial_game_data(RakNet::BitStream& bitstream){
     Network_Game::read_initial_game_data(bitstream);
 }
 
-void Network_Engine::write_update(RakNet::BitStream* bitstream){
+void Network_Engine::write_update(RakNet::BitStream& bitstream){
     Network_Game::write_update(bitstream);
 }
 
-void Network_Engine::read_update(RakNet::BitStream* bitstream){
+void Network_Engine::read_update(RakNet::BitStream& bitstream){
     Network_Game::read_update(bitstream);
 }
 
-void Network_Engine::write_server_ready(RakNet::BitStream* bitstream){
+void Network_Engine::write_server_ready(RakNet::BitStream& bitstream){
     Network_Game::write_server_ready(bitstream);
 }
 
-void Network_Engine::read_server_ready(RakNet::BitStream* bitstream){
+void Network_Engine::read_server_ready(RakNet::BitStream& bitstream){
     Network_Game::read_server_ready(bitstream);
+}
+
+void Network_Engine::write_client_ready(RakNet::BitStream& bitstream){
+    Network_Game::write_client_ready(bitstream);
+}
+
+void Network_Engine::read_client_ready(RakNet::BitStream& bitstream){
+    Network_Game::read_client_ready(bitstream);
 }
 
 void Game_World::clear_world(){
