@@ -49,5 +49,5 @@ void Game::update_background(){
 }
 
 void Game::render_background(){
-    Render::render_rectangle(0,0,Game_Window::width(),Game_Window::height(),1.0,"ui_black");
+    Render::render_rectangle(0.0,0.0,Game_Window::width(),Game_Window::height(),1.0,"ui_black");
 }
