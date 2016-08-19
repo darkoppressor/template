@@ -415,6 +415,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="android_native_functions.cpp" />
 		<Unit filename="button_events_game.cpp" />
 		<Unit filename="console_commands_defs.cpp" />
 		<Unit filename="data_manager_defs.cpp" />
