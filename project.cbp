@@ -248,6 +248,7 @@
 					<Add option="-Wl,--stack=67108864" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
+					<Add option="-static -lpthread" />
 					<Add library="/usr/x86_64-w64-mingw32/lib/libmingw32.a" />
 					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-Windows-x86_64.a" />
 					<Add library="/home/tails/build-server/windows-x86_64/zlib/contrib/minizip/.libs/libminizip.a" />
@@ -263,7 +264,6 @@
 					<Add library="/home/tails/build-server/windows-x86_64/boost/stage/lib/libboost_system.a" />
 					<Add library="/home/tails/build-server/windows-x86_64/boost/stage/lib/libboost_filesystem.a" />
 					<Add library="/home/tails/build-server/windows-x86_64/raknet/raknet/Lib/DLL/Lib/libRakNet.a" />
-					<Add option="-static -lpthread" />
 					<Add library="/usr/x86_64-w64-mingw32/lib/libws2_32.a" />
 					<Add library="/usr/x86_64-w64-mingw32/lib/libwinmm.a" />
 					<Add library="/usr/x86_64-w64-mingw32/lib/libole32.a" />
@@ -302,6 +302,7 @@
 					<Add option="-Wl,--stack=67108864" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
+					<Add option="-static -lpthread" />
 					<Add library="/usr/i686-w64-mingw32/lib/libmingw32.a" />
 					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-Windows-x86.a" />
 					<Add library="/home/tails/build-server/windows-x86/zlib/contrib/minizip/.libs/libminizip.a" />
@@ -317,7 +318,6 @@
 					<Add library="/home/tails/build-server/windows-x86/boost/stage/lib/libboost_system.a" />
 					<Add library="/home/tails/build-server/windows-x86/boost/stage/lib/libboost_filesystem.a" />
 					<Add library="/home/tails/build-server/windows-x86/raknet/raknet/Lib/DLL/Lib/libRakNet.a" />
-					<Add option="-static -lpthread" />
 					<Add library="/usr/i686-w64-mingw32/lib/libws2_32.a" />
 					<Add library="/usr/i686-w64-mingw32/lib/libwinmm.a" />
 					<Add library="/usr/i686-w64-mingw32/lib/libole32.a" />
@@ -327,11 +327,11 @@
 					<Add library="/usr/i686-w64-mingw32/lib/libversion.a" />
 				</Linker>
 			</Target>
-			<Target title="Release-OSX-x86_64">
+			<Target title="Release-macOS-x86_64">
 				<Option platforms="Unix;" />
-				<Option output="Template-OSX-x86_64" prefix_auto="1" extension_auto="0" />
+				<Option output="Template-macOS-x86_64" prefix_auto="1" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output=".objs/osx-x86_64" />
+				<Option object_output=".objs/macos-x86_64" />
 				<Option type="5" />
 				<Option compiler="osxcross_clang_compiler" />
 				<Compiler>
@@ -341,7 +341,7 @@
 					<Add option="-w" />
 					<Add option="-m64" />
 					<Add option="-stdlib=libc++" />
-					<Add option="-DGAME_OS_OSX" />
+					<Add option="-DGAME_OS_MACOS" />
 					<Add directory="/home/tails/build-server/osx-x86_64/osxcross/target/SDK/MacOSX.sdk/usr/include/" />
 					<Add directory="/home/tails/build-server/osx-x86_64/SDL2/include/" />
 					<Add directory="/home/tails/build-server/osx-x86_64/SDL2_image/" />
@@ -367,7 +367,7 @@
 					<Add option="-framework AudioToolbox" />
 					<Add option="-framework OpenGL" />
 					<Add option="-framework CoreVideo" />
-					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-OSX-x86_64.a" />
+					<Add library="/home/tails/build-server/cheese-engine/libCheese-Engine-macOS-x86_64.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/zlib/contrib/minizip/.libs/libminizip.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/SDL2_image/.libs/libSDL2_image.a" />
 					<Add library="/home/tails/build-server/osx-x86_64/libpng/.libs/libpng.a" />
@@ -420,6 +420,7 @@
 		<Unit filename="console_commands_defs.cpp" />
 		<Unit filename="data_manager_defs.cpp" />
 		<Unit filename="dev_info.cpp" />
+		<Unit filename="directories_defs.cpp" />
 		<Unit filename="engine_glue.cpp" />
 		<Unit filename="game.cpp" />
 		<Unit filename="game.h" />

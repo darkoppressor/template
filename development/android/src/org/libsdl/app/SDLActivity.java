@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 
 import android.app.*;
 import android.content.*;
+import android.net.Uri;
 import android.text.InputType;
 import android.view.*;
 import android.view.inputmethod.BaseInputConnection;
@@ -573,6 +574,10 @@ public class SDLActivity extends Activity {
 
     public static void vibrateStop(){
         mSurface.vibrateStop();
+    }
+
+    public static void openUrl(String url){
+        mSurface.openUrl(url);
     }
 
     //This should only be called by the game
@@ -1188,6 +1193,8 @@ class SDLMain implements Runnable {
 class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     View.OnKeyListener, View.OnTouchListener, SensorEventListener  {
 
+    protected static Context mContext;
+
     // Sensors
     protected static SensorManager mSensorManager;
     protected static Display mDisplay;
@@ -1210,6 +1217,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         setOnKeyListener(this);
         setOnTouchListener(this);
 
+        mContext = context;
         mDisplay = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
         mVibrator=(Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -1656,6 +1664,10 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
     public void vibrateStop(){
         mVibrator.cancel();
+    }
+
+    public void openUrl(String url){
+        mContext.startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));
     }
 }
 
