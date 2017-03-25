@@ -1,0 +1,38 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+rm -rf "CMakeFiles/"
+rm -rf ".objs/"
+rm -rf "mods/"
+rm -rf "screenshots/"
+
+rm -f *Windows-x86_64.exe
+rm -f *Windows-Debug-x86_64.exe
+rm -f *Linux-x86_64
+rm -f *Linux-Debug-x86_64
+rm -f *Linux-x86
+rm -f *Windows-x86.exe
+rm -f *OSX-x86_64
+
+rm -f "options.cfg"
+rm -f "game_commands.cfg"
+
+rm -f "error_log.txt"
+rm -f "servers.txt"
+
+rm -f *_TEMPORARY
+rm -f *_BACKUP
+
+rm -f "CMakeCache.txt"
+rm -f "Makefile"
+rm -f "cmake_install.cmake"
+rm -f "compile_commands.json"
+
+rm -f *.dll
+rm -f *.depend
+rm -f *.cscope_file_list
+
+rm -f "Thumbs.db"
+rm -f ".DS_Store"
