@@ -21,7 +21,7 @@ pipeline {
             steps {
                 slackSend message: "Build started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
 
-                sh '/home/tails/build-server/cheese-engine/tools/build-system/build $(pwd)'
+                sh '/home/tails/build-server/cheese-engine/tools/build-system/build $(pwd) true'
             }
         }
     }
