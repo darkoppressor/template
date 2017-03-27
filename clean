@@ -25,6 +25,8 @@ rm -f "servers.txt"
 rm -f *_TEMPORARY
 rm -f *_BACKUP
 
+rm -f "docs/build-information"
+
 rm -f "CMakeCache.txt"
 rm -f "Makefile"
 rm -f "cmake_install.cmake"
@@ -36,3 +38,7 @@ rm -f *.cscope_file_list
 
 rm -f "Thumbs.db"
 rm -f ".DS_Store"
+
+$HOME/build-server/cheese-engine/tools/build-system/scripts/data/clean-images "$DIR"
+$HOME/build-server/cheese-engine/tools/build-system/scripts/data/clean-music "$DIR"
+$HOME/build-server/cheese-engine/tools/build-system/scripts/data/clean-sounds "$DIR"

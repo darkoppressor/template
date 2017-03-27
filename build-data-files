@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+$HOME/build-server/cheese-engine/tools/build-system/scripts/data/build-images "$DIR"
+$HOME/build-server/cheese-engine/tools/build-system/scripts/data/build-music "$DIR"
+$HOME/build-server/cheese-engine/tools/build-system/scripts/data/build-sounds "$DIR"

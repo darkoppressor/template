@@ -3,9 +3,7 @@
 # except for Android, which is explained below
 
 Release-Linux-x86_64
-Release-Linux-x86
 Release-Windows-x86_64
-Release-Windows-x86
 Release-macOS-x86_64
 
 # A line beginning with 'Android' tells the build system to build for Android
