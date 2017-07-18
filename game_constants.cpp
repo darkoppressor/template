@@ -10,7 +10,8 @@
 
 using namespace std;
 
-///double Game_Constants::EXAMPLE_CONSTANT=0.0;
+/// BEGIN SCRIPT-GENERATED CONSTANT INITIALIZATIONS
+/// END SCRIPT-GENERATED CONSTANT INITIALIZATIONS
 
 void Game_Constants_Loader::set_game_constant(string name,string value){
     if(name=="zoom_rate"){
@@ -22,4 +23,7 @@ void Game_Constants_Loader::set_game_constant(string name,string value){
     else if(name=="zoom_max"){
         Engine_Data::ZOOM_MAX=Strings::string_to_double(value);
     }
+
+    /// BEGIN SCRIPT-GENERATED CONSTANT SETUP
+    /// END SCRIPT-GENERATED CONSTANT SETUP
 }

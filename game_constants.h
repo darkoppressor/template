@@ -5,10 +5,14 @@
 #ifndef game_constants_h
 #define game_constants_h
 
+#include <string>
+#include <cstdint>
+
 class Game_Constants{
 public:
 
-    ///static double EXAMPLE_CONSTANT;
+    /// BEGIN SCRIPT-GENERATED CONSTANT DECLARATIONS
+    /// END SCRIPT-GENERATED CONSTANT DECLARATIONS
 };
 
 #endif
