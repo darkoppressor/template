@@ -10,10 +10,4 @@ Release-macOS-x86_64
 # The remainder of an Android line will be used to generate a new APP_ABI line in Application.mk
 # The existing APP_ABI line in Application.mk will be replaced with the ABIs specified on the Android line
 
-# Some Android targets don't work right now. They fail to compile, complaining of missing headers:
-# mips
-# arm64-v8a
-# x86_64
-# mips64
-
-Android armeabi armeabi-v7a x86
+Android armeabi-v7a arm64-v8a x86 x86_64
