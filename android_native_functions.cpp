@@ -5,16 +5,14 @@
 #ifdef GAME_OS_ANDROID
     #include <jni.h>
 
-    // Uncomment to enable the Google Play Games SDK
-    //#include <gpg/android_support.h>
+    #include <gpg/android_support.h>
 #endif
 
 using namespace std;
 
 #ifdef GAME_OS_ANDROID
     extern "C"{
-        // Uncomment to enable the Google Play Games SDK
-        /*JNIEXPORT void JNICALL Java_org_libsdl_app_SDLActivity_nativeOnActivityCreated(JNIEnv *env,jobject thiz,jobject activity,jobject saved_instance_state){
+        JNIEXPORT void JNICALL Java_org_libsdl_app_SDLActivity_nativeOnActivityCreated(JNIEnv *env,jobject thiz,jobject activity,jobject saved_instance_state){
             gpg::AndroidSupport::OnActivityCreated(env,activity,saved_instance_state);
         }
 
@@ -44,6 +42,6 @@ using namespace std;
 
         JNIEXPORT void JNICALL Java_org_libsdl_app_SDLActivity_nativeOnActivityResult(JNIEnv *env,jobject thiz,jobject activity,jint request_code,jint result_code,jobject data){
            gpg::AndroidSupport::OnActivityResult(env,activity,request_code,result_code,data);
-        }*/
+        }
     }
 #endif

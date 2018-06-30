@@ -1,16 +1,15 @@
 LOCAL_PATH := $(call my-dir)
 
-# Uncomment to enable the Google Play Games SDK
-#include $(CLEAR_VARS)
-#PRIVATE_APP_STL := $(APP_STL)
-#PRIVATE_APP_STL := $(PRIVATE_APP_STL:_shared=)
-#PRIVATE_APP_STL := $(PRIVATE_APP_STL:_static=)
-#LOCAL_MODULE := libgpg-1
-#LOCAL_SRC_FILES := $(LOCAL_PATH)/../$(TARGET_ARCH_ABI)/libgpg.a
-#LOCAL_STATIC_LIBRARIES := $(APP_STL)
-#LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../include/gpg
-#LOCAL_EXPORT_LDLIBS := -lz -latomic -llog
-#include $(PREBUILT_STATIC_LIBRARY)
+include $(CLEAR_VARS)
+PRIVATE_APP_STL := $(APP_STL)
+PRIVATE_APP_STL := $(PRIVATE_APP_STL:_shared=)
+PRIVATE_APP_STL := $(PRIVATE_APP_STL:_static=)
+LOCAL_MODULE := libgpg-1
+LOCAL_SRC_FILES := $(LOCAL_PATH)/../$(TARGET_ARCH_ABI)/libgpg.a
+LOCAL_STATIC_LIBRARIES := $(APP_STL)
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../include/gpg
+LOCAL_EXPORT_LDLIBS := -lz -latomic -llog
+include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := png_static
@@ -79,9 +78,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/../include/boost
 # Add your application source files here...
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/../../../../*.cpp)
 
-# Add the below library to the front of the library line to enable the Google Play Games SDK
-# libgpg-1
-LOCAL_STATIC_LIBRARIES := png_static ogg_static vorbisidec_static SDL2_main SDL2_static SDL2_image_static SDL2_mixer_static RakNet_static Cheese-Engine
+LOCAL_STATIC_LIBRARIES := libgpg-1 png_static ogg_static vorbisidec_static SDL2_main SDL2_static SDL2_image_static SDL2_mixer_static RakNet_static Cheese-Engine
 
 LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -llog -lz -landroid
 

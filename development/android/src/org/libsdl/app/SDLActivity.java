@@ -260,8 +260,7 @@ public class SDLActivity extends Activity {
         mLocationListener=new GPSListener();
         mLocationHandler=new Handler(Looper.getMainLooper());
 
-        // Uncomment to enable Google Play Games SDK
-        //SDLActivity.nativeOnActivityCreated(this,savedInstanceState);
+        SDLActivity.nativeOnActivityCreated(this,savedInstanceState);
     }
 
     // Events
@@ -272,8 +271,7 @@ public class SDLActivity extends Activity {
         mNextNativeState = NativeState.PAUSED;
         mIsResumedCalled = false;
 
-        // Uncomment to enable Google Play Games SDK
-        //SDLActivity.nativeOnActivityPaused(this);
+        SDLActivity.nativeOnActivityPaused(this);
 
         if (SDLActivity.mBrokenLibraries) {
            return;
@@ -289,8 +287,7 @@ public class SDLActivity extends Activity {
         mNextNativeState = NativeState.RESUMED;
         mIsResumedCalled = true;
 
-        // Uncomment to enable Google Play Games SDK
-        //SDLActivity.nativeOnActivityResumed(this);
+        SDLActivity.nativeOnActivityResumed(this);
 
         if (SDLActivity.mBrokenLibraries) {
            return;
@@ -303,32 +300,28 @@ public class SDLActivity extends Activity {
     protected void onStart(){
         super.onStart();
 
-        // Uncomment to enable Google Play Games SDK
-        //SDLActivity.nativeOnActivityStarted(this);
+        SDLActivity.nativeOnActivityStarted(this);
     }
 
     @Override
     protected void onStop(){
         super.onStop();
 
-        // Uncomment to enable Google Play Games SDK
-        //SDLActivity.nativeOnActivityStopped(this);
+        SDLActivity.nativeOnActivityStopped(this);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
 
-        // Uncomment to enable Google Play Games SDK
-        //SDLActivity.nativeOnActivitySaveInstanceState(this,outState);
+        SDLActivity.nativeOnActivitySaveInstanceState(this,outState);
     }
 
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
         super.onActivityResult(requestCode,resultCode,data);
 
-        // Uncomment to enable Google Play Games SDK
-        //SDLActivity.nativeOnActivityResult(this,requestCode,resultCode,data);
+        SDLActivity.nativeOnActivityResult(this,requestCode,resultCode,data);
     }
 
     @Override
@@ -394,8 +387,7 @@ public class SDLActivity extends Activity {
 
         super.onDestroy();
 
-        // Uncomment to enable Google Play Games SDK
-        //SDLActivity.nativeOnActivityDestroyed(this);
+        SDLActivity.nativeOnActivityDestroyed(this);
 
         // Reset everything in case the user re opens the app
         SDLActivity.initialize();
@@ -579,15 +571,14 @@ public class SDLActivity extends Activity {
 
     // Implemented in C++.
     // Added for Google Play Games on Android versions before API 14
-    // Uncomment to enable Google Play Games SDK
-    /*private static native void nativeOnActivityCreated(Activity activity,Bundle savedInstanceState);
+    private static native void nativeOnActivityCreated(Activity activity,Bundle savedInstanceState);
     private static native void nativeOnActivityDestroyed(Activity activity);
     private static native void nativeOnActivityPaused(Activity activity);
     private static native void nativeOnActivityResumed(Activity activity);
     private static native void nativeOnActivitySaveInstanceState(Activity activity,Bundle outState);
     private static native void nativeOnActivityStarted(Activity activity);
     private static native void nativeOnActivityStopped(Activity activity);
-    private static native void nativeOnActivityResult(Activity activity,int requestCode,int resultCode,Intent data);*/
+    private static native void nativeOnActivityResult(Activity activity,int requestCode,int resultCode,Intent data);
 
     // C functions we call
     public static native int nativeSetupJNI();
