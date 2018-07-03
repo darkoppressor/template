@@ -20,6 +20,9 @@
 
 using namespace std;
 
+void Game_Manager::on_startup () {
+}
+
 bool Game_Manager::effect_allowed(){
     uint32_t effects=/**Game_Data::effects_example.size()*/0;
 
