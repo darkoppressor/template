@@ -1,8 +1,6 @@
 pipeline {
     agent any
 
-    //Test11
-
     stages {
         stage('build') {
             post {
