@@ -1,5 +1,5 @@
 # template
-[![Build Status](http://wells-family.xyz:8080/buildStatus/icon?job=template/master)](http://wells-family.xyz:8080/job/template/job/master/)
+[![Build Status](https://wells-family.xyz/jenkins/buildStatus/icon?job=template/master)](https://wells-family.xyz/jenkins/job/template/job/master/)
 
 Template project for use with the Cheese Engine
 https://github.com/darkoppressor/cheese-engine
