@@ -1,5 +1,5 @@
 # template
-[![Build Status](https://wells-family.xyz/jenkins/buildStatus/icon?job=template)](https://wells-family.xyz/jenkins/job/template/)
+[![Build Status](http://wells-family.xyz:8080/jenkins/buildStatus/icon?job=template)](https://wells-family.xyz/jenkins/job/template/)
 
 Template project for use with the Cheese Engine
 https://github.com/darkoppressor/cheese-engine
