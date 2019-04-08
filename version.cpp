@@ -7,15 +7,15 @@
 using namespace std;
 
 string Engine_Version::get_year(){
-    return "2018"; //YEAR
+    return "2019"; //YEAR
 }
 
 string Engine_Version::get_month(){
-    return "06"; //MONTH
+    return "04"; //MONTH
 }
 
 string Engine_Version::get_day(){
-    return "30"; //DAY
+    return "08"; //DAY
 }
 
 int Engine_Version::get_major(){
