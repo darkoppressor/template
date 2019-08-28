@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.2.2)
 project(template)
 
 set(SOURCE_FILES
-android_native_functions.cpp
 button_events_game.cpp
 console_commands_defs.cpp
 data_manager_defs.cpp
@@ -237,7 +236,6 @@ COMPILE_FLAGS "-fexpensive-optimizations -O2 -std=c++11 -Wall -Wextra -m64 -DGAM
 target_include_directories(Android-NoBuild PRIVATE
 /usr/include/
 /usr/include/x86_64-linux-gnu/
-/home/tails/build-server/android/gpg-cpp-sdk/android/include
 /home/tails/build-server/android/SDL2/include/
 /home/tails/build-server/android/SDL2_image/
 /home/tails/build-server/android/SDL2_mixer/
