@@ -8,11 +8,10 @@
 #include <string>
 #include <cstdint>
 
-class Game_Constants{
-public:
-
-    /// BEGIN SCRIPT-GENERATED CONSTANT DECLARATIONS
-    /// END SCRIPT-GENERATED CONSTANT DECLARATIONS
+class Game_Constants {
+    public:
+        /// BEGIN SCRIPT-GENERATED CONSTANT DECLARATIONS
+        /// END SCRIPT-GENERATED CONSTANT DECLARATIONS
 };
 
 #endif
