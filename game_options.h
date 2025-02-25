@@ -6,7 +6,6 @@
 #define game_options_h
 
 #include <string>
-#include <cstdint>
 
 class Game_Options {
     public:
