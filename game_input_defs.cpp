@@ -13,7 +13,7 @@
 using namespace std;
 
 void Game_Manager::handle_drag_and_drop (string file) {
-    ///Do something with file
+    // Do something with file
 }
 
 void Game_Manager::prepare_for_input () {
@@ -33,7 +33,7 @@ void Game_Manager::handle_command_states_multiplayer () {
                 if (!paused) {
                     // Example multiplayer command state
                     /**if(Network_Engine::clients[i].game_command_state("some_command")){
-                        ///Deal with command state here
+                        // Deal with command state here
                        }*/
                 }
             }
@@ -51,7 +51,7 @@ void Game_Manager::handle_game_commands_multiplayer () {
                     if (!paused) {
                         // Example multiplayer command
                         /**if(command_name=="some_command"){
-                            ///Deal with command here
+                            // Deal with command here
                            }*/
                     }
                 }
@@ -121,22 +121,22 @@ bool Game_Manager::handle_game_command_gui (string command_name) {
 bool Game_Manager::handle_game_command (string command_name) {
     const uint8_t* keystates = SDL_GetKeyboardState(NULL);
 
-    ///DEV COMMANDS
+    // DEV COMMANDS
     if (Options::dev && keystates[SDL_SCANCODE_F1]) {
         // Example dev command
         /**if(command_name=="some_dev_command"){
-            ///Dev command here.
+            // Dev command here.
 
             return true;
            }*/
     }
 
-    ///END OF DEV COMMANDS
+    // END OF DEV COMMANDS
 
     if (!paused) {
         // Example command
         /**if(command_name=="some_command"){
-            ///Command here
+            // Command here
 
             return true;
            }*/

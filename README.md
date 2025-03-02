@@ -5,7 +5,7 @@ Template project for use with the Cheese Engine
 https://github.com/darkoppressor/cheese-engine
 
 This template is a complete project for use with the Cheese Engine. Before being used, it should be properly initialized
-using the rename-template tool: https://github.com/darkoppressor/rename-template
+using the rename-template tool.
 
 ## License
 This project's source code is licensed under the MIT License. See [LICENSE.txt](docs/LICENSE.txt) for the full license text.
