@@ -10,7 +10,7 @@ project.ext {
     targetSdkVersion = 34
     minSdkVersion = 34
     buildToolsVersion = '34.0.0'
-    javaVersion = JavaVersion.VERSION_11
+    javaVersion = JavaVersion.VERSION_17
     versionCode = 1
     versionName = '0.0.1'
     ndkVersion = '26.3.11579264'
@@ -28,16 +28,18 @@ buildscript {
 allprojects {
     addRepos(getRepositories())
     gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        tasks.withType(JavaCompile).tap {
+            configureEach {
+                options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+            }
         }
     }
 }
 
-task clean (type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete getLayout().getBuildDirectory()
 }
 
 wrapper {
-    gradleVersion = '8.9'
+    gradleVersion = '8.13'
 }
