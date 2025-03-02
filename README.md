@@ -24,7 +24,8 @@ When an updated version has been pushed to main, tag the commit locally and remo
 
 ## License
 
-This project's source code is licensed under the MIT License. See [LICENSE.txt](docs/LICENSE.txt) for the full license text.
+This project's source code is licensed under the MIT License. See [LICENSE.md](docs/LICENSE.md) for the full license
+text.
 
-Please note that the file docs/CONTENT-LICENSE.txt is included for convenience when starting a new project,
-and does not pertain to this template project itself.
+Please note that the file docs/contentLicense.md is included for convenience when starting a new project, and does not
+pertain to this template project itself.
