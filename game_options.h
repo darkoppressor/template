@@ -9,7 +9,7 @@
 
 class Game_Options {
     public:
-        ///static int example_option;
+        // static int example_option;
 
         static bool get_option(std::string name, std::string& value);
         static void set_option(std::string name, std::string value);

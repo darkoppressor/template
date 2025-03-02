@@ -6,13 +6,14 @@
 
 using namespace std;
 
-///vector<Example_Game_Tag> Game_Data::example_game_tags;
+// vector<Example_Game_Tag> Game_Data::example_game_tags;
 
-///Don't forget to increment this for each progress item in load_data_game() below
+// Don't forget to increment this for each progress item in load_data_game() below
 const int Game_Data::game_data_load_item_count = 0;
+
 void Game_Data::load_data_game (Progress_Bar& bar) {
-    ///bar.progress("Loading example game tag");
-    ///Data_Manager::load_data("example_game_tag");
+    // bar.progress("Loading example game tag");
+    // Data_Manager::load_data("example_game_tag");
 }
 
 void Game_Data::load_data_tag_game (string tag, File_IO_Load* load) {
@@ -22,7 +23,7 @@ void Game_Data::load_data_tag_game (string tag, File_IO_Load* load) {
 }
 
 void Game_Data::unload_data_game () {
-    ///example_game_tags.clear();
+    // example_game_tags.clear();
 }
 
 /**void Game_Data::load_example_game_tag(File_IO_Load* load){
