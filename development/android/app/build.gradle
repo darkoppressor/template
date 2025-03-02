@@ -14,8 +14,10 @@ if (buildAsApplication) {
 }
 
 android {
+    namespace 'org.cheeseandbacon.template'
     compileSdkVersion project.targetSdkVersion
     buildToolsVersion project.buildToolsVersion
+    ndkVersion project.ndkVersion
 
     defaultConfig {
         if (buildAsApplication) {

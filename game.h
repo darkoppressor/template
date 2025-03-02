@@ -5,13 +5,13 @@
 #ifndef game_h
 #define game_h
 
-///#include "example_object.h"
+// #include "example_object.h"
 
 #include <vector>
 
 class Game {
     public:
-        ///static std::vector<Example_Object> example_objects;
+        // static std::vector<Example_Object> example_objects;
 
         static void clear_world();
         static void generate_world();
