@@ -10,13 +10,13 @@ using the rename-template tool.
 
 ## For players
 
-[System requirements](docs/systemRequirements.md)
-[Changelog](docs/changelog.md)
+* [System requirements](docs/systemRequirements.md)
+* [Changelog](docs/changelog.md)
 
 ## For developers
 
-[Ideas](development/ideas.md)
-[To do](development/toDo.md)
+* [Ideas](development/ideas.md)
+* [To do](development/toDo.md)
 
 ### Updating the version
 
@@ -25,7 +25,7 @@ using the rename-template tool.
 
 In version.cpp:
 
-        Update the version series in Engine_Version::populate_version_series to include the new version
+    Update the version series in Engine_Version::populate_version_series to include the new version
 
 When an updated version has been pushed to main, tag the commit locally and remotely:
 
