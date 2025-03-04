@@ -8,7 +8,17 @@ https://github.com/darkoppressor/cheese-engine
 This template is a complete project for use with the Cheese Engine. Before being used, it should be properly initialized
 using the rename-template tool.
 
-## Updating the version
+## For players
+
+[System requirements](docs/systemRequirements.md)
+[Changelog](docs/changelog.md)
+
+## For developers
+
+[Ideas](development/ideas.md)
+[To do](development/toDo.md)
+
+### Updating the version
 
     ~/build-server/cheese-engine/tools/version <PROJECT-DIRECTORY> <VERSION-COMPONENT> [STATUS]
     ~/build-server/cheese-engine/tools/build-date <PROJECT-DIRECTORY>
@@ -29,3 +39,5 @@ text.
 
 Please note that the file docs/contentLicense.md is included for convenience when starting a new project, and does not
 pertain to this template project itself.
+
+For third party licenses for dependencies, see [the thirdPartyLicenses directory](docs/thirdPartyLicenses).
