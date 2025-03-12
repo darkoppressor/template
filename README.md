@@ -23,7 +23,7 @@ using the rename-template tool.
     ~/build-server/cheese-engine/tools/version <PROJECT-DIRECTORY> <VERSION-COMPONENT> [STATUS]
     ~/build-server/cheese-engine/tools/build-date <PROJECT-DIRECTORY>
 
-In version.cpp:
+In [src/version.cpp](src/version.cpp):
 
     Update the version series in Engine_Version::populate_version_series to include the new version
 

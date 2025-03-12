@@ -2,25 +2,25 @@ cmake_minimum_required(VERSION 3.28.3)
 project(template)
 
 set(SOURCE_FILES
-button_events_game.cpp
-console_commands_defs.cpp
-data_manager_defs.cpp
-dev_info.cpp
-directories_defs.cpp
-engine_glue.cpp
-game.cpp
+src/button_events_game.cpp
+src/console_commands_defs.cpp
+src/data_manager_defs.cpp
+src/dev_info.cpp
+src/directories_defs.cpp
+src/engine_glue.cpp
+src/game.cpp
+src/game_constants.cpp
+src/game_data.cpp
+src/game_input_defs.cpp
+src/game_manager_defs.cpp
+src/game_options.cpp
+src/main.cpp
+src/network_game.cpp
+src/special_info.cpp
+src/version.cpp
+src/window_close_function.cpp
+src/window_scrolling_buttons.cpp
 game.rc
-game_constants.cpp
-game_data.cpp
-game_input_defs.cpp
-game_manager_defs.cpp
-game_options.cpp
-main.cpp
-network_game.cpp
-special_info.cpp
-version.cpp
-window_close_function.cpp
-window_scrolling_buttons.cpp
 )
 
 ########################################################################################################################
@@ -44,7 +44,7 @@ target_include_directories(Release-Linux-x86_64 PRIVATE
 /home/tails/build-server/linux-x86_64/boost/
 /home/tails/build-server/linux-x86_64/raknet/
 /home/tails/build-server/linux-x86_64/zlib/
-/home/tails/build-server/cheese-engine
+/home/tails/build-server/cheese-engine/src/
 )
 
 target_link_libraries(Release-Linux-x86_64
@@ -87,7 +87,7 @@ target_include_directories(Debug-Linux-x86_64 PRIVATE
 /home/tails/build-server/linux-x86_64/boost/
 /home/tails/build-server/linux-x86_64/raknet/
 /home/tails/build-server/linux-x86_64/zlib/
-/home/tails/build-server/cheese-engine
+/home/tails/build-server/cheese-engine/src/
 )
 
 target_link_libraries(Debug-Linux-x86_64
@@ -132,7 +132,7 @@ target_include_directories(Release-Windows-x86_64 PRIVATE
 /home/tails/build-server/windows-x86_64/boost/
 /home/tails/build-server/windows-x86_64/raknet/
 /home/tails/build-server/windows-x86_64/zlib/
-/home/tails/build-server/cheese-engine
+/home/tails/build-server/cheese-engine/src/
 )
 
 target_link_libraries(Release-Windows-x86_64
@@ -184,7 +184,7 @@ target_include_directories(Release-macOS-arm64 PRIVATE
 /home/tails/build-server/macos-arm64/boost/
 /home/tails/build-server/macos-arm64/raknet/
 /home/tails/build-server/macos-arm64/zlib/
-/home/tails/build-server/cheese-engine
+/home/tails/build-server/cheese-engine/src/
 )
 
 target_link_libraries(Release-macOS-arm64
