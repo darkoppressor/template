@@ -5,8 +5,8 @@
 
 // #include "example_game_tag.h"
 
-#include <progress_bar.h>
-#include <file_io.h>
+#include <ui/progress_bar.h>
+#include <file/file_io.h>
 
 #include <vector>
 

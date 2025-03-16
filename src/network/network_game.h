@@ -3,7 +3,7 @@
 #ifndef network_game_h
 #define network_game_h
 
-#include <network_message_identifiers.h>
+#include <network/network_message_identifiers.h>
 
 #include <string>
 

@@ -1,9 +1,9 @@
 /* Copyright (c) Cheese and Bacon Games, LLC. See docs/LICENSE.md for details. */
 
-#include <window.h>
+#include <ui/window.h>
 #include <log.h>
-#include <engine_input.h>
-#include <object_manager.h>
+#include <ui/engine_input.h>
+#include <data/object_manager.h>
 
 using namespace std;
 

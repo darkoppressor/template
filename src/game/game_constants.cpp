@@ -2,9 +2,9 @@
 
 #include "game_constants.h"
 
-#include <game_constants_loader.h>
-#include <engine_strings.h>
-#include <engine_data.h>
+#include <game/game_constants_loader.h>
+#include <strings/engine_strings.h>
+#include <data/engine_data.h>
 
 using namespace std;
 

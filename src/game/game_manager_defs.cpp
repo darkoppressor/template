@@ -1,20 +1,20 @@
 /* Copyright (c) Cheese and Bacon Games, LLC. See docs/LICENSE.md for details. */
 
-#include <game_manager.h>
-#include <options.h>
-#include <music_manager.h>
+#include <game/game_manager.h>
+#include <options/options.h>
+#include <music/music_manager.h>
 #include <screen_shake.h>
 #include <engine.h>
-#include <font.h>
-#include <object_manager.h>
-#include <network_engine.h>
-#include <render.h>
+#include <ui/font.h>
+#include <data/object_manager.h>
+#include <network/network_engine.h>
+#include <render/render.h>
 #include <game_window.h>
 #include <engine_version.h>
-#include <image_manager.h>
-#include <data_manager.h>
-#include <engine_strings.h>
-#include <engine_math.h>
+#include <image/image_manager.h>
+#include <data/data_manager.h>
+#include <strings/engine_strings.h>
+#include <math/engine_math.h>
 
 using namespace std;
 

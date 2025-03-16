@@ -1,6 +1,6 @@
 /* Copyright (c) Cheese and Bacon Games, LLC. See docs/LICENSE.md for details. */
 
-#include <console.h>
+#include <console/console.h>
 
 using namespace std;
 

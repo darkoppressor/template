@@ -1,25 +1,26 @@
 cmake_minimum_required(VERSION 3.28.3)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 project(template)
 
 set(SOURCE_FILES
-src/button_events_game.cpp
-src/console_commands_defs.cpp
-src/data_manager_defs.cpp
-src/dev_info.cpp
-src/directories_defs.cpp
-src/engine_glue.cpp
-src/game.cpp
-src/game_constants.cpp
-src/game_data.cpp
-src/game_input_defs.cpp
-src/game_manager_defs.cpp
-src/game_options.cpp
+src/console/console_commands_defs.cpp
+src/data/data_manager_defs.cpp
+src/engine/engine_glue.cpp
+src/file/directories_defs.cpp
+src/game/game.cpp
+src/game/game_constants.cpp
+src/game/game_data.cpp
+src/game/game_manager_defs.cpp
+src/network/network_game.cpp
+src/options/game_options.cpp
+src/ui/button_events_game.cpp
+src/ui/dev_info.cpp
+src/ui/game_input_defs.cpp
+src/ui/special_info.cpp
+src/ui/window_close_function.cpp
+src/ui/window_scrolling_buttons.cpp
 src/main.cpp
-src/network_game.cpp
-src/special_info.cpp
 src/version.cpp
-src/window_close_function.cpp
-src/window_scrolling_buttons.cpp
 game.rc
 )
 

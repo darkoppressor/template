@@ -1,8 +1,8 @@
 /* Copyright (c) Cheese and Bacon Games, LLC. See docs/LICENSE.md for details. */
 
-#include <special_info.h>
+#include <ui/special_info.h>
 #include <log.h>
-#include <object_manager.h>
+#include <data/object_manager.h>
 
 using namespace std;
 

@@ -2,9 +2,9 @@
 
 #include "game.h"
 
-#include <render.h>
+#include <render/render.h>
 #include <game_window.h>
-#include <sound_manager.h>
+#include <sound/sound_manager.h>
 
 using namespace std;
 

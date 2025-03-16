@@ -1,7 +1,7 @@
 /* Copyright (c) Cheese and Bacon Games, LLC. See docs/LICENSE.md for details. */
 
-#include <data_manager.h>
-#include <rtt_manager.h>
+#include <data/data_manager.h>
+#include <render/rtt_manager.h>
 
 using namespace std;
 

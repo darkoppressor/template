@@ -1,14 +1,14 @@
 /* Copyright (c) Cheese and Bacon Games, LLC. See docs/LICENSE.md for details. */
 
-#include "game_data.h"
-#include "game_options.h"
-#include "network_game.h"
-#include "game.h"
+#include "../game/game_data.h"
+#include "../options/game_options.h"
+#include "../network/network_game.h"
+#include "../game/game.h"
 
-#include <game_manager.h>
-#include <game_option.h>
-#include <network_engine.h>
-#include <game_world.h>
+#include <game/game_manager.h>
+#include <options/game_option.h>
+#include <network/network_engine.h>
+#include <game/game_world.h>
 
 using namespace std;
 

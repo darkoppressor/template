@@ -1,11 +1,11 @@
 /* Copyright (c) Cheese and Bacon Games, LLC. See docs/LICENSE.md for details. */
 
-#include <window.h>
-#include <engine_strings.h>
+#include <ui/window.h>
+#include <strings/engine_strings.h>
 #include <log.h>
-#include <object_manager.h>
-#include <network_client.h>
-#include <network_lan_browser.h>
+#include <data/object_manager.h>
+#include <network/network_client.h>
+#include <network/network_lan_browser.h>
 
 using namespace std;
 

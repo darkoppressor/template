@@ -1,13 +1,13 @@
 /* Copyright (c) Cheese and Bacon Games, LLC. See docs/LICENSE.md for details. */
 
 #include <engine.h>
-#include <game_manager.h>
-#include <font.h>
-#include <object_manager.h>
-#include <options.h>
-#include <network_engine.h>
-#include <render.h>
-#include <engine_strings.h>
+#include <game/game_manager.h>
+#include <ui/font.h>
+#include <data/object_manager.h>
+#include <options/options.h>
+#include <network/network_engine.h>
+#include <render/render.h>
+#include <strings/engine_strings.h>
 
 using namespace std;
 
