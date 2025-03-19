@@ -15,8 +15,9 @@ using the rename-template tool.
 
 ## For developers
 
-* [Ideas](development/ideas.md)
 * [To do](development/toDo.md)
+
+* [Ideas](development/design/ideas.md)
 
 ### Updating the version
 
