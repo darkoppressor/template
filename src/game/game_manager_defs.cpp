@@ -147,7 +147,7 @@ void Game_Manager::render_title_background () {
                "Version: " + Engine_Version::get_version() + " " + Engine_Version::get_status() + "\nChecksum: " +
                Engine::CHECKSUM, "ui_white");
 
-    Image_Data* logo = Image_Manager::get_image("logo");
+    Image_Data* logo = Image_Manager::get_image("engine/logo");
     double logo_scale_x = (double) Game_Window::width() / (double) 1280.0;
     double logo_scale_y = (double) Game_Window::height() / (double) 720.0;
 
